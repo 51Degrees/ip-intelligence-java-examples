@@ -27,7 +27,7 @@
     <parent>
         <artifactId>ip-intelligence-java-examples</artifactId>
         <groupId>com.51degrees</groupId>
-        <version>4.4.21-SNAPSHOT</version>
+        <version>4.4.20</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -65,12 +65,12 @@
         <dependency>
             <groupId>com.51degrees</groupId>
             <artifactId>ip-intelligence</artifactId>
-            <version>${project.version}</version>
+            <version>${ip-intelligence.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ip-intelligence.shared</artifactId>
-            <version>${project.version}</version>
+            <version>${ip-intelligence.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

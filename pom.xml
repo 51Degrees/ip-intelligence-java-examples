@@ -34,7 +34,7 @@
     </parent>
 
     <artifactId>ip-intelligence-java-examples</artifactId>
-    <version>4.4.21-SNAPSHOT</version>
+    <version>4.4.20</version>
     <packaging>pom</packaging>
 
     <name>51Degrees :: Device Detection :: Examples</name>
@@ -74,7 +74,7 @@
             <dependency>
                 <groupId>com.51degrees</groupId>
                 <artifactId>ip-intelligence</artifactId>
-                <version>${project.version}</version>
+                <version>${ip-intelligence.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
