@@ -45,9 +45,6 @@ try {
         $IpiFileHash = (Get-FileHash -Algorithm MD5 -Path $NextIpiFile).Hash
         Write-Output "MD5 ($NextIpiFile) = $IpiFileHash"
     }
-
-    ./evidence-gen.ps1 -v4 10000 -v6 10000
-    ./evidence-gen.ps1 -v4 10000 -v6 10000 -csv "evidence.csv"
 }
 finally {
     Pop-Location
