@@ -73,7 +73,7 @@ public class OfflineProcessing {
     // Note that the Lite data file is only used for illustration, and has
     // limited accuracy and capabilities. Find out about the Enterprise data
     // file here: https://51degrees.com/pricing
-    private static final String dataDir = "ip-intelligence.engine.on-premise/src/main/cxx/ip-intelligence-cxx/ip-intelligence-data";
+    private static final String dataDir = "ip-intelligence-data";
     public static final String LITE_V_4_1_HASH =
             dataDir + "/51Degrees-LiteV41.ipi";
     // This 51degrees file of 20,000 examples (distributed with the source)
