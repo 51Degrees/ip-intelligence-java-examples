@@ -147,7 +147,7 @@
                     <properties>
                         <property>
                             <name>listener</name>
-                            <value>fiftyone.devicedetection.shared.testhelpers.MavenRunListener</value>
+                            <value>fiftyone.ipintelligence.shared.testhelpers.MavenRunListener</value>
                         </property>
                     </properties>
                 </configuration>
