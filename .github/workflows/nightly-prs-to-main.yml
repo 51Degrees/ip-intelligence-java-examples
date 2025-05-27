@@ -1,0 +1,19 @@
+name: Nightly PRs to Main
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Nightly Submodule Update]
+    types: [completed]
+
+jobs:
+  # Run the common workflow on each pull request
+  Nightly_PR_to_Main:
+    uses: 51Degrees/common-ci/.github/workflows/nightly-prs-to-main.yml@main
+    with:
+      repo-name: ${{ github.event.repository.name }}
+    secrets:
+      token: ${{ secrets.ACCESS_TOKEN }}
+      DeviceDetection: ${{ secrets.DEVICE_DETECTION_KEY }}
+      TestResourceKey: ${{ secrets.SUPER_RESOURCE_KEY}}
+      DeviceDetectionUrl: ${{ secrets.IPI_DATA_FILE_URL }}
