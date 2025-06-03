@@ -68,13 +68,9 @@ The same principle can be applied to incorporate changes in pipeline-java if nee
 
 The tables below describe the examples available in this repository.
 
-### Cloud
+### Cloud (coming soon)
 
-| Example                                | Description                                                                                                                                        |
-|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| GettingStarted (Console)               | How to use the 51Degrees Cloud service to determine IP intelligence data based on IP addresses.                                                   |
-| GettingStarted (Web)                   | How to use the 51Degrees Cloud service to determine IP intelligence data as part of a simple Java servlet website.                               |
-| Metadata                               | How to access the meta-data that relates to the properties available in IP intelligence detection.                                                |
+Cloud examples will be added once the cloud service for IP Intelligence becomes available.
 
 ### On-Premise
 
