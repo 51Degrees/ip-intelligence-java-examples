@@ -1,12 +1,17 @@
-# 51Degrees Device Detection Engines - Examples
+# 51Degrees IP Intelligence Engines - Examples
 
-![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=java-open-source "Data rewards the curious") **Java Device Detection**
+![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=java-open-source "Data rewards the curious") **Java IP Intelligence**
 
 [Developer Documentation](https://51degrees.com/ip-intelligence-java/index.html?utm_source=github&utm_medium=repository&utm_content=documentation&utm_campaign=java-open-source "developer documentation")
 
 ## Introduction
 
 These examples are not distributed as maven jars and need to be built by you.
+
+## Required Files
+
+See [ip-intelligence-data](https://github.com/51Degrees/ip-intelligence-data/) 
+repository for instructions on obtaining the necessary data files for on-premise detection.
 
 This project contains sub-modules - **console**, giving examples that are intended 
 to be run from the command line/console and **web**, illustrating use
@@ -16,10 +21,10 @@ containing various helpers for the examples.
 Among other things, the examples illustrate:
 - use of the fluent builder to configure a pipeline
 - use of a configuration options file to configure a pipeline
-- use of the cloud device detection service
-- use of the on-premise "hash" device detection service
-- use of device detection pipeline for off-line processing tasks
-- configuring device detection trade-offs between speed and conserving memory
+- use of the cloud IP intelligence service
+- use of the on-premise IP intelligence service
+- use of IP intelligence pipeline for off-line processing tasks
+- configuring IP intelligence trade-offs between speed and conserving memory
 
 ## Cloud resource keys
 
@@ -67,23 +72,20 @@ The tables below describe the examples available in this repository.
 
 | Example                                | Description                                                                                                                                        |
 |----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| GettingStarted (Console)               | How to use the 51Degrees Cloud service to determine details about a device based on its User-Agent and User-Agent Client Hints HTTP header values. |
-| GettingStarted (Web)                   | How to use the 51Degrees Cloud service to determine details about a device as part of a simple Java servlet website.                               |
-| Metadata                               | How to access the meta-data that relates to things like the properties populated device detection                                                  |
-| TacLookup                              | How to get device details from a TAC (Type Allocation Code) using the 51Degrees cloud service.                                                     |
-| NativeModelLookup                      | How to get device details from a native model name using the 51Degrees cloud service.                                                              |
+| GettingStarted (Console)               | How to use the 51Degrees Cloud service to determine IP intelligence data based on IP addresses.                                                   |
+| GettingStarted (Web)                   | How to use the 51Degrees Cloud service to determine IP intelligence data as part of a simple Java servlet website.                               |
+| Metadata                               | How to access the meta-data that relates to the properties available in IP intelligence detection.                                                |
 
 ### On-Premise
 
 | Example                  | Description                                                                                                                                                                                                                    |
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GettingStarted (Console) | How to use the 51Degrees on-premise device detection API to determine details about a device based on its User-Agent and User-Agent Client Hints HTTP header values.                                                           |
-| GettingStarted (Web)     | How to use the 51Degrees Cloud service to determine details about a device as part of a simple Java servlet website.                                                                                                           |
-| Metadata                 | How to access the meta-data that relates to things like the properties populated device detection.                                                                                                                             |
-| MatchMetrics             | How to view metrics associated with the properties of processing with a Device Detection engine.                                                                                                                               |
-| OfflineProcessing        | Example showing how to ingest a file containing data from web requests and perform detection against the entries.                                                                                                              |
-| PerformanceBenchmark     | How to configure the various performance options and run some simple performance tests.                                                                                                                                        |
-| UpdateOnStartup          | How to configure the Pipeline to automatically update the device detection data file on startup. Also illustrates 'file watcher'. This will refresh the device detection engine if the specified data file is updated on disk. |
+| GettingStarted (Console) | How to use the 51Degrees on-premise IP intelligence API to determine details about IP addresses.                                                                                                                               |
+| GettingStarted (Web)     | How to use the 51Degrees on-premise IP intelligence service to determine details about IP addresses as part of a simple Java servlet website.                                                                                 |
+| Metadata                 | How to access the meta-data that relates to the properties available in IP intelligence detection.                                                                                                                             |
+| OfflineProcessing        | Example showing how to ingest a file containing IP addresses and perform IP intelligence detection against the entries.                                                                                                        |
+| PerformanceBenchmark     | How to configure the various performance options and run some simple performance tests for IP intelligence.                                                                                                                    |
+| UpdateOnStartup          | How to configure the Pipeline to automatically update the IP intelligence data file on startup. Also illustrates 'file watcher'. This will refresh the IP intelligence engine if the specified data file is updated on disk. |
 
 ## Running built examples from command line
 
@@ -98,5 +100,6 @@ will produce "fat" JARs inside `target` subfolders.
 Use them with relevant example class entrypoints like:
 
 ```bash
-java -cp .\console\target\ip-intelligence-java-examples.console-4.4.20-jar-with-dependencies.jar fiftyone.devicedetection.examples.console.OfflineProcessing
+java -cp .\console\target\ip-intelligence-java-examples.console-4.4.19-jar-with-dependencies.jar fiftyone.ipintelligence.examples.console.OfflineProcessing
 ```
+
