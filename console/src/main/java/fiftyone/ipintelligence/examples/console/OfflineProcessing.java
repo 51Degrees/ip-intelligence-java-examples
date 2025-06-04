@@ -83,8 +83,12 @@ public class OfflineProcessing {
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));
+        
+        // Use provided data file argument, or fall back to default Lite file
+        String dataFile = (args.length > 0) ? args[0] : LITE_V_4_1_HASH;
+        
         File evidenceFile = getFilePath(HEADER_EVIDENCE_YML);
-        run(LITE_V_4_1_HASH, Files.newInputStream(evidenceFile.toPath()), System.out);
+        run(dataFile, Files.newInputStream(evidenceFile.toPath()), System.out);
     }
 
     /**
