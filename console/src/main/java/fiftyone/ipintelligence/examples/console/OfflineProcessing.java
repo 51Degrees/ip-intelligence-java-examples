@@ -128,9 +128,9 @@ public class OfflineProcessing {
           ---- Build a pipeline ----
          */
 
-        logger.info("Constructing pipeline with on-premise hash " +
+        logger.info("Constructing pipeline with on-premise IP Intelligence " +
                 "engine from file " + dataFile);
-        // Build a new on-premise Hash engine in a try/resources so
+        // Build a new on-premise IP Intelligence engine in a try/resources so
         // that the pipeline is disposed when done
         try (Pipeline pipeline = new IPIntelligencePipelineBuilder()
                 .useOnPremise(detectionFile, false)
