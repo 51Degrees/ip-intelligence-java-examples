@@ -32,7 +32,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ip-intelligence-java-examples.shared</artifactId>
-    <name>51Degrees :: Device Detection :: Examples :: Shared</name>
+    <name>51Degrees :: IP Intelligence :: Examples :: Shared</name>
 
     <properties>
         <jakarta.xml.bind-api.version>3.0.1</jakarta.xml.bind-api.version>

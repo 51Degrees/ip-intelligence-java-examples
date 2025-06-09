@@ -68,7 +68,7 @@ public class HtmlContentHelper {
                 ".smaller {font-size: smaller}</style>\n" +
                 "</head>\n" +
                 "<body>\n" +
-                "<h1>51Degrees Device Detection Example ("+ title +")</h1>\n" +
+                "<h1>51Degrees IP Intelligence Example ("+ title +")</h1>\n" +
                 "\n");
     }
 

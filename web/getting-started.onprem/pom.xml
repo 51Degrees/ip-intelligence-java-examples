@@ -80,7 +80,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fiftyone.devicedetection.examples.web.GettingStartedWebOnPrem</mainClass>
+                            <mainClass>fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

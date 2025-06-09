@@ -32,9 +32,9 @@
     <version>4.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>51Degrees :: Device Detection :: Examples</name>
+    <name>51Degrees :: IP Intelligence :: Examples</name>
     <url>https://51degrees.com</url>
-    <description>Device detection examples</description>
+    <description>IP Intelligence examples</description>
 
     <modules>
         <module>web</module>

@@ -32,8 +32,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ip-intelligence-java-examples.console</artifactId>
-    <name>51Degrees :: Device Detection :: Examples :: Console</name>
-    <description>Examples showing how to use device detection in a console environment</description>
+    <name>51Degrees :: IP Intelligence :: Examples :: Console</name>
+    <description>Examples showing how to use IP Intelligence in a console environment</description>
 
     <properties>
         <slf4j-api.version>2.0.17</slf4j-api.version>
