@@ -48,7 +48,7 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
  * Provides an illustration of the fundamental elements of carrying out IP Intelligence using
- * "on premise" (aka Hash) detection - meaning the IP Intelligence data is stored on your server
+ * "on premise" detection - meaning the IP Intelligence data is stored on your server
  * and the detection software executes exclusively on your server.
  * <p>
  * This example shows how to use pipeline configuration file, as opposed to the fluent builder
@@ -66,7 +66,7 @@ public class GettingStartedOnPrem {
     Note that the Lite data file is only used for illustration, and has limited accuracy and
     capabilities. Find out about the Enterprise data file here: https://51degrees.com/pricing */
     public static String LITE_V_4_1_HASH = "51Degrees-LiteV41.ipi";
-    public static String ENTERPRISE_HASH = "TAC-IpIntelligenceV41.ipi";
+    public static String ENTERPRISE_HASH = "51Degrees-EnterpriseIpiV41.ipi";
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));

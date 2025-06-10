@@ -15,8 +15,8 @@
     </modules>
 
     <artifactId>ip-intelligence-java-examples.web</artifactId>
-    <name>51Degrees :: Device Detection :: Examples :: Web</name>
-    <description>Examples showing how to use device detection in a web
+    <name>51Degrees :: IP Intelligence :: Examples :: Web</name>
+    <description>Examples showing how to use IP Intelligence in a web
         environment
     </description>
 
