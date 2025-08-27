@@ -233,5 +233,5 @@ public class MetadataOnPrem {
  *
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/devicedetection/examples/console/MetadataOnPrem.java).
  *
- * @include{doc} example-require-datafile.txt
+ * @include{doc} example-require-datafile-ipi.txt
  */

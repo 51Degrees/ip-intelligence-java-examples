@@ -150,7 +150,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
  *
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/web/getting-started.onprem/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebOnPrem.java).
  *
- * @include{doc} example-require-datafile.txt
+ * @include{doc} example-require-datafile-ipi.txt
  *
  * ## Overview
  *

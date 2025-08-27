@@ -385,6 +385,6 @@ public class PerformanceBenchmark {
  *
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/devicedetection/examples/console/PerformanceBenchmark.java).
  *
- * @include{doc} example-require-datafile.txt
+ * @include{doc} example-require-datafile-ipi.txt
  */
 
