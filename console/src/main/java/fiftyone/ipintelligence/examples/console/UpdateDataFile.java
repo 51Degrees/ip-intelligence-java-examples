@@ -46,7 +46,16 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /*!
  * @example console/UpdateDataFile.java
- * This example illustrates various parameters that can be adjusted when using the on-premise
+ *
+ * This example shows how to configure automatic data file updates for 51Degrees On-premise IP Intelligence.
+ *
+ * You will learn:
+ *
+ * 1. How to create a Pipeline that uses 51Degrees On-premise IP Intelligence with automatic updates
+ * 2. How to configure different update mechanisms (startup, filesystem watcher, daily auto-update)
+ * 3. How to control when a new data file is sought and loaded by the IP Intelligence software
+ *
+ * This example illustrates various parameters that can be adjusted when using the On-premise
  * IP Intelligence engine, and controls when a new data file is sought and when it is loaded by
  * the IP Intelligence software.
  * <p>
@@ -162,9 +171,11 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
             			.setUpdateRandomisationMax(10*60)
  * ```
  * # Location
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java/blob/master/ip-intelligence-java-examples/console/src/main/java/fiftyone/devicedetection/examples/console/UpdateDataFile.java).
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/UpdateDataFile.java).
  *
- * @include{doc} example-require-licensekey.txt
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ *
  */
 
 /**

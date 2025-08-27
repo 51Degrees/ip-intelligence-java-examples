@@ -44,10 +44,21 @@ import static fiftyone.ipintelligence.examples.web.HtmlContentHelper.*;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
+ * This example shows how to use 51Degrees On-premise IP Intelligence to determine location and network details from IP addresses in a web application.
+ * 
+ * You will learn:
+ * 
+ * 1. How to configure a Pipeline that uses 51Degrees On-premise IP Intelligence in a web application
+ * 2. How the PipelineFilter automatically processes requests and makes results available
+ * 3. How to retrieve the results in your web application
+ * 
  * This is the getting started Web/On-Prem example showing use of the 51Degrees
- * supplied filter which automatically creates and configures a IP Intelligence pipeline.
- * <p>
+ * supplied filter which automatically creates and configures an IP Intelligence pipeline.
+ * 
  * The configuration file for the pipeline is at src/main/webapp/WEB-INF/51Degrees-OnPrem.xml
+ * 
+ * This example requires an enterprise IP Intelligence data file (.ipi). 
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
  */
 public class GettingStartedWebOnPrem extends HttpServlet {
     private static final long serialVersionUID = 1734154705981153540L;
@@ -146,11 +157,9 @@ public class GettingStartedWebOnPrem extends HttpServlet {
 /*!
  * @example GettingStartedWebOnPrem.java
  *
- * @include{doc} example-getting-started-web.txt
  *
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/web/getting-started.onprem/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebOnPrem.java).
  *
- * @include{doc} example-require-datafile-ipi.txt
  *
  * ## Overview
  *

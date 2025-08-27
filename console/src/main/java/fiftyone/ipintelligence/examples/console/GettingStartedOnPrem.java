@@ -197,8 +197,18 @@ public class GettingStartedOnPrem {
 }
 /*!
  * @example console/GettingStartedOnPrem.java
- * @include{doc} example-getting-started-onpremise-ipi.txt
+ * 
+ * This example shows how to use 51Degrees On-premise IP Intelligence to determine location and network details from IP addresses.
+ * 
+ * You will learn:
+ * 
+ * 1. How to create a Pipeline that uses 51Degrees On-premise IP Intelligence
+ * 2. How to pass input data (evidence) to the Pipeline
+ * 3. How to retrieve the results
+ * 
  * <p>
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/devicedetection/examples/console/GettingStartedOnPrem.java).
- * @include{doc} example-require-datafile-ipi.txt
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/GettingStartedOnPrem.java).
+ * 
+ * This example requires an enterprise IP Intelligence data file (.ipi). 
+ * To obtain an enterprise data file for testing, please <a href="https://51degrees.com/contact-us">contact us</a>.
  */

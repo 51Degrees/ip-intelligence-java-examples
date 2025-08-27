@@ -41,7 +41,18 @@ import java.util.stream.StreamSupport;
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
-
+/**
+ * This example shows how to access metadata about the IP Intelligence properties that are available 
+ * in the data file. This can be useful for understanding what information is available and how to access it.
+ *
+ * The example will output the available properties along with details about their data types and descriptions.
+ * This helps you understand what IP Intelligence data you can access for your use case.
+ *
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
+ *
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ */
 public class MetadataOnPrem {
     private static final Logger logger = LoggerFactory.getLogger(GettingStartedOnPrem.class);
 
@@ -68,14 +79,14 @@ public class MetadataOnPrem {
             DataFileHelper.cantFindDataFile(dataFile);
             throw e;
         }
-        // Build a new on-premise IP Intelligence engine with the low memory performance profile.
+        // Build a new on-premise IP Intelligence engine with the max performance profile.
         // Note that there is no need to construct a complete pipeline in order to access
         // the meta-data.
         // If you already have a pipeline and just want to get a reference to the engine 
         // then you can use `var engine = pipeline.GetElement<IPIntelligenceOnPremiseEngine>();`
         try (IPIntelligenceOnPremiseEngine ddEngine =
                      new IPIntelligenceOnPremiseEngineBuilder(LoggerFactory.getILoggerFactory())
-                // We use the low memory profile as its performance is sufficient for this
+                // We use the max performance profile for optimal detection speed in this
                 // example. See the documentation for more detail on this and other
                 // configuration options:
                 // https://51degrees.com/documentation/_device_detection__features__performance_options.html
@@ -212,26 +223,28 @@ public class MetadataOnPrem {
 /*!
  * @example MetadataOnPrem.java
  *
- * The IP Intelligence data file contains meta data that can provide additional information
- * about the various records in the data model.
- * This example shows how to access this data and display the values available.
+ * This example shows how to access metadata about the IP Intelligence properties that are available 
+ * in the data file. This can be useful for understanding what information is available and how to access it.
  *
- * To help navigate the data, it's useful to have an understanding of the types of records that
- * are present:
- * - Component - A record relating to a major aspect of the entity making a web request. There are currently 4 components: Hardware, Software Platform (OS), Browser and Crawler.
- * - Profile - A record containing the details for a specific instance of a component. An example of a hardware profile would be the profile for the iPhone 13. An example of a platform profile would be Android 12.1.0.
- * - Property - Each property will have a specific value (or values) for each profile. An example of a hardware property is 'IsMobile'. An example of a browser property is 'BrowserName'.
+ * The example will output the available properties along with details about their data types and descriptions.
+ * This helps you understand what IP Intelligence data you can access for your use case.
  *
- * The example will output each component in turn, with a list of the properties associated with
- * each component. Some of the possible values for each property are also displayed.
- * There are too many profiles to display, so we just list the number of profiles for each
- * component.
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
  *
- * Finally, the evidence keys that are accepted by IP Intelligence are listed. These are the
- * keys that, when added to the evidence collection in flow data, could have some impact on the
- * result returned by IP Intelligence.
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ */
+/*!
+ * @example console/MetadataOnPrem.java
  *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/devicedetection/examples/console/MetadataOnPrem.java).
+ * This example shows how to access metadata about the IP Intelligence properties that are available 
+ * in the data file. This can be useful for understanding what information is available and how to access it.
  *
- * @include{doc} example-require-datafile-ipi.txt
+ * The example will output the available properties along with details about their data types and descriptions.
+ * This helps you understand what IP Intelligence data you can access for your use case.
+ *
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
+ *
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
  */
