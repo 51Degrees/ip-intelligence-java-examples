@@ -197,7 +197,7 @@ public class GettingStartedOnPrem {
 }
 /*!
  * @example console/GettingStartedOnPrem.java
- * @include{doc} example-getting-started-onpremise.txt
+ * @include{doc} example-getting-started-onpremise-ipi.txt
  * <p>
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/devicedetection/examples/console/GettingStartedOnPrem.java).
  * @include{doc} example-require-datafile-ipi.txt
