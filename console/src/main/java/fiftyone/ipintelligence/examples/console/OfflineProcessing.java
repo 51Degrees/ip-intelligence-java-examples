@@ -67,17 +67,16 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  */
 public class OfflineProcessing {
     static final Logger logger = LoggerFactory.getLogger(OfflineProcessing.class);
-    // This 51degrees "Lite" file (distributed with the source) needs to
+    // This 51degrees IP Intelligence data file (distributed with the source) needs to
     // be somewhere in the project space
     //
-    // Note that the Lite data file is only used for illustration, and has
-    // limited accuracy and capabilities. Find out about the Enterprise data
-    // file here: https://51degrees.com/pricing
+    // For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us
     private static final String dataDir = "ip-intelligence-data";
     public static final String LITE_V_4_1_HASH =
             dataDir + "/51Degrees-LiteV41.ipi";
     // This 51degrees file of 20,000 examples (distributed with the source)
-    // needs to be somewhere in the project space
+    // needs to be somewhere in the project space. Additional evidence files
+    // can be obtained from the [ip-intelligence-data repository](https://github.com/51Degrees/ip-intelligence-data)
     public static final String HEADER_EVIDENCE_YML =
             dataDir + "/evidence.yml";
 
@@ -283,6 +282,8 @@ public class OfflineProcessing {
  * As well as explaining the basic operation of offline processing using the defaults, for
  * advanced operation this example can be used to experiment with tuning IP Intelligence for
  * performance and predictive power using Performance Profile settings.
+ *
+ * Evidence files can be obtained from the [ip-intelligence-data repository](https://github.com/51Degrees/ip-intelligence-data).
  *
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/OfflineProcessing.java).
  *

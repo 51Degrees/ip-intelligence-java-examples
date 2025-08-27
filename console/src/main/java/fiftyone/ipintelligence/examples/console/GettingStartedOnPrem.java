@@ -60,11 +60,10 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
 public class GettingStartedOnPrem {
     private static final Logger logger = LoggerFactory.getLogger(GettingStartedOnPrem.class);
 
-    /* In this example, by default, the 51degrees "Lite" file needs to be somewhere in the project
+    /* In this example, by default, the 51degrees IP Intelligence data file needs to be somewhere in the project
     space, or you may specify another file as a command line parameter.
 
-    Note that the Lite data file is only used for illustration, and has limited accuracy and
-    capabilities. Find out about the Enterprise data file here: https://51degrees.com/pricing */
+    For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us */
     public static String LITE_V_4_1_HASH = "51Degrees-LiteV41.ipi";
     public static String ENTERPRISE_HASH = "51Degrees-EnterpriseIpiV41.ipi";
 

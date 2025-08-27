@@ -372,7 +372,7 @@ public class PerformanceBenchmark {
  * The example illustrates a "clock-time" benchmark for assessing detection speed.
  *
  * Using a YAML formatted evidence file - "evidence.yml" - supplied with the
- * distribution or can be obtained from the [data repository on Github](https://github.com/51Degrees/ip-intelligence-data/blob/master/20000%20Evidence%20Records.yml).
+ * distribution or can be obtained from the [data repository on Github](https://github.com/51Degrees/ip-intelligence-data).
  *
  * It's important to understand the trade-offs between performance, memory usage and accuracy, that
  * the 51Degrees pipeline configuration makes available, and this example shows a range of
@@ -381,7 +381,6 @@ public class PerformanceBenchmark {
  * Requesting specific properties reduces detection time compared with requesting all available properties. 
  * If you don't specify any properties to detect, then all properties are detected.
  *
- * Please review @ref IpIntelligence_Features_PerformanceOptions for more information about adjusting performance.
  *
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/PerformanceBenchmark.java).
  *
