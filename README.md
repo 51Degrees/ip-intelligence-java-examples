@@ -21,7 +21,7 @@ containing various helpers for the examples.
 Among other things, the examples illustrate:
 - use of the fluent builder to configure a pipeline
 - use of a configuration options file to configure a pipeline
-- use of the cloud IP intelligence service
+- use of the Cloud IP intelligence service
 - use of the on-premise IP intelligence service
 - use of IP intelligence pipeline for off-line processing tasks
 - configuring IP intelligence trade-offs between speed and conserving memory
@@ -70,7 +70,7 @@ The tables below describe the examples available in this repository.
 
 ### Cloud (coming soon)
 
-Cloud examples will be added once the cloud service for IP Intelligence becomes available.
+Cloud examples will be added once the Cloud service for IP Intelligence becomes available.
 
 ### On-Premise
 
