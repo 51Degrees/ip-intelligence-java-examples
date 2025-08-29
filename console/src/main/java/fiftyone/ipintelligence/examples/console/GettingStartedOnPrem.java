@@ -20,6 +20,26 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/*!
+ * @example console/GettingStartedOnPrem.java
+ * 
+ * This example shows how to use 51Degrees On-premise IP Intelligence to determine location and network details from IP addresses.
+ * 
+ * You will learn:
+ * 
+ * 1. How to create a Pipeline that uses 51Degrees On-premise IP Intelligence
+ * 2. How to pass input data (evidence) to the Pipeline
+ * 3. How to retrieve the results
+ * 
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/ipintelligence/examples/console/GettingStartedOnPrem.java).
+ * 
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * 
+ * Required Maven Dependencies:
+ * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
+ */
+
 package fiftyone.ipintelligence.examples.console;
 
 import fiftyone.ipintelligence.examples.shared.DataFileHelper;
@@ -45,33 +65,38 @@ import java.util.Map;
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
 /**
  * Provides an illustration of the fundamental elements of carrying out IP Intelligence using
  * "on premise" detection - meaning the IP Intelligence data is stored on your server
  * and the detection software executes exclusively on your server.
  * <p>
- * This example shows how to use pipeline configuration file, as opposed to the fluent builder
- * illustrated in {@link GettingStartedCloud}. The configuration file is
- * <code>src/main/resources/gettingStartedOnPrem.xml</code>.
+ * This example shows how to use pipeline configuration file, as opposed to the fluent builder.
+ * The configuration file is <code>src/main/resources/gettingStartedOnPrem.xml</code>.
  * <p>
  * The concepts of "pipeline", "flow data", "evidence" and "results" are illustrated.
  */
 public class GettingStartedOnPrem {
     private static final Logger logger = LoggerFactory.getLogger(GettingStartedOnPrem.class);
 
-    /* In this example, by default, the 51degrees IP Intelligence data file needs to be somewhere in the project
-    space, or you may specify another file as a command line parameter.
-
-    For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us */
-    public static String LITE_V_4_1_HASH = "51Degrees-LiteV41.ipi";
-    public static String ENTERPRISE_HASH = "51Degrees-EnterpriseIpiV41.ipi";
+    /* In this example, the 51degrees IP Intelligence data file needs to be specified as a command line parameter.
+    
+    To test this example, you need to:
+    1. Host an IP Intelligence data file (.ipi) at a custom URL accessible to this application
+    2. Provide the path to that hosted data file as a command line parameter
+    3. No license key is required when using a custom URL
+    
+    For production use, you will eventually need to use a Distributor service and license key
+    to keep your data file updated.
+    
+    To obtain access to enterprise data files for hosting, please contact us: https://51degrees.com/contact-us */
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));
 
-        //for best IP Intelligence results use the ENTERPRISE_HASH data file
-        String dataFile = args.length > 0 ? args[0] : LITE_V_4_1_HASH;
+        // Use the supplied path for the data file
+        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_IPI_DATA_FILE_NAME;
         // prepare 'evidence' for use in pipeline (see below)
         List<Map<String, String>> evidence = EvidenceHelper.setUpEvidence();
         run(dataFile, evidence, System.out);
@@ -87,13 +112,18 @@ public class GettingStartedOnPrem {
                            List<Map<String, String>> evidenceList,
                            OutputStream outputStream) throws Exception {
         logger.info("Running GettingStarted example");
+        
+        String dataFileLocation;
         try {
-            String dataFileLocation = getFilePath(dataFile).getAbsolutePath();
+            dataFileLocation = DataFileHelper.getDataFileLocation(dataFile);
             // the location of the test data file is interpolated in the pipeline
             // configuration file
             System.setProperty("TestDataFile", dataFileLocation);
         } catch (Exception e) {
-            DataFileHelper.cantFindDataFile(dataFile);
+            logger.error("Failed to find IP Intelligence data file at '{}'. " +
+                    "Please provide a valid path to an IP Intelligence data file (.ipi). " +
+                    "For testing, you can obtain an enterprise data file by contacting us at " +
+                    "https://51degrees.com/contact-us", dataFile);
             throw e;
         }
 
@@ -164,50 +194,121 @@ public class GettingStartedOnPrem {
             writer.println("Results:");
             /* Now that it has been processed, the flow data will have been populated with the result.
 
-            In this case, we want information about the device, which we can get by asking for a
+            In this case, we want information about the IP address, which we can get by asking for a
             result matching the "IPIntelligenceData" interface. */
-            IPIntelligenceData device = data.get(IPIntelligenceData.class);
+            IPIntelligenceData ipData = data.get(IPIntelligenceData.class);
 
-            /* Display the results of the detection, which are called device properties. See the
+            /* Display the results of the detection, which are called IP Intelligence properties. See the
             property dictionary at https://51degrees.com/developers/property-dictionary for
             details of all available properties. */
-            AspectPropertyValue<List<IWeightedValue<String>>> value = device.getRegisteredName();
-            if (value != null && value.hasValue()) {
-                for (IWeightedValue<?> weightedValue : value.getValue()) {
-                    writer.println("\tRegisteredName: " + weightedValue.getValue() + "; Weighting: " + weightedValue.getWeighting());
-                }
-            }
-            value = device.getRegisteredCountry();
-            if (value != null && value.hasValue()) {
-                for (IWeightedValue<?> weightedValue : value.getValue()) {
-                    writer.println("\tRegisteredCountry: " + weightedValue.getValue() + "; Weighting: " + weightedValue.getWeighting());
-                }
-            }
-            value = device.getRegisteredCountry();
-            if (value != null && value.hasValue()) {
-                for (IWeightedValue<?> weightedValue : value.getValue()) {
-                    writer.println("\tRegisteredCountry: " + weightedValue.getValue() + "; Weighting: " + weightedValue.getWeighting());
-                }
-            }
+            
+            // Output all the properties in the same format as the .NET example
+            outputListProperty("RegisteredName", ipData.getRegisteredName(), writer);
+            outputListProperty("RegisteredOwner", ipData.getRegisteredOwner(), writer);
+            outputListProperty("RegisteredCountry", ipData.getRegisteredCountry(), writer);
+            outputIPAddressProperty("IpRangeStart", ipData.getIpRangeStart(), writer);
+            outputIPAddressProperty("IpRangeEnd", ipData.getIpRangeEnd(), writer);
+            outputListProperty("Country", ipData.getCountry(), writer);
+            outputListProperty("CountryCode", ipData.getCountryCode(), writer);
+            outputListProperty("CountryCode3", ipData.getCountryCode3(), writer);
+            outputListProperty("Region", ipData.getRegion(), writer);
+            outputListProperty("State", ipData.getState(), writer);
+            outputListProperty("Town", ipData.getTown(), writer);
+            outputFloatProperty("Latitude", ipData.getLatitude(), writer);
+            outputFloatProperty("Longitude", ipData.getLongitude(), writer);
+            outputListProperty("Areas", ipData.getAreas(), writer);
+            outputIntProperty("AccuracyRadius", ipData.getAccuracyRadius(), writer);
+            outputIntProperty("TimeZoneOffset", ipData.getTimeZoneOffset(), writer);
         }
         writer.println();
         writer.flush();
     }
+    
+    /**
+     * Output a list property with proper formatting to match .NET example
+     */
+    private static void outputListProperty(String name, AspectPropertyValue<List<IWeightedValue<String>>> property, PrintWriter writer) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            writer.println("\t" + name + ": " + message);
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<String> weightedValue = property.getValue().get(i);
+                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
+                    values.append("'").append(weightedValue.getValue()).append("'");
+                } else {
+                    values.append("('").append(weightedValue.getValue()).append("' @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
+                }
+            }
+            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
+        }
+    }
+    
+    /**
+     * Output an IP address property with proper formatting
+     */
+    private static void outputIPAddressProperty(String name, AspectPropertyValue<List<IWeightedValue<java.net.InetAddress>>> property, PrintWriter writer) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            writer.println("\t" + name + ": " + message);
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<java.net.InetAddress> weightedValue = property.getValue().get(i);
+                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
+                    values.append(weightedValue.getValue().getHostAddress());
+                } else {
+                    values.append("(").append(weightedValue.getValue().getHostAddress()).append(" @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
+                }
+            }
+            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
+        }
+    }
+    
+    /**
+     * Output an integer property with proper formatting
+     */
+    private static void outputIntProperty(String name, AspectPropertyValue<List<IWeightedValue<Integer>>> property, PrintWriter writer) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            writer.println("\t" + name + ": " + message);
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<Integer> weightedValue = property.getValue().get(i);
+                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
+                    values.append(weightedValue.getValue().toString());
+                } else {
+                    values.append("(").append(weightedValue.getValue()).append(" @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
+                }
+            }
+            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
+        }
+    }
+    
+    /**
+     * Output a float property with proper formatting
+     */
+    private static void outputFloatProperty(String name, AspectPropertyValue<List<IWeightedValue<Float>>> property, PrintWriter writer) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            writer.println("\t" + name + ": " + message);
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<Float> weightedValue = property.getValue().get(i);
+                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
+                    values.append(String.format("%.6f", weightedValue.getValue()));
+                } else {
+                    values.append("(").append(String.format("%.6f", weightedValue.getValue())).append(" @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
+                }
+            }
+            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
+                }
+    }
 }
-/*!
- * @example console/GettingStartedOnPrem.java
- * 
- * This example shows how to use 51Degrees On-premise IP Intelligence to determine location and network details from IP addresses.
- * 
- * You will learn:
- * 
- * 1. How to create a Pipeline that uses 51Degrees On-premise IP Intelligence
- * 2. How to pass input data (evidence) to the Pipeline
- * 3. How to retrieve the results
- * 
- * <p>
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/GettingStartedOnPrem.java).
- * 
- * This example requires an enterprise IP Intelligence data file (.ipi). 
- * To obtain an enterprise data file for testing, please <a href="https://51degrees.com/contact-us">contact us</a>.
- */

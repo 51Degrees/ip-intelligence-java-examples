@@ -20,6 +20,27 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/*!
+ * @example console/PerformanceBenchmark.java
+ *
+ * This example demonstrates how to run a performance benchmark using the IP Intelligence
+ * On-premise API to see how fast detections can be performed.
+ *
+ * The example will process a list of IP addresses and output performance metrics including
+ * detection rate and processing time per IP address.
+ *
+ * This can help you optimize your IP Intelligence configuration for your specific use case
+ * and understand the performance characteristics of different settings.
+ *
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/ipintelligence/examples/console/PerformanceBenchmark.java).
+ *
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ *
+ * Required Maven Dependencies:
+ * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
+ */
+
 package fiftyone.ipintelligence.examples.console;
 
 import fiftyone.common.testhelpers.LogbackHelper;
@@ -357,35 +378,4 @@ public class PerformanceBenchmark {
         }
     }
 }
-
-/*!
- * @example PerformanceBenchmark.java
- *
- * This example shows how to benchmark the performance of 51Degrees On-premise IP Intelligence.
- *
- * You will learn:
- *
- * 1. How to create a Pipeline that uses 51Degrees On-premise IP Intelligence with different performance configurations
- * 2. How to run benchmarks to measure detection speed and throughput
- * 3. How to analyze performance trade-offs between speed, memory usage, and accuracy
- *
- * The example illustrates a "clock-time" benchmark for assessing detection speed.
- *
- * Using a YAML formatted evidence file - "evidence.yml" - supplied with the
- * distribution or can be obtained from the [data repository on Github](https://github.com/51Degrees/ip-intelligence-data).
- *
- * It's important to understand the trade-offs between performance, memory usage and accuracy, that
- * the 51Degrees pipeline configuration makes available, and this example shows a range of
- * different configurations to illustrate the difference in performance.
- *
- * Requesting specific properties reduces detection time compared with requesting all available properties. 
- * If you don't specify any properties to detect, then all properties are detected.
- *
- *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/PerformanceBenchmark.java).
- *
- * This example requires an enterprise IP Intelligence data file (.ipi).
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
- *
- */
 

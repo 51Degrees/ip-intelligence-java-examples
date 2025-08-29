@@ -22,14 +22,13 @@
 
 package fiftyone.ipintelligence.examples.console;
 
-import fiftyone.ipintelligence.shared.testhelpers.FileUtils;
 import org.junit.Test;
+
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
 public class MetadataOnPremTest {
     @Test
     public void gettingMetaDataOnPremTest() throws Exception {
-        MetadataOnPrem.run(FileUtils.getHashFileName() == null
-                ? FileUtils.LITE_IPI_DATA_FILE_NAME
-                : FileUtils.getHashFileName(), System.out);
+        MetadataOnPrem.run(ENTERPRISE_IPI_DATA_FILE_NAME, System.out);
     }
 }

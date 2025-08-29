@@ -20,6 +20,30 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/*!
+ * @example console/OfflineProcessing.java
+ *
+ * Provides an example of processing a YAML file containing evidence for IP Intelligence.
+ * There are 20,000 examples in the supplied file of evidence representing IP addresses.
+ *
+ * We create an IP Intelligence pipeline to read the data and find out about the associated network information,
+ * we write this data to a YAML formatted output stream.
+ *
+ * As well as explaining the basic operation of offline processing using the defaults, for
+ * advanced operation this example can be used to experiment with tuning IP Intelligence for
+ * performance and predictive power using Performance Profile settings.
+ *
+ * Evidence files can be obtained from the [ip-intelligence-data repository](https://github.com/51Degrees/ip-intelligence-data).
+ *
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/ipintelligence/examples/console/OfflineProcessing.java).
+ *
+ * This example requires an enterprise IP Intelligence data file (.ipi).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ *
+ * Required Maven Dependencies:
+ * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
+ */
+
 package fiftyone.ipintelligence.examples.console;
 
 import fiftyone.ipintelligence.IPIntelligencePipelineBuilder;
@@ -44,6 +68,7 @@ import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
@@ -72,8 +97,6 @@ public class OfflineProcessing {
     //
     // For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us
     private static final String dataDir = "ip-intelligence-data";
-    public static final String LITE_V_4_1_HASH =
-            dataDir + "/51Degrees-LiteV41.ipi";
     // This 51degrees file of 20,000 examples (distributed with the source)
     // needs to be somewhere in the project space. Additional evidence files
     // can be obtained from the [ip-intelligence-data repository](https://github.com/51Degrees/ip-intelligence-data)
@@ -84,7 +107,7 @@ public class OfflineProcessing {
         configureLogback(getFilePath("logback.xml"));
         
         // Use provided data file argument, or fall back to default Lite file
-        String dataFile = (args.length > 0) ? args[0] : LITE_V_4_1_HASH;
+        String dataFile = (args.length > 0) ? args[0] : ENTERPRISE_IPI_DATA_FILE_NAME;
         
         File evidenceFile = getFilePath(HEADER_EVIDENCE_YML);
         run(dataFile, Files.newInputStream(evidenceFile.toPath()), System.out);
@@ -104,9 +127,10 @@ public class OfflineProcessing {
 
         String detectionFile;
         try {
-            detectionFile = getFilePath(dataFile).getAbsolutePath();
+            detectionFile = DataFileHelper.getDataFileLocation(dataFile);
         } catch (Exception e) {
-            DataFileHelper.cantFindDataFile(dataFile);
+            logger.error("Failed to find IP Intelligence data file at '{}'. " +
+                    "Please provide a valid path to an IP Intelligence data file (.ipi).", dataFile);
             throw e;
         }
 
@@ -262,33 +286,3 @@ public class OfflineProcessing {
                         e -> ((AspectPropertyValue<?>)e.getValue()).getValue()));
     }
 }
-/*!
- * @example console/OfflineProcessing.java
- *
- * This example shows how to process a YAML file containing IP address evidence for IP Intelligence analysis.
- *
- * You will learn:
- *
- * 1. How to create a Pipeline that uses 51Degrees On-premise IP Intelligence
- * 2. How to process evidence from YAML files in batch
- * 3. How to output IP Intelligence results to YAML format
- *
- * Provides an example of processing a YAML file containing evidence for IP Intelligence.
- * There are 20,000 examples in the supplied file of evidence representing IP addresses.
- *
- * We create an IP Intelligence pipeline to read the data and find out about the associated network information,
- * we write this data to a YAML formatted output stream.
- *
- * As well as explaining the basic operation of offline processing using the defaults, for
- * advanced operation this example can be used to experiment with tuning IP Intelligence for
- * performance and predictive power using Performance Profile settings.
- *
- * Evidence files can be obtained from the [ip-intelligence-data repository](https://github.com/51Degrees/ip-intelligence-data).
- *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/OfflineProcessing.java).
- *
- * This example requires an enterprise IP Intelligence data file (.ipi).
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
- */
-
-

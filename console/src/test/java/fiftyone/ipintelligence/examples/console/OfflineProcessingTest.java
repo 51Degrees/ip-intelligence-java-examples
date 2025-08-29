@@ -30,6 +30,8 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+
 
 public class OfflineProcessingTest {
     private static final Logger logger = LoggerFactory.getLogger(OfflineProcessingTest.class);
@@ -38,9 +40,7 @@ public class OfflineProcessingTest {
     public void offlineProcessingTest() throws Exception {
         try (LoggerOutputStream outStream = new LoggerOutputStream(logger)) {
 
-            OfflineProcessing.run(FileUtils.getHashFileName() == null
-                            ? FileUtils.LITE_IPI_DATA_FILE_NAME
-                            : FileUtils.getHashFileName(),
+            OfflineProcessing.run(ENTERPRISE_IPI_DATA_FILE_NAME,
                     new FileInputStream(Objects.requireNonNull(FileUtils.getEvidenceFile())),
                     outStream);
         }

@@ -23,16 +23,15 @@
 package fiftyone.ipintelligence.examples.console;
 
 import fiftyone.ipintelligence.examples.shared.EvidenceHelper;
-import fiftyone.ipintelligence.shared.testhelpers.FileUtils;
 import org.junit.Test;
+
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
 public class GettingStartedOnPremTest {
 
     @Test
     public void gettingStartedOnPremTest() throws Exception {
-        GettingStartedOnPrem.run(FileUtils.getHashFileName() == null
-                        ? FileUtils.LITE_IPI_DATA_FILE_NAME
-                        : FileUtils.getHashFileName(),
+        GettingStartedOnPrem.run(ENTERPRISE_IPI_DATA_FILE_NAME,
                 EvidenceHelper.setUpEvidence(), System.out);
     }
 }

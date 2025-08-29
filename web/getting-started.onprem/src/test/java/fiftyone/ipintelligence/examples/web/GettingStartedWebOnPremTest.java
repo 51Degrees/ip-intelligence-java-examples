@@ -28,6 +28,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -42,9 +44,7 @@ public class GettingStartedWebOnPremTest {
 
     @BeforeClass
     public static void startJetty() throws Exception {
-        System.setProperty("TestDataFile", FileUtils.getHashFile() == null
-                ? FileUtils.LITE_IPI_DATA_FILE_NAME
-                : FileUtils.getHashFile().getAbsolutePath());
+        System.setProperty("TestDataFile", ENTERPRISE_IPI_DATA_FILE_NAME);
         SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 8081);
     }
 

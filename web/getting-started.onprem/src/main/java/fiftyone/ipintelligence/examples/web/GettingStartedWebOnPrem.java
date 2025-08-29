@@ -26,7 +26,8 @@ import fiftyone.ipintelligence.shared.IPIntelligenceData;
 import fiftyone.pipeline.core.configuration.PipelineOptions;
 import fiftyone.pipeline.core.configuration.PipelineOptionsFactory;
 import fiftyone.pipeline.core.data.FlowData;
-import fiftyone.pipeline.web.Constants;
+import fiftyone.pipeline.core.flowelements.Pipeline;
+import fiftyone.pipeline.engines.fiftyone.flowelements.FiftyOnePipelineBuilder;
 import fiftyone.pipeline.web.services.FlowDataProviderCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,13 +35,20 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
-import static fiftyone.ipintelligence.examples.web.HtmlContentHelper.*;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
@@ -69,7 +77,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         logger.info("Running Example {}", GettingStartedWebOnPrem.class);
 
         // start Jetty with this WebApp
-        EmbedJetty.runWebApp(getResourceBase(), 8081);
+        EmbedJetty.runWebApp(getResourceBase(), 8082);
     }
 
     public static String getResourceBase() {
@@ -92,47 +100,133 @@ public class GettingStartedWebOnPrem extends HttpServlet {
      FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();
 
     /**
-     *
+     * Process the HTTP request and generate the IP Intelligence results page
      * @param request  servlet request
      * @param response servlet response
      * @throws Exception when things go wrong
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        // the detection has already been carried out by the Filter
-        // which is responsible to the lifecycle of the flowData - do NOT dispose
-        FlowData flowData = flowDataProvider.getFlowData(request);
-        // retrieve the device data from the flowdata
-        IPIntelligenceData device = flowData.get(IPIntelligenceData.class);
-
+        
+        // Get the IP address parameter from the request for custom lookup
+        String inputIpAddress = request.getParameter("client-ip");
+        
+        FlowData flowData;
+        Pipeline pipeline;
+        
+        // Get the pipeline from configuration
+        String resourceBase = getResourceBase();
+        PipelineOptions pipelineOptions = PipelineOptionsFactory.getOptionsFromFile(
+            getFilePath(resourceBase) + "/WEB-INF/51Degrees-OnPrem.xml");
+        pipeline = new FiftyOnePipelineBuilder()
+            .buildFromConfiguration(pipelineOptions);
+        
+        // Get flow data - pipeline filter has already processed the request and evidence
+        flowData = flowDataProvider.getFlowData(request);
+        
+        // Determine which IP to display and evidence key to show
+        String targetIp;
+        String evidenceKey;
+        
+        if (inputIpAddress != null && !inputIpAddress.trim().isEmpty()) {
+            // IP provided via form - pipeline automatically picked up as query.client-ip evidence
+            targetIp = inputIpAddress.trim();
+            evidenceKey = "query.client-ip";
+        } else {
+            // No form input - use visitor's actual IP
+            targetIp = request.getRemoteAddr();
+            evidenceKey = "server.client-ip";
+        }
+        
+        // Note: No need to call flowData.process() - the PipelineFilter has already done this
+        
+        // Get IP Intelligence data
+        IPIntelligenceData ipiData = flowData.get(IPIntelligenceData.class);
+        
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            doHtmlPreamble(out, "Web Integration On-Premise Example");
-
-            // request main 51Degrees Client Side Script - this is automatically
-            // served by inclusion of the PipelineFilter which intercepts the request
-            // and serves dynamically generated JavaScript
-            out.println("<script src=\"" + Constants.CORE_JS_NAME+ "\"></script>");
-
-            String resourceBase = getResourceBase();
-
-             // include description of example
-            doStaticText(out, resourceBase + "/WEB-INF/html/example-description.html");
-
-            // include a script to display the results of the client side detection
-            doStaticText(out, resourceBase + "/WEB-INF/html/client-side-js-include.html");
-            // find out where our data file is from the configuration
-            PipelineOptions pipelineOptions =
-                    PipelineOptionsFactory.getOptionsFromFile(getFilePath(resourceBase) +
-                            "/WEB-INF/51Degrees-OnPrem.xml");
-            doIPIntelligenceData(out, device, flowData,
-                    pipelineOptions.findAndSubstitute("IPIntelligenceOnPremiseEngine", "DataFile"));
-
-            doStaticText(out, resourceBase + "/WEB-INF/html/apple-detection.html");
-            doEvidence(out, request, flowData);
-            doResponseHeaders(out, response);
-            doHtmlPostamble(out);
+            // Load and process the HTML template
+            String htmlTemplate = loadTemplate(resourceBase + "/WEB-INF/html/index.html");
+            String processedHtml = substituteTemplateValues(htmlTemplate, ipiData, targetIp, evidenceKey);
+            out.println(processedHtml);
+        } finally {
+            if (flowData != null) {
+                try {
+                    flowData.close();
+                } catch (Exception e) {
+                    logger.warn("Error closing flow data", e);
+                }
+            }
         }
+    }
+    
+    /**
+     * Load HTML template from file system
+     */
+    private String loadTemplate(String templatePath) throws IOException {
+        Path path = Paths.get(templatePath);
+        if (Files.exists(path)) {
+            // Java 8 compatible way to read file
+            return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+        }
+        
+        // Fallback to classpath
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("html/index.html")) {
+            if (is != null) {
+                // Java 8 compatible way to read input stream
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                    return reader.lines().collect(Collectors.joining("\n"));
+                }
+            }
+        }
+        
+        throw new IOException("Could not find HTML template: " + templatePath);
+    }
+    
+    /**
+     * Replace template variables with IP Intelligence data
+     */
+    private String substituteTemplateValues(String template, IPIntelligenceData ipiData, String inputIp, String evidenceKey) {
+        return template
+            .replace("${DATA_FILE_WARNING}", "") // Add warning logic if needed
+            .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
+            .replace("${REGISTERED_NAME}", asString(tryGet(ipiData::getRegisteredName)))
+            .replace("${REGISTERED_OWNER}", asString(tryGet(ipiData::getRegisteredOwner)))
+            .replace("${REGISTERED_COUNTRY}", asString(tryGet(ipiData::getRegisteredCountry)))
+            .replace("${IP_RANGE_START}", asString(tryGet(ipiData::getIpRangeStart)))
+            .replace("${IP_RANGE_END}", asString(tryGet(ipiData::getIpRangeEnd)))
+            .replace("${COUNTRY}", asString(tryGet(ipiData::getCountry)))
+            .replace("${COUNTRY_CODE}", asString(tryGet(ipiData::getCountryCode)))
+            .replace("${COUNTRY_CODE3}", asString(tryGet(ipiData::getCountryCode3)))
+            .replace("${REGION}", asString(tryGet(ipiData::getRegion)))
+            .replace("${STATE}", asString(tryGet(ipiData::getState)))
+            .replace("${TOWN}", asString(tryGet(ipiData::getTown)))
+            .replace("${LATITUDE}", asString(tryGet(ipiData::getLatitude)))
+            .replace("${LONGITUDE}", asString(tryGet(ipiData::getLongitude)))
+            .replace("${AREAS}", asString(tryGet(ipiData::getAreas)))
+            .replace("${AREAS_JS}", escapeForJs(asString(tryGet(ipiData::getAreas))))
+            .replace("${ACCURACY_RADIUS}", asString(tryGet(ipiData::getAccuracyRadius)))
+            .replace("${TIME_ZONE_OFFSET}", asString(tryGet(ipiData::getTimeZoneOffset)))
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(inputIp, evidenceKey))
+            .replace("${RESPONSE_HEADER_ROWS}", "") // IP Intelligence doesn't set response headers
+            .replace("${LITE_DATA_WARNING}", ""); // Add warning logic if needed
+    }
+    
+    /**
+     * Build evidence table rows showing the evidence key used
+     */
+    private String buildEvidenceRows(String clientIp, String evidenceKey) {
+        return String.format(
+            "<tr class=\"lightgreen\"><td><b>%s</b></td><td>%s</td></tr>", 
+            evidenceKey, clientIp != null ? clientIp : "Unknown");
+    }
+    
+    /**
+     * Escape string for JavaScript
+     */
+    private String escapeForJs(String value) {
+        return value != null ? value.replace("'", "\\'").replace("\"", "\\\"") : "";
     }
 
     /**

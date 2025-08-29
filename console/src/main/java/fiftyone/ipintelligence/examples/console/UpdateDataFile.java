@@ -65,33 +65,13 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  *     <li>Filesystem Watcher</li>
  *     <li>Daily auto-update</li>
  * </ol>
- * ## License Key
- * In order to test this example you will need a 51Degrees Enterprise license which can be
- * purchased from our [pricing page](//51degrees.com/pricing/annual).
- * # Data Files
- * You can find out more about data files, licenses etc. at our [FAQ page](https://51degrees.com/resources/faqs)
- * ## Enterprise Data File
- * Enterprise (fully-featured) data files are typically released by 51Degrees five days a week
- * (Mon-Fri) and on-premise deployments can fetch and download those files automatically. Equally,
- * customers may choose to download the files themselves and move them into place to be detected
- * by the 51Degrees filesystem watcher.
- * ### Manual Download
- * If you prefer to download files yourself, you may do so here:
- * ```
- * https://distributor.51degrees.com/api/v2/download?LicenseKeys=<your_license_key>&Type=27&Download=True&Product=22
- * ```
- * ## Lite Data File
- * Lite data files (free-to-use, limited capabilities, no license key required) are created roughly
- * once a month and cannot be updated using auto-update, they may be downloaded from
- * [Github](https://github.com/51Degrees/ip-intelligence-data) and are included with
- * source distributions of this software.
- * # Update on Start-Up
- * You can configure the pipeline builder to download an Enterprise data file on start-up.
- * ## Pre-Requisites
- * - a license key
- * - a file location for the download
- *      - this may be an existing file - which will be overwritten
- *      - or if it does not exist must end in ".hash" and must be in an existing directory
+ * ## Distributor Service and License Key
+ * For production use, you will eventually need to use a Distributor service and license key
+ * to keep your data file updated. However, for now this example requires a custom URL where
+ * an updated data file will be hosted.
+ * 
+ * To obtain access to enterprise data files, please [contact us](https://51degrees.com/contact-us).
+ *
  * ## Configuration
  * - the pipeline must be configured to use a temp file
  * ``` {java}
@@ -171,10 +151,17 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
             			.setUpdateRandomisationMax(10*60)
  * ```
  * # Location
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/UpdateDataFile.java).
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/ipintelligence/examples/console/UpdateDataFile.java).
  *
- * This example requires an enterprise IP Intelligence data file (.ipi).
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * To test this example, you need to:
+ * 1. Host an IP Intelligence data file (.ipi) at a custom URL accessible to this application
+ * 2. Provide that custom URL using the WithDataUpdateUrl parameter
+ * 3. No license key is required when using a custom URL
+ * 
+ * For production use, you will eventually need to use a Distributor service and license key
+ * to keep your data file updated.
+ * 
+ * To obtain access to enterprise data files for hosting, please [contact us](https://51degrees.com/contact-us).
  *
  */
 
@@ -190,9 +177,12 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  *     <li>Daily auto-update</li>
  * </ol>
  * <p>
- * To run this example you must obtain a license key purchased from our
- * <a href="https://51degrees.com/pricing/annual">pricing page</a>. Look for our "Bigger" or
- * "Biggest" options. This license key must be supplied as a command line argument or by setting
+ * For production use, you will eventually need to use a Distributor service and license key
+ * to keep your data file updated. However, for now this example requires a custom URL where
+ * an updated data file will be hosted.
+ * 
+ * To obtain access to enterprise data files, please <a href="https://51degrees.com/contact-us">contact us</a>.
+ * This license key must be supplied as a command line argument or by setting
  * an environment variable or system property called {@link UpdateDataFile#UPDATE_EXAMPLE_LICENSE_KEY_NAME}
  */
 public class UpdateDataFile {
@@ -216,7 +206,7 @@ public class UpdateDataFile {
     /**
      * Run the UpdateDataFile example. Checks that an existing "Lite" data file won't be
      * overwritten.
-     * @param dataFilename the path for a datafile to download, must end in ".hash", directory
+     * @param dataFilename the path for a datafile to download, must end in ".ipi", directory
      *                     must exist. If null
      *                     {@link UpdateDataFile#DEFAULT_DATA_FILENAME} is used.
      * @param licenseKey a license key for Enterprise "on premise" data. If null environment
@@ -232,10 +222,11 @@ public class UpdateDataFile {
             licenseKey = KeyUtils.getNamedKey(UPDATE_EXAMPLE_LICENSE_KEY_NAME);
         }
         if (Objects.isNull(licenseKey) || KeyUtils.isInvalidKey(licenseKey)) {
-            logger.error("In order to test this example you will need a 51Degrees Enterprise " +
-                    "license which can be obtained on a trial basis or purchased from our\n" +
-                    "pricing page https://51degrees.com/pricing. You must supply the license " +
-                    "key as an argument to this program, or as an environment or system variable " +
+            logger.error("For production use, you will eventually need to use a Distributor service and " +
+                    "license key to keep your data file updated. However, for now this example requires " +
+                    "a custom URL where an updated data file will be hosted. To obtain access to enterprise " +
+                    "data files, please contact us at https://51degrees.com/contact-us. You must supply the " +
+                    "license key as an argument to this program, or as an environment or system variable " +
                     "named '{}'", UPDATE_EXAMPLE_LICENSE_KEY_NAME);
             throw new IllegalArgumentException("No license key available");
         }
@@ -314,8 +305,10 @@ public class UpdateDataFile {
                     // pass in the update listener which has been configured
                     // to notify when update complete
                     .setDataUpdateService(dataUpdateService)
-                    // For automatic updates to work you will need to provide a license key.
-                    // A license key can be obtained with a subscription from https://51degrees.com/pricing
+                    // For production use, you will eventually need to use a Distributor service and
+                    // license key to keep your data file updated. However, for now this example
+                    // requires a custom URL where an updated data file will be hosted.
+                    // To obtain access to enterprise data files, please contact us at https://51degrees.com/contact-us
                     .setDataUpdateLicenseKey(licenseKey)
                     // Enable update on startup, the auto update system
                     // will be used to check for an update before the

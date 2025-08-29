@@ -32,6 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -88,26 +92,13 @@ public static class DatafileInfo {
         if (daysOld > 28) {
             logger.warn("This example is using a data file that is more " +
                     "than {} days old. A more recent data file " +
-                    "may be needed to correctly detect the latest " +
-                    "devices, browsers, etc.", daysOld);
-            logger.info("The latest 'Lite' data file is available " +
-                    "from the ip-intelligence-data repository on GitHub " +
-                    "https://github.com/51Degrees/ip-intelligence-data. " +
-                    "Find out about the Enterprise data file, which " +
-                    "includes automatic daily updates, on our pricing " +
-                    "page: https://51degrees.com/pricing");
+                    "may be needed for correct results", daysOld);
         }
     }
 
     public static void cantFindDataFile(String dataFile) {
         logger.error("Could not find the data file '{}' which must be " +
                 "somewhere in the project space to be found.", dataFile);
-        logger.info("The latest 'Lite' data file is available " +
-                "from the ip-intelligence-data repository on GitHub " +
-                "https://github.com/51Degrees/ip-intelligence-data. " +
-                "Find out about the Enterprise data file, which includes " +
-                "automatic daily updates, on our pricing " +
-                "page: https://51degrees.com/pricing");
     }
 
     /**
@@ -134,23 +125,45 @@ public static class DatafileInfo {
     }
 
     /**
-     * Tries to find the passed file, or if null a default file
-     * @param dataFilename a filename to find
+     * Tries to find the passed file, or if null a default file. Handles both absolute and relative paths.
+     * @param dataFilename a filename to find (can be absolute or relative path)
      * @return a full pathname
      * @throws Exception if the file was not found
      */
     @SuppressWarnings("RedundantThrows")
     public static String getDataFileLocation(String dataFilename) throws Exception {
         if (Objects.isNull(dataFilename)) {
-            dataFilename = FileUtils.getHashFileName();
+            dataFilename = FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
         }
-        String dataFileLocation;
-        try {
-            dataFileLocation = getFilePath(dataFilename).getAbsolutePath();
-        } catch (Exception e) {
-            DataFileHelper.cantFindDataFile(dataFilename);
-            throw e;
+        
+        // Check if it's an absolute path
+        Path dataPath = Paths.get(dataFilename);
+        if (dataPath.isAbsolute()) {
+            // It's an absolute path, check if file exists
+            if (Files.exists(dataPath)) {
+                return dataPath.toString();
+            } else {
+                throw new IOException("Data file not found at absolute path: " + dataFilename);
+            }
+        } else {
+            // It's a relative path, try FileFinder first (searches project directories)
+            try {
+                return getFilePath(dataFilename).getAbsolutePath();
+            } catch (Exception e) {
+                // If FileFinder fails, try as relative to current working directory
+                Path relativePath = Paths.get(System.getProperty("user.dir"), dataFilename);
+                if (Files.exists(relativePath)) {
+                    return relativePath.toString();
+                } else {
+                    // Try just the relative path as-is
+                    if (Files.exists(dataPath)) {
+                        return dataPath.toAbsolutePath().toString();
+                    }
+                    DataFileHelper.cantFindDataFile(dataFilename);
+                    throw new IOException("Data file not found at relative path: " + dataFilename + 
+                                        ". Searched in project directories and current working directory.");
+                }
+            }
         }
-        return dataFileLocation;
     }
 }

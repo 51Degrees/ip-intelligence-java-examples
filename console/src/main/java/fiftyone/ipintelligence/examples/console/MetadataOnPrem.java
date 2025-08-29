@@ -40,6 +40,7 @@ import java.util.stream.StreamSupport;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
+import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
 /**
  * This example shows how to access metadata about the IP Intelligence properties that are available 
@@ -48,7 +49,10 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  * The example will output the available properties along with details about their data types and descriptions.
  * This helps you understand what IP Intelligence data you can access for your use case.
  *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
+ *
+ * Required Maven Dependencies:
+ * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
  *
  * This example requires an enterprise IP Intelligence data file (.ipi).
  * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
@@ -60,11 +64,10 @@ public class MetadataOnPrem {
     space, or you may specify another file as a command line parameter.
 
     For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us */
-    public static String LITE_V_4_1_HASH = "51Degrees-LiteV41.ipi";
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));
-        String dataFile = args.length > 0 ? args[0] : LITE_V_4_1_HASH;
+        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_IPI_DATA_FILE_NAME;
         run(dataFile, System.out);
     }
 
@@ -73,9 +76,10 @@ public class MetadataOnPrem {
         logger.info("Running MetadataOnPrem example");
         String dataFileLocation;
         try {
-            dataFileLocation = getFilePath(dataFile).getAbsolutePath();
+            dataFileLocation = DataFileHelper.getDataFileLocation(dataFile);
         } catch (Exception e) {
-            DataFileHelper.cantFindDataFile(dataFile);
+            logger.error("Failed to find IP Intelligence data file at '{}'. " +
+                    "Please provide a valid path to an IP Intelligence data file (.ipi).", dataFile);
             throw e;
         }
         // Build a new on-premise IP Intelligence engine with the max performance profile.
@@ -217,33 +221,3 @@ public class MetadataOnPrem {
         return result.orElse("[empty]") + (lines.length > 1 ? "..." : "");
     }
 }
-
-
-/*!
- * @example MetadataOnPrem.java
- *
- * This example shows how to access metadata about the IP Intelligence properties that are available 
- * in the data file. This can be useful for understanding what information is available and how to access it.
- *
- * The example will output the available properties along with details about their data types and descriptions.
- * This helps you understand what IP Intelligence data you can access for your use case.
- *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
- *
- * This example requires an enterprise IP Intelligence data file (.ipi).
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
- */
-/*!
- * @example console/MetadataOnPrem.java
- *
- * This example shows how to access metadata about the IP Intelligence properties that are available 
- * in the data file. This can be useful for understanding what information is available and how to access it.
- *
- * The example will output the available properties along with details about their data types and descriptions.
- * This helps you understand what IP Intelligence data you can access for your use case.
- *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/console/src/main/java/fiftyone/ipintelligence/examples/console/MetadataOnPrem.java).
- *
- * This example requires an enterprise IP Intelligence data file (.ipi).
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
- */

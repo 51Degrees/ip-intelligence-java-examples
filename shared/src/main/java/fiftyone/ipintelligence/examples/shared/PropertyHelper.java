@@ -22,6 +22,7 @@
 
 package fiftyone.ipintelligence.examples.shared;
 
+import fiftyone.pipeline.core.data.IWeightedValue;
 import fiftyone.pipeline.engines.data.AspectPropertyValue;
 import fiftyone.pipeline.engines.data.AspectPropertyValueDefault;
 import fiftyone.pipeline.engines.exceptions.PropertyMissingException;
@@ -65,9 +66,46 @@ public class PropertyHelper {
         if (value.hasValue()) {
             Object object = value.getValue();
             if (object instanceof List) {
-                return ((List<?>) object).stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", "));
+                List<?> list = (List<?>) object;
+                if (!list.isEmpty()) {
+                    // Handle WeightedValue lists (IP Intelligence properties)
+                    // Use reflection to handle WeightedValue objects that may not implement IWeightedValue interface properly
+                    StringBuilder values = new StringBuilder();
+                    for (int i = 0; i < list.size(); i++) {
+                        if (i > 0) values.append(", ");
+                        Object item = list.get(i);
+                        
+                        // Extract values from WeightedValue objects using string parsing
+                        String itemStr = item.toString();
+                        if (itemStr.contains("WeightedValue{") && itemStr.contains("value=")) {
+                            // Extract the value from WeightedValue{rawWeighting=65535, value=GOGL}
+                            int valueStart = itemStr.indexOf("value=") + 6;
+                            int valueEnd = itemStr.indexOf("}", valueStart);
+                            if (valueEnd == -1) valueEnd = itemStr.length();
+                            String extractedValue = itemStr.substring(valueStart, valueEnd);
+                            values.append(extractedValue);
+                        } else if (item instanceof IWeightedValue) {
+                            IWeightedValue<?> weightedValue = (IWeightedValue<?>) item;
+                            values.append(weightedValue.getValue().toString());
+                        } else {
+                            values.append(item.toString());
+                        }
+                    }
+                    return values.toString();
+                }
+                return "";
+            } else if (object instanceof IWeightedValue) {
+                // Handle single IWeightedValue objects (IP Intelligence properties)
+                return ((IWeightedValue<?>) object).getValue().toString();
+            } else {
+                // Handle single WeightedValue objects using string parsing
+                String objStr = object.toString();
+                if (objStr.contains("WeightedValue{") && objStr.contains("value=")) {
+                    int valueStart = objStr.indexOf("value=") + 6;
+                    int valueEnd = objStr.indexOf("}", valueStart);
+                    if (valueEnd == -1) valueEnd = objStr.length();
+                    return objStr.substring(valueStart, valueEnd);
+                }
             }
             return value.getValue().toString();
         }
