@@ -23,13 +23,8 @@
 package fiftyone.ipintelligence.examples.web;
 
 import fiftyone.ipintelligence.shared.IPIntelligenceData;
-import fiftyone.pipeline.core.configuration.PipelineOptions;
-import fiftyone.pipeline.core.configuration.PipelineOptionsFactory;
 import fiftyone.pipeline.core.data.FlowData;
-import fiftyone.pipeline.core.data.IWeightedValue;
-import fiftyone.pipeline.core.flowelements.Pipeline;
-import fiftyone.pipeline.engines.data.AspectPropertyValue;
-import fiftyone.pipeline.engines.fiftyone.flowelements.FiftyOnePipelineBuilder;
+import fiftyone.pipeline.core.flowelements.FlowElement;
 import fiftyone.pipeline.web.services.FlowDataProviderCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
@@ -102,7 +98,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         return basePath;
     }
 
-     FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();
+    FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();
 
     /**
      * Process the HTTP request and generate the IP Intelligence results page
@@ -116,34 +112,14 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         // Get the IP address parameter from the request for custom lookup
         String inputIpAddress = request.getParameter("client-ip");
         
-        FlowData flowData;
-        Pipeline pipeline;
+        // The detection has already been carried out by the PipelineFilter
+        // which is responsible for the lifecycle of the flowData - do NOT dispose
+        FlowData flowData = flowDataProvider.getFlowData(request);
         
-        // Get the pipeline from configuration
-        String resourceBase = getResourceBase();
-        PipelineOptions pipelineOptions = PipelineOptionsFactory.getOptionsFromFile(
-            getFilePath(resourceBase) + "/WEB-INF/51Degrees-OnPrem.xml");
-        pipeline = new FiftyOnePipelineBuilder()
-            .buildFromConfiguration(pipelineOptions);
-        
-        // Get flow data - pipeline filter has already processed the request and evidence
-        flowData = flowDataProvider.getFlowData(request);
-        
-        // Determine which IP to display and evidence key to show
-        String targetIp;
-        String evidenceKey;
-        
-        if (inputIpAddress != null && !inputIpAddress.trim().isEmpty()) {
-            // IP provided via form - pipeline automatically picked up as query.client-ip evidence
-            targetIp = inputIpAddress.trim();
-            evidenceKey = "query.client-ip";
-        } else {
-            // No form input - use visitor's actual IP
-            targetIp = request.getRemoteAddr();
-            evidenceKey = "server.client-ip";
-        }
-        
-        // Note: No need to call flowData.process() - the PipelineFilter has already done this
+        // Determine target IP for display (fallback if evidence doesn't contain it)
+        String targetIp = inputIpAddress != null && !inputIpAddress.trim().isEmpty() 
+            ? inputIpAddress.trim() 
+            : request.getRemoteAddr();
         
         // Get IP Intelligence data
         IPIntelligenceData ipiData = flowData.get(IPIntelligenceData.class);
@@ -151,8 +127,9 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             // Load and process the HTML template
+            String resourceBase = getResourceBase();
             String htmlTemplate = loadTemplate(resourceBase + "/WEB-INF/html/index.html");
-            String processedHtml = substituteTemplateValues(htmlTemplate, ipiData, targetIp, evidenceKey);
+            String processedHtml = substituteTemplateValues(htmlTemplate, ipiData, targetIp, flowData);
             out.println(processedHtml);
         } finally {
             if (flowData != null) {
@@ -192,7 +169,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
     /**
      * Replace template variables with IP Intelligence data
      */
-    private String substituteTemplateValues(String template, IPIntelligenceData ipiData, String inputIp, String evidenceKey) {
+    private String substituteTemplateValues(String template, IPIntelligenceData ipiData, String inputIp, FlowData flowData) {
         return template
             .replace("${DATA_FILE_WARNING}", "") // Add warning logic if needed
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
@@ -213,18 +190,46 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${AREAS_JS}", escapeForJs(asStringProperty(ipiData.getAreas())))
             .replace("${ACCURACY_RADIUS}", asIntegerProperty(ipiData.getAccuracyRadius()))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(ipiData.getTimeZoneOffset()))
-            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(inputIp, evidenceKey))
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
             .replace("${RESPONSE_HEADER_ROWS}", "") // IP Intelligence doesn't set response headers
             .replace("${LITE_DATA_WARNING}", ""); // Add warning logic if needed
     }
     
     /**
-     * Build evidence table rows showing the evidence key used
+     * Build evidence table rows showing all evidence, with distinction between used vs present
      */
-    private String buildEvidenceRows(String clientIp, String evidenceKey) {
-        return String.format(
-            "<tr class=\"lightgreen\"><td><b>%s</b></td><td>%s</td></tr>", 
-            evidenceKey, clientIp != null ? clientIp : "Unknown");
+    private String buildEvidenceRows(FlowData flowData) {
+        StringBuilder evidenceRows = new StringBuilder();
+        
+        // Get the IP Intelligence engine to check which evidence was actually used
+        FlowElement<?, ?> engine = getIPIntelligenceEngine(flowData);
+        
+        // Get all evidence from FlowData
+        for (Map.Entry<String, Object> evidenceEntry : flowData.getEvidence().asKeyMap().entrySet()) {
+            String key = evidenceEntry.getKey();
+            Object value = evidenceEntry.getValue();
+            String valueStr = value != null ? value.toString() : "null";
+            
+            // Check if this evidence was actually used by the engine
+            boolean wasUsed = engine != null && engine.getEvidenceKeyFilter().include(key);
+            String cssClass = wasUsed ? "lightgreen" : "lightyellow";
+            String keyDisplay = wasUsed ? "<b>" + key + "</b>" : key;
+            
+            evidenceRows.append(String.format(
+                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>", 
+                cssClass, keyDisplay, valueStr));
+        }
+        
+        return evidenceRows.toString();
+    }
+    
+    /**
+     * Get the IP Intelligence on-premise engine from the pipeline
+     */
+    private FlowElement<?, ?> getIPIntelligenceEngine(FlowData flowData) {
+        // Get IP Intelligence on-premise engine
+        return flowData.getPipeline().getElement(
+            fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
     }
     
     /**

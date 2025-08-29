@@ -36,7 +36,7 @@
     </filter>
     <filter-mapping>
         <filter-name>Pipeline</filter-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>GettingStartedWebOnPrem</servlet-name>
@@ -44,7 +44,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>GettingStartedWebOnPrem</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>default</servlet-name>
