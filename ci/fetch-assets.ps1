@@ -2,15 +2,13 @@
 param (
     [string]$RepoName,
     [Parameter(Mandatory=$true)]
-    [string]$DeviceDetection,
-    [string]$DeviceDetectionUrl
+    [string]$IpIntelligence,
+    [string]$IpIntelligenceUrl
 )
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $true
 
-# Use IP Intelligence naming internally
-$IpIntelligence = $DeviceDetection
-$IpIntelligenceUrl = $DeviceDetectionUrl
+# IP Intelligence parameters
 
 # Fetch the enterprise IPI data file for testing with
 $DataFileName = "51Degrees-EnterpriseIpiV41.ipi"
@@ -35,7 +33,7 @@ $DataFileDir = [IO.Path]::Combine($pwd, $RepoName, "ip-intelligence-data")
 $DataFileDestination = [IO.Path]::Combine($DataFileDir, $DataFileName)
 Move-Item $DataFileSource $DataFileDestination
 
-# Get the evidence files for testing. These are in the device-detection-data submodule,
+# Get the evidence files for testing. These are in the ip-intelligence-data submodule,
 # But are not pulled by default.
 Push-Location $DataFileDir
 try {
