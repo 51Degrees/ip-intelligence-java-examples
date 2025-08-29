@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
@@ -167,9 +167,9 @@ public class HtmlContentHelper {
                         "<div id=\"content\">\n" +
                         content +
                         "    <table>\n" +
-                        "        <tr><td>Registered Name</td><td>" + asString(tryGet(ipData::getRegisteredName)) + "</td></tr>\n" +
-                        "        <tr><td>Registered Owner</td><td>" + asString(tryGet(ipData::getRegisteredOwner)) + "</td></tr>\n" +
-                        "        <tr><td>Registered Country</td><td>" + asString(tryGet(ipData::getRegisteredCountry)) + "</td></tr>\n" +
+                        "        <tr><td>Registered Name</td><td>" + asStringProperty(tryGet(ipData::getRegisteredName)) + "</td></tr>\n" +
+                        "        <tr><td>Registered Owner</td><td>" + asStringProperty(tryGet(ipData::getRegisteredOwner)) + "</td></tr>\n" +
+                        "        <tr><td>Registered Country</td><td>" + asStringProperty(tryGet(ipData::getRegisteredCountry)) + "</td></tr>\n" +
                         "    </table>\n" +
                         "</div>\n");
 

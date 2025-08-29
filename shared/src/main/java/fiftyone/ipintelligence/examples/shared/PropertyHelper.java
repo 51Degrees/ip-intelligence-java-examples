@@ -57,59 +57,87 @@ public class PropertyHelper {
     }
 
     /**
-     * Helper to get the value of a property as a string
-     * @param value the property value
-     * @param <T> the type
-     * @return a string representation of the value or a "no value" message
+     * Helper to get the value of an IP Intelligence string list property - strongly typed
      */
-    public static <T> String asString(AspectPropertyValue<T> value) {
-        if (value.hasValue()) {
-            Object object = value.getValue();
-            if (object instanceof List) {
-                List<?> list = (List<?>) object;
-                if (!list.isEmpty()) {
-                    // Handle WeightedValue lists (IP Intelligence properties)
-                    // Use reflection to handle WeightedValue objects that may not implement IWeightedValue interface properly
-                    StringBuilder values = new StringBuilder();
-                    for (int i = 0; i < list.size(); i++) {
-                        if (i > 0) values.append(", ");
-                        Object item = list.get(i);
-                        
-                        // Extract values from WeightedValue objects using string parsing
-                        String itemStr = item.toString();
-                        if (itemStr.contains("WeightedValue{") && itemStr.contains("value=")) {
-                            // Extract the value from WeightedValue{rawWeighting=65535, value=GOGL}
-                            int valueStart = itemStr.indexOf("value=") + 6;
-                            int valueEnd = itemStr.indexOf("}", valueStart);
-                            if (valueEnd == -1) valueEnd = itemStr.length();
-                            String extractedValue = itemStr.substring(valueStart, valueEnd);
-                            values.append(extractedValue);
-                        } else if (item instanceof IWeightedValue) {
-                            IWeightedValue<?> weightedValue = (IWeightedValue<?>) item;
-                            values.append(weightedValue.getValue().toString());
-                        } else {
-                            values.append(item.toString());
-                        }
-                    }
-                    return values.toString();
-                }
-                return "";
-            } else if (object instanceof IWeightedValue) {
-                // Handle single IWeightedValue objects (IP Intelligence properties)
-                return ((IWeightedValue<?>) object).getValue().toString();
-            } else {
-                // Handle single WeightedValue objects using string parsing
-                String objStr = object.toString();
-                if (objStr.contains("WeightedValue{") && objStr.contains("value=")) {
-                    int valueStart = objStr.indexOf("value=") + 6;
-                    int valueEnd = objStr.indexOf("}", valueStart);
-                    if (valueEnd == -1) valueEnd = objStr.length();
-                    return objStr.substring(valueStart, valueEnd);
+    public static String asStringProperty(AspectPropertyValue<List<IWeightedValue<String>>> property) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            return "Unknown. " + message;
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<String> weightedValue = property.getValue().get(i);
+                values.append(weightedValue.getValue());
+            }
+            return values.toString();
+        }
+    }
+    
+    /**
+     * Helper to get the value of an IP Intelligence integer list property - strongly typed
+     */
+    public static String asIntegerProperty(AspectPropertyValue<List<IWeightedValue<Integer>>> property) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            return "Unknown. " + message;
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<Integer> weightedValue = property.getValue().get(i);
+                values.append(weightedValue.getValue().toString());
+            }
+            return values.toString();
+        }
+    }
+    
+    /**
+     * Helper to get the value of an IP Intelligence float list property - strongly typed
+     */
+    public static String asFloatProperty(AspectPropertyValue<List<IWeightedValue<Float>>> property) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            return "Unknown. " + message;
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<Float> weightedValue = property.getValue().get(i);
+                Object val = weightedValue.getValue();
+                // Handle the case where the value might be a String instead of Float
+                if (val instanceof Float) {
+                    values.append(String.format("%.6f", val));
+                } else {
+                    values.append(val.toString());
                 }
             }
-            return value.getValue().toString();
+            return values.toString();
         }
-        return "Unknown. " + value.getNoValueMessage();
+    }
+    
+    /**
+     * Helper to get the value of an IP Intelligence InetAddress list property - strongly typed
+     */
+    public static String asIPAddressProperty(AspectPropertyValue<List<IWeightedValue<java.net.InetAddress>>> property) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            return "Unknown. " + message;
+        } else {
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < property.getValue().size(); i++) {
+                if (i > 0) values.append(", ");
+                IWeightedValue<java.net.InetAddress> weightedValue = property.getValue().get(i);
+                Object val = weightedValue.getValue();
+                // Handle the case where the value might be a String instead of InetAddress
+                if (val instanceof java.net.InetAddress) {
+                    values.append(((java.net.InetAddress) val).getHostAddress());
+                } else {
+                    values.append(val.toString());
+                }
+            }
+            return values.toString();
+        }
     }
 
 }

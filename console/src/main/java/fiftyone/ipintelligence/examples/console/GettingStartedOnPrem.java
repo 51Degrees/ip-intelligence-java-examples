@@ -63,7 +63,10 @@ import java.util.List;
 import java.util.Map;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
@@ -202,113 +205,25 @@ public class GettingStartedOnPrem {
             property dictionary at https://51degrees.com/developers/property-dictionary for
             details of all available properties. */
             
-            // Output all the properties in the same format as the .NET example
-            outputListProperty("RegisteredName", ipData.getRegisteredName(), writer);
-            outputListProperty("RegisteredOwner", ipData.getRegisteredOwner(), writer);
-            outputListProperty("RegisteredCountry", ipData.getRegisteredCountry(), writer);
-            outputIPAddressProperty("IpRangeStart", ipData.getIpRangeStart(), writer);
-            outputIPAddressProperty("IpRangeEnd", ipData.getIpRangeEnd(), writer);
-            outputListProperty("Country", ipData.getCountry(), writer);
-            outputListProperty("CountryCode", ipData.getCountryCode(), writer);
-            outputListProperty("CountryCode3", ipData.getCountryCode3(), writer);
-            outputListProperty("Region", ipData.getRegion(), writer);
-            outputListProperty("State", ipData.getState(), writer);
-            outputListProperty("Town", ipData.getTown(), writer);
-            outputFloatProperty("Latitude", ipData.getLatitude(), writer);
-            outputFloatProperty("Longitude", ipData.getLongitude(), writer);
-            outputListProperty("Areas", ipData.getAreas(), writer);
-            outputIntProperty("AccuracyRadius", ipData.getAccuracyRadius(), writer);
-            outputIntProperty("TimeZoneOffset", ipData.getTimeZoneOffset(), writer);
+            // Output all the properties using shared PropertyHelper methods
+            writer.println("\tRegisteredName: " + asStringProperty(ipData.getRegisteredName()));
+            writer.println("\tRegisteredOwner: " + asStringProperty(ipData.getRegisteredOwner()));
+            writer.println("\tRegisteredCountry: " + asStringProperty(ipData.getRegisteredCountry()));
+            writer.println("\tIpRangeStart: " + asIPAddressProperty(ipData.getIpRangeStart()));
+            writer.println("\tIpRangeEnd: " + asIPAddressProperty(ipData.getIpRangeEnd()));
+            writer.println("\tCountry: " + asStringProperty(ipData.getCountry()));
+            writer.println("\tCountryCode: " + asStringProperty(ipData.getCountryCode()));
+            writer.println("\tCountryCode3: " + asStringProperty(ipData.getCountryCode3()));
+            writer.println("\tRegion: " + asStringProperty(ipData.getRegion()));
+            writer.println("\tState: " + asStringProperty(ipData.getState()));
+            writer.println("\tTown: " + asStringProperty(ipData.getTown()));
+            writer.println("\tLatitude: " + asFloatProperty(ipData.getLatitude()));
+            writer.println("\tLongitude: " + asFloatProperty(ipData.getLongitude()));
+            writer.println("\tAreas: " + asStringProperty(ipData.getAreas()));
+            writer.println("\tAccuracyRadius: " + asIntegerProperty(ipData.getAccuracyRadius()));
+            writer.println("\tTimeZoneOffset: " + asIntegerProperty(ipData.getTimeZoneOffset()));
         }
         writer.println();
         writer.flush();
-    }
-    
-    /**
-     * Output a list property with proper formatting to match .NET example
-     */
-    private static void outputListProperty(String name, AspectPropertyValue<List<IWeightedValue<String>>> property, PrintWriter writer) {
-        if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            writer.println("\t" + name + ": " + message);
-        } else {
-            StringBuilder values = new StringBuilder();
-            for (int i = 0; i < property.getValue().size(); i++) {
-                if (i > 0) values.append(", ");
-                IWeightedValue<String> weightedValue = property.getValue().get(i);
-                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
-                    values.append("'").append(weightedValue.getValue()).append("'");
-                } else {
-                    values.append("('").append(weightedValue.getValue()).append("' @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
-                }
-            }
-            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
-        }
-    }
-    
-    /**
-     * Output an IP address property with proper formatting
-     */
-    private static void outputIPAddressProperty(String name, AspectPropertyValue<List<IWeightedValue<java.net.InetAddress>>> property, PrintWriter writer) {
-        if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            writer.println("\t" + name + ": " + message);
-        } else {
-            StringBuilder values = new StringBuilder();
-            for (int i = 0; i < property.getValue().size(); i++) {
-                if (i > 0) values.append(", ");
-                IWeightedValue<java.net.InetAddress> weightedValue = property.getValue().get(i);
-                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
-                    values.append(weightedValue.getValue().getHostAddress());
-                } else {
-                    values.append("(").append(weightedValue.getValue().getHostAddress()).append(" @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
-                }
-            }
-            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
-        }
-    }
-    
-    /**
-     * Output an integer property with proper formatting
-     */
-    private static void outputIntProperty(String name, AspectPropertyValue<List<IWeightedValue<Integer>>> property, PrintWriter writer) {
-        if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            writer.println("\t" + name + ": " + message);
-        } else {
-            StringBuilder values = new StringBuilder();
-            for (int i = 0; i < property.getValue().size(); i++) {
-                if (i > 0) values.append(", ");
-                IWeightedValue<Integer> weightedValue = property.getValue().get(i);
-                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
-                    values.append(weightedValue.getValue().toString());
-                } else {
-                    values.append("(").append(weightedValue.getValue()).append(" @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
-                }
-            }
-            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
-        }
-    }
-    
-    /**
-     * Output a float property with proper formatting
-     */
-    private static void outputFloatProperty(String name, AspectPropertyValue<List<IWeightedValue<Float>>> property, PrintWriter writer) {
-        if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            writer.println("\t" + name + ": " + message);
-        } else {
-            StringBuilder values = new StringBuilder();
-            for (int i = 0; i < property.getValue().size(); i++) {
-                if (i > 0) values.append(", ");
-                IWeightedValue<Float> weightedValue = property.getValue().get(i);
-                if (Math.abs(weightedValue.getWeighting() - 1.0f) < 0.0001f) {
-                    values.append(String.format("%.6f", weightedValue.getValue()));
-                } else {
-                    values.append("(").append(String.format("%.6f", weightedValue.getValue())).append(" @ ").append(String.format("%.4f", weightedValue.getWeighting())).append(")");
-                }
-            }
-            writer.println("\t" + name + " (" + property.getValue().size() + "): " + values.toString());
-                }
     }
 }

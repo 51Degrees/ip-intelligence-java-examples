@@ -26,7 +26,9 @@ import fiftyone.ipintelligence.shared.IPIntelligenceData;
 import fiftyone.pipeline.core.configuration.PipelineOptions;
 import fiftyone.pipeline.core.configuration.PipelineOptionsFactory;
 import fiftyone.pipeline.core.data.FlowData;
+import fiftyone.pipeline.core.data.IWeightedValue;
 import fiftyone.pipeline.core.flowelements.Pipeline;
+import fiftyone.pipeline.engines.data.AspectPropertyValue;
 import fiftyone.pipeline.engines.fiftyone.flowelements.FiftyOnePipelineBuilder;
 import fiftyone.pipeline.web.services.FlowDataProviderCore;
 import org.slf4j.Logger;
@@ -44,11 +46,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
@@ -191,23 +196,23 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         return template
             .replace("${DATA_FILE_WARNING}", "") // Add warning logic if needed
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
-            .replace("${REGISTERED_NAME}", asString(tryGet(ipiData::getRegisteredName)))
-            .replace("${REGISTERED_OWNER}", asString(tryGet(ipiData::getRegisteredOwner)))
-            .replace("${REGISTERED_COUNTRY}", asString(tryGet(ipiData::getRegisteredCountry)))
-            .replace("${IP_RANGE_START}", asString(tryGet(ipiData::getIpRangeStart)))
-            .replace("${IP_RANGE_END}", asString(tryGet(ipiData::getIpRangeEnd)))
-            .replace("${COUNTRY}", asString(tryGet(ipiData::getCountry)))
-            .replace("${COUNTRY_CODE}", asString(tryGet(ipiData::getCountryCode)))
-            .replace("${COUNTRY_CODE3}", asString(tryGet(ipiData::getCountryCode3)))
-            .replace("${REGION}", asString(tryGet(ipiData::getRegion)))
-            .replace("${STATE}", asString(tryGet(ipiData::getState)))
-            .replace("${TOWN}", asString(tryGet(ipiData::getTown)))
-            .replace("${LATITUDE}", asString(tryGet(ipiData::getLatitude)))
-            .replace("${LONGITUDE}", asString(tryGet(ipiData::getLongitude)))
-            .replace("${AREAS}", asString(tryGet(ipiData::getAreas)))
-            .replace("${AREAS_JS}", escapeForJs(asString(tryGet(ipiData::getAreas))))
-            .replace("${ACCURACY_RADIUS}", asString(tryGet(ipiData::getAccuracyRadius)))
-            .replace("${TIME_ZONE_OFFSET}", asString(tryGet(ipiData::getTimeZoneOffset)))
+            .replace("${REGISTERED_NAME}", asStringProperty(ipiData.getRegisteredName()))
+            .replace("${REGISTERED_OWNER}", asStringProperty(ipiData.getRegisteredOwner()))
+            .replace("${REGISTERED_COUNTRY}", asStringProperty(ipiData.getRegisteredCountry()))
+            .replace("${IP_RANGE_START}", asIPAddressProperty(ipiData.getIpRangeStart()))
+            .replace("${IP_RANGE_END}", asIPAddressProperty(ipiData.getIpRangeEnd()))
+            .replace("${COUNTRY}", asStringProperty(ipiData.getCountry()))
+            .replace("${COUNTRY_CODE}", asStringProperty(ipiData.getCountryCode()))
+            .replace("${COUNTRY_CODE3}", asStringProperty(ipiData.getCountryCode3()))
+            .replace("${REGION}", asStringProperty(ipiData.getRegion()))
+            .replace("${STATE}", asStringProperty(ipiData.getState()))
+            .replace("${TOWN}", asStringProperty(ipiData.getTown()))
+            .replace("${LATITUDE}", asFloatProperty(ipiData.getLatitude()))
+            .replace("${LONGITUDE}", asFloatProperty(ipiData.getLongitude()))
+            .replace("${AREAS}", asStringProperty(ipiData.getAreas()))
+            .replace("${AREAS_JS}", escapeForJs(asStringProperty(ipiData.getAreas())))
+            .replace("${ACCURACY_RADIUS}", asIntegerProperty(ipiData.getAccuracyRadius()))
+            .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(ipiData.getTimeZoneOffset()))
             .replace("${EVIDENCE_ROWS}", buildEvidenceRows(inputIp, evidenceKey))
             .replace("${RESPONSE_HEADER_ROWS}", "") // IP Intelligence doesn't set response headers
             .replace("${LITE_DATA_WARNING}", ""); // Add warning logic if needed
@@ -228,6 +233,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
     private String escapeForJs(String value) {
         return value != null ? value.replace("'", "\\'").replace("\"", "\\\"") : "";
     }
+    
 
     /**
      * Handles the HTTP <code>GET</code> method.
