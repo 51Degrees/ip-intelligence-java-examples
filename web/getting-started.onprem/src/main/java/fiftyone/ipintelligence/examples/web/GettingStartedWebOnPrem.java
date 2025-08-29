@@ -20,6 +20,43 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+/*!
+ * @example GettingStartedWebOnPrem.java
+ *
+ * This example shows how to use 51Degrees On-premise IP Intelligence in a web application to determine location and network details from IP addresses.
+ *
+ * You will learn:
+ * 
+ * 1. How to configure a Pipeline in a web application that uses 51Degrees On-premise IP Intelligence
+ * 2. How evidence from the web request is automatically passed to the Pipeline
+ * 3. How to retrieve the results in your web application
+ * 
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/web/getting-started.onprem/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebOnPrem.java).
+ *
+ * This example requires an enterprise IP Intelligence data file (.ipi). 
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ *
+ * Required Maven Dependencies:
+ * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
+ * - [com.51degrees:pipeline-web](https://central.sonatype.com/artifact/com.51degrees/pipeline-web)
+ *
+ * ## Overview
+ *
+ * The `PipelineFilter` is used to intercept requests and perform IP Intelligence. The results
+ * will be stored in the HttpServletRequest object.
+ *
+ * The results of detection can be accessed by using a FlowDataProvider which
+ * is responsible for managing the lifecycle of the flowData - do NOT dispose
+ * ```{java}
+ * FlowData flowData = flowDataProvider.getFlowData(request);
+ * IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
+ * ...
+ * ```
+ *
+ * IP Intelligence operates entirely server-side, so all results are available immediately
+ * after processing through the Pipeline API shown above.
+ */
+
 package fiftyone.ipintelligence.examples.web;
 
 import fiftyone.ipintelligence.shared.IPIntelligenceData;
@@ -259,39 +296,3 @@ public class GettingStartedWebOnPrem extends HttpServlet {
     }
 }
 
-/*!
- * @example GettingStartedWebOnPrem.java
- *
- *
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/web/getting-started.onprem/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebOnPrem.java).
- *
- *
- * ## Overview
- *
- * The `PipelineFilter` is used to intercept requests and perform IP Intelligence. The results
- * will be stored in the HttpServletRequest object.
- * The filter will also handle setting response headers (e.g. Accept-CH for User-Agent
- * Client Hints) and serving requests for client-side JavaScript and JSON resources.
- *
- * The results of detection can be accessed by using a FlowDataProvider which
- * is responsible for managing the lifecycle of the flowData - do NOT dispose
- * ```{java}
- * FlowData flowData = flowDataProvider.getFlowData(request);
- * IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
- * ...
- * ```
- *
- * Results can also be accessed in client-side code by using the `fod` object. Note that the global
- * object name can be changed by using the setObjectName option on the
- * [JavaScriptBuilderElementBuilder](//51degrees.com/pipeline-java/classfiftyone_1_1pipeline_1_1javascriptbuilder_1_1flowelements_1_1_java_script_builder_element_builder.html)
- *
- * ```{java}
- * window.onload = function () {
- *     fod.complete(function(data) {
- *         var registeredName = data.ip.registeredname;
- *         alert(hardwareName.join(", "));
- *     }
- * }
- * ```
- *
- */
