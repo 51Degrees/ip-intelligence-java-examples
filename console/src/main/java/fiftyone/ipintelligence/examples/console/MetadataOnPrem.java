@@ -90,10 +90,7 @@ public class MetadataOnPrem {
         try (IPIntelligenceOnPremiseEngine ddEngine =
                      new IPIntelligenceOnPremiseEngineBuilder(LoggerFactory.getILoggerFactory())
                 // We use the max performance profile for optimal detection speed in this
-                // example. See the documentation for more detail on this and other
-                // configuration options:
-                // https://51degrees.com/documentation/_device_detection__features__performance_options.html
-                // https://51degrees.com/documentation/_features__automatic_datafile_updates.html
+                // example.
                 .setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
                 // inhibit auto-update of the data file for this test
                 .setAutoUpdate(false)
@@ -183,9 +180,9 @@ public class MetadataOnPrem {
                                     property.getDescription());
 
                             // Next, output a list of the possible values this property can have.
-                            // Most properties in the Device Metrics category do not have defined
+                            // Most properties in the Metrics category do not have defined
                             // values so exclude them.
-                            if (property.getCategory().equals("Device Metrics")==false) {
+                            if (property.getCategory().equals("Metrics")==false) {
                                 StringBuilder values = new StringBuilder("        Possible " +
                                         "values: ");
                                 Spliterator<ValueMetaData> spliterator2 =

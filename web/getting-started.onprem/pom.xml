@@ -32,7 +32,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ip-intelligence-java-examples.web.getting-started.onprem</artifactId>
-    <name>51Degrees :: Device-Detection :: Examples :: Web :: Getting Started :: OnPrem</name>
+    <name>51Degrees :: IP-Intelligence :: Examples :: Web :: Getting Started :: OnPrem</name>
 
     <properties>
         <slf4j-api.version>2.0.17</slf4j-api.version>

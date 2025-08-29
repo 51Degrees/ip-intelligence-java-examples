@@ -272,7 +272,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
  * is responsible for managing the lifecycle of the flowData - do NOT dispose
  * ```{java}
  * FlowData flowData = flowDataProvider.getFlowData(request);
- * IPIntelligenceData device = flowData.get(IPIntelligenceData.class);
+ * IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
  * ...
  * ```
  *
@@ -283,7 +283,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
  * ```{java}
  * window.onload = function () {
  *     fod.complete(function(data) {
- *         var hardwareName = data.device.hardwarename;
+ *         var registeredName = data.ip.registeredname;
  *         alert(hardwareName.join(", "));
  *     }
  * }

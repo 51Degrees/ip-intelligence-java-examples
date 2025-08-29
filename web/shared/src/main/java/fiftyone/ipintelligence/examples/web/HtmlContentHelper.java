@@ -157,13 +157,13 @@ public class HtmlContentHelper {
             if (daysOld > 28) {
                 content += String.format(
                         "<p>The data file is more than %d days old. A more recent data file " +
-                                " may be needed to correctly detect the latest devices, " +
+                                " may be needed for the most accurate IP Intelligence data, " +
                                 "browsers, etc.</p>", daysOld);
             }
         }
         // language=html
         out.append(
-                "<h2>Device Data</h2>\n" +
+                "<h2>IP Intelligence Data</h2>\n" +
                         "<div id=\"content\">\n" +
                         content +
                         "    <table>\n" +

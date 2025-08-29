@@ -32,7 +32,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ip-intelligence-java-examples.web.shared</artifactId>
-    <name>51Degrees :: Device-Detection :: Examples :: Web :: Shared</name>
+    <name>51Degrees :: IP-Intelligence :: Examples :: Web :: Shared</name>
 
     <properties>
         <slf4j-api.version>2.0.17</slf4j-api.version>

@@ -67,7 +67,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asString;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
 import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
@@ -83,7 +83,7 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  *   header.sec-ch-ua-platform: '"Android"'
  * </pre></code>
  * <p>
- * We create a IP Intelligence pipeline to read the data and find out about the associated devices,
+ * We create a IP Intelligence pipeline to read the data and find out about the associated IP addresses,
  * we write this data to a YAML formatted output stream.
  * <p>
  * As well as explaining the basic operation of offline processing using the defaults, for advanced
@@ -118,8 +118,8 @@ public class OfflineProcessing {
      * containing the processed evidence
      *
      * @param dataFile the 51Degrees on premise data file containing
-     *                 information about devices
-     * @param is       an InputStream containing YAML documents - one per device
+     *                 information about IP addresses
+     * @param is       an InputStream containing YAML documents - one per IP address
      * @param os       an OutputStream for the processed data
      */
     @SuppressWarnings("unchecked")
@@ -143,7 +143,7 @@ public class OfflineProcessing {
         dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
         dumperOptions.setSplitLines(false);
 
-        // get a YAML loader to iterate over the device evidence
+        // get a YAML loader to iterate over the IP evidence
         Yaml yaml = new Yaml(dumperOptions);
         Iterator<Object> evidenceIterator = yaml.loadAll(is).iterator();
 
@@ -164,7 +164,7 @@ public class OfflineProcessing {
                 .setAutoUpdate(false)
                 // -- Setting the Profile
                 // For information on profiles see
-                // https://51degrees.com/documentation/_device_detection__features__performance_options.html
+                // Performance options for IP Intelligence
                 //.setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
                 //.setPerformanceProfile(Constants.PerformanceProfiles.HighPerformance)
                 // Low memory profile has detection data streamed from disk on
@@ -173,11 +173,11 @@ public class OfflineProcessing {
                 .setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
                 //.setPerformanceProfile(Constants.PerformanceProfiles.Balanced)
                 // -- Setting the Graph
-                // see https://51degrees.com/documentation/_device_detection__hash.html#DeviceDetection_Hash_DataSetProduction
+                // Data set production configuration
                 //.setUsePerformanceGraph(false)
                 //.setUsePredictiveGraph(true)
                 // -- Setting Predictive Power
-                // see https://51degrees.com/documentation/_device_detection__hash.html#DeviceDetection_Hash_PredictivePower
+                // Predictive power configuration
                 //.setDifference(0)
                 //.setDrift(0)
                 .build()) {
@@ -185,7 +185,7 @@ public class OfflineProcessing {
             // get the details of the detection engine from the pipeline,
             // to find out what data file we are using
             IPIntelligenceOnPremiseEngine engine = pipeline.getElement(IPIntelligenceOnPremiseEngine.class);
-            logger.info("Device data file was created {}", engine.getDataFilePublishedDate());
+            logger.info("IP Intelligence data file was created {}", engine.getDataFilePublishedDate());
 
             /*
               ---- Iterate over the evidence ----
@@ -193,7 +193,7 @@ public class OfflineProcessing {
 
             // open a writer to collect the results
             try (Writer writer = new OutputStreamWriter(os)) {
-                // read a batch of device data from the stream
+                // read a batch of IP evidence from the stream
                 int count = 0;
                 while (evidenceIterator.hasNext() && count < 20) {
                     // Flow data is the container for inputs and outputs that
@@ -215,20 +215,20 @@ public class OfflineProcessing {
                         // carry out ip-intelligence (and other
                         // pipeline actions) on the evidence
                         flowData.process();
-                        // extract device data from the flowData
-                        IPIntelligenceData device = flowData.get(IPIntelligenceData.class);
+                        // extract IP Intelligence data from the flowData
+                        IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
 
                         /*
-                          ---- use the device data - output to YAML in this case
+                          ---- use the IP Intelligence data - output to YAML in this case
                          */
 
                         Map<String, ? super Object> resultMap = new HashMap<>();
-                        resultMap.put("device.RegisteredName", asString(device.getRegisteredName()));
-                        resultMap.put("device.RegisteredOwner", asString(device.getRegisteredOwner()));
-                        resultMap.put("device.RegisteredCountry", asString(device.getRegisteredCountry()));
+                        resultMap.put("ip.RegisteredName", asStringProperty(ipData.getRegisteredName()));
+                        resultMap.put("ip.RegisteredOwner", asStringProperty(ipData.getRegisteredOwner()));
+                        resultMap.put("ip.RegisteredCountry", asStringProperty(ipData.getRegisteredCountry()));
 
                         // to look at all IP Intelligence properties use the following:
-                        // resultMap.putAll(getPopulatedProperties(device, "device."));
+                        // resultMap.putAll(getPopulatedProperties(ipData, "ip."));
 
                         // write document to output stream as a YAML document
                         writer.write("---\n");
@@ -271,9 +271,9 @@ public class OfflineProcessing {
     }
 
     /**
-     * Get a map of device properties that are populated
+     * Get a map of IP Intelligence properties that are populated
      * @param data IPIntelligenceData
-     * @param prefix the prefix we want for the property name e.g "device."
+     * @param prefix the prefix we want for the property name e.g "ip."
      * @return a filtered map
      */
     @SuppressWarnings({"SameParameterValue", "unused"})

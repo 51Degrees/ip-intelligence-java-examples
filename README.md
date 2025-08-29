@@ -54,7 +54,7 @@ By default, the examples are configured to use the packages from Maven central.
 In order to produce and use local packages instead:
 
 - Clone and make your changes to ip-intelligence-java
-- Set the version of the device detection packages that we're going to create to 0.0.0:
+- Set the version of the IP Intelligence packages that we're going to create to 0.0.0:
   `mvn versions:set-property -Dproperty="project.version" "-DnewVersion=0.0.0"`
 - Create and install the packages locally (skipping tests is needed):
   `mvn clean install [-DskipTests]`

@@ -118,7 +118,7 @@ public class PerformanceBenchmark {
     /**
      * Runs benchmarks for various configurations.
      *
-     * @param dataFilename     path to the 51Degrees device data file for testing
+     * @param dataFilename     path to the 51Degrees IP Intelligence data file for testing
      * @param evidenceFilename path to a text file of evidence
      * @param numberOfThreads  number of concurrent threads
      * @throws Exception as a catch all
@@ -322,10 +322,10 @@ public class PerformanceBenchmark {
 
                     // Calculate a checksum to compare different runs on
                     // the same data.
-                    IPIntelligenceData device = flowData.get(IPIntelligenceData.class);
-                    if (device != null) {
-                        if (device.getRegisteredName().hasValue()) {
-                            List<IWeightedValue<String>> value = device.getRegisteredName().getValue();
+                    IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
+                    if (ipData != null) {
+                        if (ipData.getRegisteredName().hasValue()) {
+                            List<IWeightedValue<String>> value = ipData.getRegisteredName().getValue();
                             if (value != null) {
                                 for (IWeightedValue<?> weightedValue : value) {
                                     result.checkSum += weightedValue.getValue().hashCode();
@@ -349,7 +349,7 @@ public class PerformanceBenchmark {
 
     static class BenchmarkResult {
 
-        // number of device evidence processed to determine the result.
+        // number of IP evidence processed to determine the result.
         private long count;
 
         // processing time in millis this thread
