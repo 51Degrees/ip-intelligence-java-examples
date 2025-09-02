@@ -27,7 +27,8 @@
             <BuildParameters>
                 <AutoUpdate>false</AutoUpdate>
                 <CreateTempDataCopy>false</CreateTempDataCopy>
-                <DataFile>/Users/eugene/projects/51degrees/51drepos/assets/51Degrees-EnterpriseIpiV41.ipi</DataFile>
+                <!-- specify path to 51Degrees IPI Data File -->
+                <DataFile>ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi</DataFile>
                 <PerformanceProfile>MaxPerformance</PerformanceProfile>
             </BuildParameters>
             <BuilderName>IPIntelligenceOnPremiseEngine</BuilderName>
