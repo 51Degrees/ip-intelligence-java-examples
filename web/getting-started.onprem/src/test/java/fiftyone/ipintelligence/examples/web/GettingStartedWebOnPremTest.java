@@ -33,6 +33,7 @@ import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IP
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import static fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem.getResourceBase;
