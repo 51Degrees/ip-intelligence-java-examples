@@ -1,7 +1,7 @@
 param(
-    [Parameter(Mandatory)][string]$RepoName
+    [Parameter(Mandatory)][string]$RepoName,
     [string]$Name,
-    [hashtable]$Keys,
+    [hashtable]$Keys
 )
 
 $RepoPath = [IO.Path]::Combine($pwd, $RepoName)
