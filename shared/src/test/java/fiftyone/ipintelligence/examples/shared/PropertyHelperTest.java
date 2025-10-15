@@ -22,8 +22,11 @@
 
 package fiftyone.ipintelligence.examples.shared;
 
+import fiftyone.pipeline.core.data.IWeightedValue;
+import fiftyone.pipeline.core.data.WeightedValue;
 import fiftyone.pipeline.engines.data.AspectPropertyValue;
 import fiftyone.pipeline.engines.data.AspectPropertyValueDefault;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -35,29 +38,39 @@ public class PropertyHelperTest {
 
     @Test
     public void testAsStringBoolean() {
-        AspectPropertyValue<Boolean> test = new AspectPropertyValueDefault<>(true);
-        assertEquals("true", PropertyHelper.asString(test));
+        String expected = "true";
+        ArrayList<IWeightedValue<String>> weightedValues = new ArrayList<IWeightedValue<String>>() {
+            {
+                add(new WeightedValue<>(1, expected));
+            }
+        };
+        AspectPropertyValueDefault<List<IWeightedValue<String>>> aspectProperty =
+                new AspectPropertyValueDefault<>(weightedValues);
+        assertEquals(expected, PropertyHelper.asStringProperty(aspectProperty));
     }
 
     @Test
     public void testAsStringStringArray() {
-        List<String> strings = new ArrayList<>();
-        strings.add("one"); strings.add("two");
-        AspectPropertyValue<List<String>> test = new AspectPropertyValueDefault<>(strings);
-        assertEquals("one, two", PropertyHelper.asString(test));
+        String firstElement = "one";
+        String secondElement = "two";
+        String delimiter = ", ";
+
+        ArrayList<IWeightedValue<String>> weightedValues = new ArrayList<IWeightedValue<String>>() {
+            {
+                add(new WeightedValue<>(1, firstElement));
+                add(new WeightedValue<>(1, secondElement));
+            }
+        };
+        AspectPropertyValueDefault<List<IWeightedValue<String>>> aspectProperty =
+                new AspectPropertyValueDefault<>(weightedValues);
+        assertEquals(StringUtils.joinWith(delimiter, firstElement,secondElement)
+                , PropertyHelper.asStringProperty(aspectProperty));
     }
 
-    @Test
-    public void testAsBooleanArray() {
-        List<Boolean> bools = new ArrayList<>();
-        bools.add(true); bools.add(false);
-        AspectPropertyValue<List<Boolean>> test = new AspectPropertyValueDefault<>(bools);
-        assertEquals("true, false", PropertyHelper.asString(test));
-    }
 
     @Test
     public void testAsNoValue() {
         AspectPropertyValue<List<Boolean>> test = new AspectPropertyValueDefault<>();
-        assertTrue(PropertyHelper.asString(test).startsWith("Unknown"));
+        assertTrue(PropertyHelper.asStringProperty(null).startsWith("Unknown"));
     }
 }
