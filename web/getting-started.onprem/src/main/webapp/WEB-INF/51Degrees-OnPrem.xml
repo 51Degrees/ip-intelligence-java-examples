@@ -28,7 +28,7 @@
                 <AutoUpdate>false</AutoUpdate>
                 <CreateTempDataCopy>false</CreateTempDataCopy>
                 <!-- specify path to 51Degrees IPI Data File -->
-                <DataFile>${TestDataFile:-ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi}</DataFile>
+                <DataFile>ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi</DataFile>
                 <PerformanceProfile>MaxPerformance</PerformanceProfile>
             </BuildParameters>
             <BuilderName>IPIntelligenceOnPremiseEngine</BuilderName>

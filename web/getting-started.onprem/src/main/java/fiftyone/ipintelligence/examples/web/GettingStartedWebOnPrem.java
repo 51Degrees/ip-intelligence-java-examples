@@ -164,7 +164,8 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             // Load and process the HTML template
-            String htmlTemplate = loadTemplate(request, "/WEB-INF/html/index.html");
+            String resourceBase = getResourceBase();
+            String htmlTemplate = loadTemplate(resourceBase + "/WEB-INF/html/index.html");
             String processedHtml = substituteTemplateValues(htmlTemplate, ipiData, targetIp, flowData);
             out.println(processedHtml);
         } finally {
@@ -179,38 +180,27 @@ public class GettingStartedWebOnPrem extends HttpServlet {
     }
     
     /**
-     * Load HTML template using ServletContext, with fallback to file system and classpath
+     * Load HTML template from file system
      */
-    private String loadTemplate(HttpServletRequest request, String webappRelativePath) throws IOException {
-        // Try ServletContext first (works in web container including embedded Jetty in tests)
-        try (InputStream is = request.getServletContext().getResourceAsStream(webappRelativePath)) {
-            if (is != null) {
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                    return reader.lines().collect(Collectors.joining("\n"));
-                }
-            }
-        }
-
-        // Fallback to file system (for standalone execution)
-        String resourceBase = getResourceBase();
-        Path path = Paths.get(resourceBase + webappRelativePath);
+    private String loadTemplate(String templatePath) throws IOException {
+        Path path = Paths.get(templatePath);
         if (Files.exists(path)) {
+            // Java 8 compatible way to read file
             return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
         }
-
+        
         // Fallback to classpath
-        String classpathPath = webappRelativePath.startsWith("/") ? webappRelativePath.substring(1) : webappRelativePath;
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(classpathPath)) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("html/index.html")) {
             if (is != null) {
+                // Java 8 compatible way to read input stream
                 try (BufferedReader reader = new BufferedReader(
                         new InputStreamReader(is, StandardCharsets.UTF_8))) {
                     return reader.lines().collect(Collectors.joining("\n"));
                 }
             }
         }
-
-        throw new IOException("Could not find HTML template: " + webappRelativePath);
+        
+        throw new IOException("Could not find HTML template: " + templatePath);
     }
     
     /**
