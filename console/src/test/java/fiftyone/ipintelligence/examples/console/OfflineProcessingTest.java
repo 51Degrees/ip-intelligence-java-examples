@@ -30,7 +30,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 
 
 public class OfflineProcessingTest {
@@ -39,8 +39,7 @@ public class OfflineProcessingTest {
     @Test
     public void offlineProcessingTest() throws Exception {
         try (LoggerOutputStream outStream = new LoggerOutputStream(logger)) {
-
-            OfflineProcessing.run(ENTERPRISE_IPI_DATA_FILE_NAME,
+            OfflineProcessing.run(ENTERPRISE_DATA_FILE_REL_PATH,
                     new FileInputStream(Objects.requireNonNull(FileUtils.getEvidenceFile())),
                     outStream);
         }

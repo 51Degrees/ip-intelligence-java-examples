@@ -69,24 +69,20 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
@@ -114,25 +110,26 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         configureLogback(getFilePath("logback.xml"));
         logger.info("Running Example {}", GettingStartedWebOnPrem.class);
 
+        // Set data file location using DataFileHelper
+        try {
+            String dataFilePath = fiftyone.ipintelligence.examples.shared.DataFileHelper.getDataFileLocation(ENTERPRISE_DATA_FILE_REL_PATH);
+            System.setProperty("TestDataFile", dataFilePath);
+            logger.info("Using data file: {}", dataFilePath);
+        } catch (Exception e) {
+            logger.warn("Data file not found at expected location: {}", ENTERPRISE_DATA_FILE_REL_PATH);
+            logger.warn("Will attempt to use default path from XML configuration");
+            logger.debug("Error finding data file", e);
+        }
+
         // start Jetty with this WebApp
         EmbedJetty.runWebApp(getResourceBase(), 8082);
     }
 
     public static String getResourceBase() {
-        final String basePath = "web/getting-started.onprem/src/main/webapp";
-        {
-            final Path path = Paths.get(basePath);
-            if (Files.exists(path) && Files.isDirectory(path)) {
-                return path.toString();
-            }
-        }
-        {
-            final Path path2 = Paths.get("ip-intelligence-java-examples", basePath);
-            if (Files.exists(path2) && Files.isDirectory(path2)) {
-                return path2.toString();
-            }
-        }
-        return basePath;
+        // FileFinder always finds the file when running from examples root
+        java.io.File webXml = getFilePath("WEB-INF/web.xml");
+        // web.xml is in WEB-INF/, so parent is webapp directory
+        return webXml.getParentFile().getParent();
     }
 
     FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();
@@ -183,24 +180,9 @@ public class GettingStartedWebOnPrem extends HttpServlet {
      * Load HTML template from file system
      */
     private String loadTemplate(String templatePath) throws IOException {
-        Path path = Paths.get(templatePath);
-        if (Files.exists(path)) {
-            // Java 8 compatible way to read file
-            return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-        }
-        
-        // Fallback to classpath
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("html/index.html")) {
-            if (is != null) {
-                // Java 8 compatible way to read input stream
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(is, StandardCharsets.UTF_8))) {
-                    return reader.lines().collect(Collectors.joining("\n"));
-                }
-            }
-        }
-        
-        throw new IOException("Could not find HTML template: " + templatePath);
+        // FileFinder always finds the file when running from examples root
+        Path path = getFilePath(templatePath).toPath();
+        return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     }
     
     /**
@@ -210,23 +192,22 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         return template
             .replace("${DATA_FILE_WARNING}", "") // Add warning logic if needed
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
-            .replace("${REGISTERED_NAME}", asStringProperty(ipiData.getRegisteredName()))
-            .replace("${REGISTERED_OWNER}", asStringProperty(ipiData.getRegisteredOwner()))
-            .replace("${REGISTERED_COUNTRY}", asStringProperty(ipiData.getRegisteredCountry()))
-            .replace("${IP_RANGE_START}", asIPAddressProperty(ipiData.getIpRangeStart()))
-            .replace("${IP_RANGE_END}", asIPAddressProperty(ipiData.getIpRangeEnd()))
-            .replace("${COUNTRY}", asStringProperty(ipiData.getCountry()))
-            .replace("${COUNTRY_CODE}", asStringProperty(ipiData.getCountryCode()))
-            .replace("${COUNTRY_CODE3}", asStringProperty(ipiData.getCountryCode3()))
-            .replace("${REGION}", asStringProperty(ipiData.getRegion()))
-            .replace("${STATE}", asStringProperty(ipiData.getState()))
-            .replace("${TOWN}", asStringProperty(ipiData.getTown()))
-            .replace("${LATITUDE}", asFloatProperty(ipiData.getLatitude()))
-            .replace("${LONGITUDE}", asFloatProperty(ipiData.getLongitude()))
-            .replace("${AREAS}", asStringProperty(ipiData.getAreas()))
-            .replace("${AREAS_JS}", escapeForJs(asStringProperty(ipiData.getAreas())))
-            .replace("${ACCURACY_RADIUS}", asIntegerProperty(ipiData.getAccuracyRadius()))
-            .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(ipiData.getTimeZoneOffset()))
+            .replace("${REGISTERED_NAME}", asStringProperty(tryGet(ipiData::getRegisteredName)))
+            .replace("${REGISTERED_OWNER}", asStringProperty(tryGet(ipiData::getRegisteredOwner)))
+            .replace("${REGISTERED_COUNTRY}", asStringProperty(tryGet(ipiData::getRegisteredCountry)))
+            .replace("${IP_RANGE_START}", asIPAddressProperty(tryGet(ipiData::getIpRangeStart)))
+            .replace("${IP_RANGE_END}", asIPAddressProperty(tryGet(ipiData::getIpRangeEnd)))
+            .replace("${COUNTRY}", asStringProperty(tryGet(ipiData::getCountry)))
+            .replace("${COUNTRY_CODE}", asStringProperty(tryGet(ipiData::getCountryCode)))
+            .replace("${COUNTRY_CODE3}", asStringProperty(tryGet(ipiData::getCountryCode3)))
+            .replace("${REGION}", asStringProperty(tryGet(ipiData::getRegion)))
+            .replace("${STATE}", asStringProperty(tryGet(ipiData::getState)))
+            .replace("${TOWN}", asStringProperty(tryGet(ipiData::getTown)))
+            .replace("${LATITUDE}", asFloatProperty(tryGet(ipiData::getLatitude)))
+            .replace("${LONGITUDE}", asFloatProperty(tryGet(ipiData::getLongitude)))
+            .replace("${AREAS}", asStringProperty(tryGet(ipiData::getAreas)))
+            .replace("${AREAS_JS}", escapeForJs(asStringProperty(tryGet(ipiData::getAreas))))
+            .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
             .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
             .replace("${RESPONSE_HEADER_ROWS}", "") // IP Intelligence doesn't set response headers
             .replace("${LITE_DATA_WARNING}", ""); // Add warning logic if needed

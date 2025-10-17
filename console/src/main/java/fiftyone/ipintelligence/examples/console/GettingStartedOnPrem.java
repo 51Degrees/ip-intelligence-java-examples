@@ -67,8 +67,9 @@ import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringPro
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 
 /**
  * Provides an illustration of the fundamental elements of carrying out IP Intelligence using
@@ -99,7 +100,7 @@ public class GettingStartedOnPrem {
         configureLogback(getFilePath("logback.xml"));
 
         // Use the supplied path for the data file
-        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_IPI_DATA_FILE_NAME;
+        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_DATA_FILE_REL_PATH;
         // prepare 'evidence' for use in pipeline (see below)
         List<Map<String, String>> evidence = EvidenceHelper.setUpEvidence();
         run(dataFile, evidence, System.out);
@@ -206,22 +207,21 @@ public class GettingStartedOnPrem {
             details of all available properties. */
             
             // Output all the properties using shared PropertyHelper methods
-            writer.println("\tRegisteredName: " + asStringProperty(ipData.getRegisteredName()));
-            writer.println("\tRegisteredOwner: " + asStringProperty(ipData.getRegisteredOwner()));
-            writer.println("\tRegisteredCountry: " + asStringProperty(ipData.getRegisteredCountry()));
-            writer.println("\tIpRangeStart: " + asIPAddressProperty(ipData.getIpRangeStart()));
-            writer.println("\tIpRangeEnd: " + asIPAddressProperty(ipData.getIpRangeEnd()));
-            writer.println("\tCountry: " + asStringProperty(ipData.getCountry()));
-            writer.println("\tCountryCode: " + asStringProperty(ipData.getCountryCode()));
-            writer.println("\tCountryCode3: " + asStringProperty(ipData.getCountryCode3()));
-            writer.println("\tRegion: " + asStringProperty(ipData.getRegion()));
-            writer.println("\tState: " + asStringProperty(ipData.getState()));
-            writer.println("\tTown: " + asStringProperty(ipData.getTown()));
-            writer.println("\tLatitude: " + asFloatProperty(ipData.getLatitude()));
-            writer.println("\tLongitude: " + asFloatProperty(ipData.getLongitude()));
-            writer.println("\tAreas: " + asStringProperty(ipData.getAreas()));
-            writer.println("\tAccuracyRadius: " + asIntegerProperty(ipData.getAccuracyRadius()));
-            writer.println("\tTimeZoneOffset: " + asIntegerProperty(ipData.getTimeZoneOffset()));
+            writer.println("\tRegisteredName: " + asStringProperty(tryGet(ipData::getRegisteredName)));
+            writer.println("\tRegisteredOwner: " + asStringProperty(tryGet(ipData::getRegisteredOwner)));
+            writer.println("\tRegisteredCountry: " + asStringProperty(tryGet(ipData::getRegisteredCountry)));
+            writer.println("\tIpRangeStart: " + asIPAddressProperty(tryGet(ipData::getIpRangeStart)));
+            writer.println("\tIpRangeEnd: " + asIPAddressProperty(tryGet(ipData::getIpRangeEnd)));
+            writer.println("\tCountry: " + asStringProperty(tryGet(ipData::getCountry)));
+            writer.println("\tCountryCode: " + asStringProperty(tryGet(ipData::getCountryCode)));
+            writer.println("\tCountryCode3: " + asStringProperty(tryGet(ipData::getCountryCode3)));
+            writer.println("\tRegion: " + asStringProperty(tryGet(ipData::getRegion)));
+            writer.println("\tState: " + asStringProperty(tryGet(ipData::getState)));
+            writer.println("\tTown: " + asStringProperty(tryGet(ipData::getTown)));
+            writer.println("\tLatitude: " + asFloatProperty(tryGet(ipData::getLatitude)));
+            writer.println("\tLongitude: " + asFloatProperty(tryGet(ipData::getLongitude)));
+            writer.println("\tAreas: " + asStringProperty(tryGet(ipData::getAreas)));
+            writer.println("\tTimeZoneOffset: " + asIntegerProperty(tryGet(ipData::getTimeZoneOffset)));
         }
         writer.println();
         writer.flush();

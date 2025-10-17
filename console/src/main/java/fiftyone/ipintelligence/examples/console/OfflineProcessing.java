@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
@@ -105,9 +105,9 @@ public class OfflineProcessing {
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));
-        
-        // Use provided data file argument, or fall back to default Lite file
-        String dataFile = (args.length > 0) ? args[0] : ENTERPRISE_IPI_DATA_FILE_NAME;
+
+        // Use provided data file argument, or fall back to default data file path
+        String dataFile = (args.length > 0) ? args[0] : ENTERPRISE_DATA_FILE_REL_PATH;
         
         File evidenceFile = getFilePath(HEADER_EVIDENCE_YML);
         run(dataFile, Files.newInputStream(evidenceFile.toPath()), System.out);

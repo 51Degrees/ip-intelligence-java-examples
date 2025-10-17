@@ -22,29 +22,32 @@
 
 package fiftyone.ipintelligence.examples.web;
 
-import fiftyone.ipintelligence.shared.testhelpers.FileUtils;
+import fiftyone.ipintelligence.examples.shared.DataFileHelper;
 import org.eclipse.jetty.server.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem.getResourceBase;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class GettingStartedWebOnPremTest {
     private static Server SERVER;
 
     @BeforeClass
     public static void startJetty() throws Exception {
-        System.setProperty("TestDataFile", ENTERPRISE_IPI_DATA_FILE_NAME);
+        // Use DataFileHelper to find the data file
+        String dataFilePath = DataFileHelper.getDataFileLocation(ENTERPRISE_DATA_FILE_REL_PATH);
+        System.setProperty("TestDataFile", dataFilePath);
+
         SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 8081);
     }
 
@@ -54,14 +57,38 @@ public class GettingStartedWebOnPremTest {
         HttpURLConnection connection =
                 (HttpURLConnection) new URL("http://localhost:8081/").openConnection();
 
-        InputStream response = connection.getInputStream();
-        try (Scanner scanner = new Scanner(response)) {
-            String responseBody = scanner.useDelimiter("\\A").next();
-            System.out.println(responseBody);
-        }
         int code = connection.getResponseCode();
+
+        // Get the appropriate stream based on response code
+        InputStream response;
+        if (code >= 200 && code < 400) {
+            response = connection.getInputStream();
+        } else {
+            response = connection.getErrorStream();
+        }
+
+        String responseBody = "";
+        if (response != null) {
+            try (Scanner scanner = new Scanner(response)) {
+                scanner.useDelimiter("\\A");
+                if (scanner.hasNext()) {
+                    responseBody = scanner.next();
+                }
+            }
+        }
+
+        // Print response for debugging
+        System.out.println("Response code: " + code);
+        System.out.println("Response body length: " + responseBody.length());
+        if (responseBody.length() > 0) {
+            System.out.println("Response body:\n" + responseBody);
+        }
+
         connection.disconnect();
-        assertEquals(200, code);
+
+        // Assert we got a successful response
+        assertEquals("Expected HTTP 200 OK response", 200, code);
+        assertTrue("Response should not be empty", responseBody.length() > 0);
     }
 
     @AfterClass
