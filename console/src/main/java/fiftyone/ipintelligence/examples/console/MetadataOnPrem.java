@@ -89,9 +89,9 @@ public class MetadataOnPrem {
         // then you can use `var engine = pipeline.GetElement<IPIntelligenceOnPremiseEngine>();`
         try (IPIntelligenceOnPremiseEngine ddEngine =
                      new IPIntelligenceOnPremiseEngineBuilder(LoggerFactory.getILoggerFactory())
-                // We use the max performance profile for optimal detection speed in this
-                // example.
-                .setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
+                // We use the low memory profile to minimize memory usage for this
+                // metadata example, which is memory-intensive.
+                .setPerformanceProfile(Constants.PerformanceProfiles.LowMemory)
                 // inhibit auto-update of the data file for this test
                 .setAutoUpdate(false)
                 .setDataFileSystemWatcher(false)
