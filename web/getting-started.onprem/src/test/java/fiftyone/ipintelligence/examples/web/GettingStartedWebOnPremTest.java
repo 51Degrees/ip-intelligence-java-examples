@@ -22,19 +22,18 @@
 
 package fiftyone.ipintelligence.examples.web;
 
-import fiftyone.ipintelligence.shared.testhelpers.FileUtils;
+import fiftyone.ipintelligence.examples.shared.DataFileHelper;
 import org.eclipse.jetty.server.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem.getResourceBase;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 import static org.junit.Assert.assertEquals;
@@ -44,7 +43,10 @@ public class GettingStartedWebOnPremTest {
 
     @BeforeClass
     public static void startJetty() throws Exception {
-        System.setProperty("TestDataFile", ENTERPRISE_IPI_DATA_FILE_NAME);
+        // Use DataFileHelper to find the data file
+        String dataFilePath = DataFileHelper.getDataFileLocation(ENTERPRISE_DATA_FILE_REL_PATH);
+        System.setProperty("TestDataFile", dataFilePath);
+
         SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 8081);
     }
 

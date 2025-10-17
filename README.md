@@ -10,10 +10,22 @@ These examples are not distributed as maven jars and need to be built by you.
 
 ## Required Files
 
-See [ip-intelligence-data](https://github.com/51Degrees/ip-intelligence-data/) 
+See [ip-intelligence-data](https://github.com/51Degrees/ip-intelligence-data/)
 repository for instructions on obtaining the necessary data files for on-premise detection.
 
-This project contains sub-modules - **console**, giving examples that are intended 
+**IMPORTANT**: The enterprise IP Intelligence data file must be placed in the `ip-intelligence-data`
+directory at the root of this repository. The expected filename is `51Degrees-EnterpriseIpiV41.ipi`.
+
+```
+ip-intelligence-java-examples/
+├── ip-intelligence-data/
+│   └── 51Degrees-EnterpriseIpiV41.ipi
+├── console/
+├── web/
+└── shared/
+```
+
+This project contains sub-modules - **console**, giving examples that are intended
 to be run from the command line/console and **web**, illustrating use
 of 51Degrees Web/Servlet integration. There is also a **shared** sub-module
 containing various helpers for the examples.
@@ -21,52 +33,13 @@ containing various helpers for the examples.
 Among other things, the examples illustrate:
 - use of the fluent builder to configure a pipeline
 - use of a configuration options file to configure a pipeline
-- use of the Cloud IP intelligence service
 - use of the on-premise IP intelligence service
-- use of IP intelligence pipeline for off-line processing tasks
+- use of IP intelligence pipeline for offline processing tasks
 - configuring IP intelligence trade-offs between speed and conserving memory
-
-## Cloud resource keys
-
-You will require [resource keys](https://51degrees.com/documentation/_info__resource_keys.html)
-to use the Cloud API, as described on our website. Get resource keys from
-our [configurator](https://configure.51degrees.com/), see our [documentation](https://51degrees.com/documentation/_concepts__configurator.html) on
-how to use this.
- 
-A resource key configured with the properties needed
-to run most of the examples can be obtained [here](https://configure.51degrees.com/jqz435Nc). 
-To use the resource key in the example it can be supplied as a
-command line parameter, pasted into the configuration file (where there is one)
-or supplied as either an environment variable or a system
-property called "TestResourceKey".
-
-Some cloud examples require an enhanced resource key containing a license key. And some
-on-premise examples require you to provide a license key. You can find out about 
-resource keys and license keys at our [pricing page](https://51degrees.com/pricing). 
-
-## Running examples with changes to Pipeline packages
-
-A common use case is to make a change to the Pipeline logic in
-ip-intelligence-java and then use these examples to observe the results of the
-change.
-
-By default, the examples are configured to use the packages from Maven central.
-In order to produce and use local packages instead:
-
-- Clone and make your changes to ip-intelligence-java
-- Set the version of the IP Intelligence packages that we're going to create to 0.0.0:
-  `mvn versions:set-property -Dproperty="project.version" "-DnewVersion=0.0.0"`
-- Create and install the packages locally (skipping tests is needed):
-  `mvn clean install [-DskipTests]`
-- Modify the POM for the examples to reference these new local packages. This can
-  be done by editing the POM directly or by using the command line:
-  `mvn versions:set-property -Dproperty="ip-intelligence.version" "-DnewVersion=0.0.0"`
-
-The same principle can be applied to incorporate changes in pipeline-java if needed.
 
 ## Examples
 
-The tables below describe the examples available in this repository.
+The table below describes the examples available in this repository.
 
 ### Cloud (coming soon)
 
@@ -83,19 +56,61 @@ Cloud examples will be added once the Cloud service for IP Intelligence becomes 
 | PerformanceBenchmark     | How to configure the various performance options and run some simple performance tests for IP intelligence.                                                                                                                    |
 | UpdateDataFile           | How to configure the Pipeline to automatically update the IP intelligence data file on startup. Also illustrates 'file watcher'. This will refresh the IP intelligence engine if the specified data file is updated on disk. |
 
-## Running built examples from command line
+## Running Examples and Tests
 
-Running
+**IMPORTANT**: All examples and tests must be run from the repository root directory (`ip-intelligence-java-examples/`).
+
+### Running Tests
+
+To run all tests:
+
+```bash
+# From the repository root directory
+mvn test
+```
+
+To run tests for a specific module:
+
+```bash
+# Console tests
+mvn test -pl console
+
+# Web tests
+mvn test -pl web/getting-started.onprem
+```
+
+### Running Examples with Maven
+
+Console examples can be run directly using Maven exec plugin:
+
+```bash
+# From the repository root directory
+mvn compile exec:java -pl console -Dexec.mainClass="fiftyone.ipintelligence.examples.console.GettingStartedOnPrem"
+```
+
+Web examples:
+
+```bash
+# From the repository root directory
+mvn compile exec:java -pl web/getting-started.onprem -Dexec.mainClass="fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem"
+```
+
+The web example will start a Jetty server on port 8082. Access it at: `http://localhost:8082`
+
+### Running Examples from Packaged JARs
+
+Alternatively, you can build "fat" JARs and run examples from the command line.
+
+First, build the packages:
 
 ```bash
 mvn package
 ```
 
-will produce "fat" JARs inside `target` subfolders.
+This will produce JARs with dependencies inside `target` subfolders.
 
-Use them with relevant example class entrypoints like:
+Then run examples using the JAR:
 
 ```bash
 java -cp .\console\target\ip-intelligence-java-examples.console-4.4.19-jar-with-dependencies.jar fiftyone.ipintelligence.examples.console.OfflineProcessing
 ```
-

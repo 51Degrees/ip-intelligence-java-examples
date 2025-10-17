@@ -68,7 +68,7 @@ import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerPr
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 
 /**
  * Provides an illustration of the fundamental elements of carrying out IP Intelligence using
@@ -99,7 +99,7 @@ public class GettingStartedOnPrem {
         configureLogback(getFilePath("logback.xml"));
 
         // Use the supplied path for the data file
-        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_IPI_DATA_FILE_NAME;
+        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_DATA_FILE_REL_PATH;
         // prepare 'evidence' for use in pipeline (see below)
         List<Map<String, String>> evidence = EvidenceHelper.setUpEvidence();
         run(dataFile, evidence, System.out);

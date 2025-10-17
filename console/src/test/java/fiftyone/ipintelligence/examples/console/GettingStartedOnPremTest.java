@@ -25,13 +25,13 @@ package fiftyone.ipintelligence.examples.console;
 import fiftyone.ipintelligence.examples.shared.EvidenceHelper;
 import org.junit.Test;
 
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 
 public class GettingStartedOnPremTest {
 
     @Test
     public void gettingStartedOnPremTest() throws Exception {
-        GettingStartedOnPrem.run(ENTERPRISE_IPI_DATA_FILE_NAME,
+        GettingStartedOnPrem.run(ENTERPRISE_DATA_FILE_REL_PATH,
                 EvidenceHelper.setUpEvidence(), System.out);
     }
 }

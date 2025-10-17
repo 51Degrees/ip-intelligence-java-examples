@@ -58,7 +58,58 @@ public class EmbedJetty {
         server.setHandler(context);
 
         server.start();
+
+        // Wait for the server to be fully started and ready to accept connections
+        // This ensures all servlets and filters are initialized before returning
+        waitForServerReady(server, 30000); // 30 second timeout
+
         return server;
+    }
+
+    /**
+     * Wait for the server to be fully started and ready to accept connections.
+     * This includes waiting for all connectors to be started and the context to be available.
+     *
+     * @param server the Jetty server to wait for
+     * @param timeoutMs maximum time to wait in milliseconds
+     * @throws Exception if server doesn't become ready within timeout
+     */
+    private static void waitForServerReady(Server server, long timeoutMs) throws Exception {
+        long startTime = System.currentTimeMillis();
+        long timeout = startTime + timeoutMs;
+
+        while (System.currentTimeMillis() < timeout) {
+            // Check if server is started
+            if (!server.isStarted()) {
+                Thread.sleep(50);
+                continue;
+            }
+
+            // Check if all connectors are started
+            boolean allConnectorsStarted = true;
+            for (Connector connector : server.getConnectors()) {
+                if (!connector.isStarted()) {
+                    allConnectorsStarted = false;
+                    break;
+                }
+            }
+
+            if (!allConnectorsStarted) {
+                Thread.sleep(50);
+                continue;
+            }
+
+            // Check if handler (context) is started
+            if (server.getHandler() != null && !server.getHandler().isStarted()) {
+                Thread.sleep(50);
+                continue;
+            }
+
+            // Server is ready
+            return;
+        }
+
+        throw new Exception("Server did not become ready within " + timeoutMs + "ms");
     }
 
     public static void runServlet(String contextPath, int port, Class<? extends Servlet> servlet,
@@ -91,6 +142,10 @@ public class EmbedJetty {
         server.setHandler(context);
 
         server.start();
+
+        // Wait for the server to be fully started and ready to accept connections
+        waitForServerReady(server, 30000); // 30 second timeout
+
         return server;
     }
 }

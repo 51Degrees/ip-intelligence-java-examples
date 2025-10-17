@@ -30,6 +30,7 @@ import org.junit.Test;
 import java.io.PrintWriter;
 
 import static fiftyone.ipintelligence.examples.console.PerformanceBenchmark.*;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static java.util.Arrays.stream;
 
 public class PerformanceBenchmarkTest {
@@ -42,7 +43,7 @@ public class PerformanceBenchmarkTest {
                stream(DEFAULT_PERFORMANCE_CONFIGURATIONS)
                        .filter(c -> c.profile.equals(Constants.PerformanceProfiles.MaxPerformance))
                        .toArray(PerformanceConfiguration[]::new),
-               null,
+               ENTERPRISE_DATA_FILE_REL_PATH,
                null,
                DEFAULT_NUMBER_OF_THREADS,
                new PrintWriter(System.out,true));

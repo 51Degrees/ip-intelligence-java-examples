@@ -41,7 +41,7 @@ import java.util.Scanner;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.DataFileHelper.getDatafileMetaData;
-import static fiftyone.ipintelligence.shared.testhelpers.FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /*!
@@ -189,7 +189,7 @@ public class UpdateDataFile {
 
     public static final String UPDATE_EXAMPLE_LICENSE_KEY_NAME = "LicenseKey";
     public static final String DEFAULT_DATA_FILENAME =
-            System.getProperty("user.dir") + File.separator +  ENTERPRISE_IPI_DATA_FILE_NAME;
+            System.getProperty("user.dir") + File.separator +  ENTERPRISE_DATA_FILE_REL_PATH;
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateDataFile.class);
 

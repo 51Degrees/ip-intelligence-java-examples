@@ -47,6 +47,13 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
 public class DataFileHelper {
     static Logger logger = LoggerFactory.getLogger(DataFileHelper.class);
 
+    /**
+     * Relative path to the enterprise IP Intelligence data file from the examples repository root.
+     * This path is used by both console and web examples for testing.
+     * The data file is downloaded to this location by CI scripts.
+     */
+    public static final String ENTERPRISE_DATA_FILE_REL_PATH = "ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi";
+
 public static class DatafileInfo {
         FiftyOneDataFile fileInfo;
         String tier;
@@ -133,7 +140,7 @@ public static class DatafileInfo {
     @SuppressWarnings("RedundantThrows")
     public static String getDataFileLocation(String dataFilename) throws Exception {
         if (Objects.isNull(dataFilename)) {
-            dataFilename = FileUtils.ENTERPRISE_IPI_DATA_FILE_NAME;
+            dataFilename = ENTERPRISE_DATA_FILE_REL_PATH;
         }
         
         // Check if it's an absolute path
