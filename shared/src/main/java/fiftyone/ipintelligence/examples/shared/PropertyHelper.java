@@ -140,4 +140,24 @@ public class PropertyHelper {
         }
     }
 
+    /**
+     * Generic helper to get the value of a property as a string.
+     * Used primarily for testing and simple property display.
+     * @param value the property value
+     * @param <T> the type
+     * @return a string representation of the value or a "no value" message
+     */
+    public static <T> String asString(AspectPropertyValue<T> value) {
+        if (value.hasValue()) {
+            Object object = value.getValue();
+            if (object instanceof List) {
+                return ((List<?>) object).stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
+            }
+            return value.getValue().toString();
+        }
+        return "Unknown. " + value.getNoValueMessage();
+    }
+
 }
