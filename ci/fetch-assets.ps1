@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param (
     [string]$RepoName,
-    [Parameter(Mandatory=$true)]
     [string]$IpIntelligence,
     [string]$IpIntelligenceUrl
 )
