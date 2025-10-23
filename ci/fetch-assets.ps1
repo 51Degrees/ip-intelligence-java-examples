@@ -1,52 +1,13 @@
-[CmdletBinding()]
 param (
-    [string]$RepoName,
-    [string]$IpIntelligence,
-    [string]$IpIntelligenceUrl
+    [Parameter(Mandatory)][string]$IpIntelligenceUrl
 )
 $ErrorActionPreference = "Stop"
-$PSNativeCommandUseErrorActionPreference = $true
 
-# IP Intelligence parameters
+$ipIntelligenceData = "$PSSCriptRoot/../ip-intelligence-data"
 
-# Fetch the enterprise IPI data file for testing with
-$DataFileName = "51Degrees-EnterpriseIpiV41.ipi"
+./steps/fetch-assets.ps1 -IpIntelligenceUrl $IpIntelligenceUrl -Assets '51Degrees-EnterpriseIpiV41.ipi', '51Degrees-LiteIpiV41.ipi'
+New-Item -ItemType SymbolicLink -Force -Target "$PWD/assets/51Degrees-EnterpriseIpiV41.ipi" -Path "$ipIntelligenceData/51Degrees-EnterpriseIpiV41.ipi"
+New-Item -ItemType SymbolicLink -Force -Target "$PWD/assets/51Degrees-LiteIpiV41.ipi" -Path "$ipIntelligenceData/51Degrees-LiteIpiV41.ipi"
 
-# TODO: Use `fetch-hash-assets.ps1`
-# ./steps/fetch-hash-assets.ps1 -RepoName $RepoName -LicenseKey $IpIntelligence -Url $IpIntelligenceUrl -DataType "IpIntelligenceV41" -ArchiveName $DataFileName
-$ArchivedName = "51Degrees-EnterpriseIpiV41.ipi"
-$ArchiveName = "$ArchivedName.gz"
-Invoke-WebRequest -Uri $IpIntelligenceUrl -OutFile $RepoName/$ArchiveName
-$ArchiveHash = (Get-FileHash -Algorithm MD5 -Path $RepoName/$ArchiveName).Hash
-Write-Output "MD5 (fetched $ArchiveName) = $ArchiveHash"
-Write-Output "Extracting $ArchiveName"
-./steps/gunzip-file.ps1 $RepoName/$ArchiveName
-Move-Item -Path $RepoName/$ArchivedName -Destination $RepoName/$DataFileName
-
-$DataFileHash = (Get-FileHash -Algorithm MD5 -Path $RepoName/$DataFileName).Hash
-Write-Output "MD5 (fetched $DataFileName) = $DataFileHash"
-
-# Move the data file to the correct location
-$DataFileSource = [IO.Path]::Combine($pwd, $RepoName, $DataFileName)
-$DataFileDir = [IO.Path]::Combine($pwd, $RepoName, "ip-intelligence-data")
-$DataFileDestination = [IO.Path]::Combine($DataFileDir, $DataFileName)
-Move-Item $DataFileSource $DataFileDestination
-
-# Get the evidence files for testing. These are in the ip-intelligence-data submodule,
-# But are not pulled by default.
-Push-Location $DataFileDir
-try {
-    # Write-Output "Pulling evidence files"
-    # git lfs pull
-
-    # Use Enterprise as Lite
-    Copy-Item $DataFileName 51Degrees-LiteV41.ipi
-
-    foreach ($NextIpiFile in (Get-ChildItem "*.ipi" | ForEach-Object { $_.Name })) {
-        $IpiFileHash = (Get-FileHash -Algorithm MD5 -Path $NextIpiFile).Hash
-        Write-Output "MD5 ($NextIpiFile) = $IpiFileHash"
-    }
-}
-finally {
-    Pop-Location
-}
+Write-Host "Assets hashes:"
+Get-FileHash -Algorithm MD5 -Path assets/*
