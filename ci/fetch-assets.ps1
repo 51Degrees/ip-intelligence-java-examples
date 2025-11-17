@@ -16,12 +16,14 @@ $DataFileName = "51Degrees-EnterpriseIpiV41.ipi"
 # ./steps/fetch-hash-assets.ps1 -RepoName $RepoName -LicenseKey $IpIntelligence -Url $IpIntelligenceUrl -DataType "IpIntelligenceV41" -ArchiveName $DataFileName
 $ArchivedName = "51Degrees-EnterpriseIpiV41.ipi"
 $ArchiveName = "$ArchivedName.gz"
-Invoke-WebRequest -Uri $IpIntelligenceUrl -OutFile $RepoName/$ArchiveName
-$ArchiveHash = (Get-FileHash -Algorithm MD5 -Path $RepoName/$ArchiveName).Hash
+$ArchiveOutPath = "$RepoName/$ArchiveName"
+Write-Output "Downloading to '$ArchiveOutPath'..."
+Invoke-WebRequest -Uri $IpIntelligenceUrl -OutFile $ArchiveOutPath
+$ArchiveHash = (Get-FileHash -Algorithm MD5 -Path $ArchiveOutPath).Hash
 Write-Output "MD5 (fetched $ArchiveName) = $ArchiveHash"
 Write-Output "Extracting $ArchiveName"
-./steps/gunzip-file.ps1 $RepoName/$ArchiveName
-Move-Item -Path $RepoName/$ArchivedName -Destination $RepoName/$DataFileName
+./steps/gunzip-file.ps1 $ArchiveOutPath
+Move-Item -Path "$RepoName/$ArchivedName" -Destination "$RepoName/$DataFileName"
 
 $DataFileHash = (Get-FileHash -Algorithm MD5 -Path $RepoName/$DataFileName).Hash
 Write-Output "MD5 (fetched $DataFileName) = $DataFileHash"
