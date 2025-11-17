@@ -325,11 +325,12 @@ public class PerformanceBenchmark {
                     IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
                     if (ipData != null) {
                         if (ipData.getRegisteredName().hasValue()) {
-                            List<IWeightedValue<String>> value = ipData.getRegisteredName().getValue();
+                            String value = ipData.getRegisteredName().getValue();
                             if (value != null) {
-                                for (IWeightedValue<?> weightedValue : value) {
-                                    result.checkSum += weightedValue.getValue().hashCode();
-                                }
+                                result.checkSum += value.hashCode();
+//                                for (IWeightedValue<?> weightedValue : value) {
+//                                    result.checkSum += weightedValue.getValue().hashCode();
+//                                }
                             }
                         }
                     }
