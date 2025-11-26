@@ -82,6 +82,7 @@ import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringPro
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asWktStringProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
@@ -205,8 +206,8 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${TOWN}", asStringProperty(tryGet(ipiData::getTown)))
             .replace("${LATITUDE}", asFloatProperty(tryGet(ipiData::getLatitude)))
             .replace("${LONGITUDE}", asFloatProperty(tryGet(ipiData::getLongitude)))
-            .replace("${AREAS}", asStringProperty(tryGet(ipiData::getAreas)))
-            .replace("${AREAS_JS}", escapeForJs(asStringProperty(tryGet(ipiData::getAreas))))
+            .replace("${AREAS}", asWktStringProperty(tryGet(ipiData::getAreas)))
+            .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
             .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
             .replace("${RESPONSE_HEADER_ROWS}", "") // IP Intelligence doesn't set response headers

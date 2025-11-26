@@ -23,6 +23,7 @@
 package fiftyone.ipintelligence.examples.shared;
 
 import fiftyone.pipeline.core.data.IWeightedValue;
+import fiftyone.pipeline.core.data.WktString;
 import fiftyone.pipeline.engines.data.AspectPropertyValue;
 import fiftyone.pipeline.engines.data.AspectPropertyValueDefault;
 import fiftyone.pipeline.engines.exceptions.PropertyMissingException;
@@ -104,6 +105,18 @@ public class PropertyHelper {
             StringBuilder values = new StringBuilder();
 
             return  String.valueOf(property.getValue());
+        }
+    }
+
+    /**
+     * Helper to get the value of an IP Intelligence WktString property - strongly typed
+     */
+    public static String asWktStringProperty(AspectPropertyValue<WktString> property) {
+        if (property == null || !property.hasValue()) {
+            String message = property != null ? property.getNoValueMessage() : "No data available";
+            return "Unknown. " + message;
+        } else {
+            return String.valueOf(property.getValue());
         }
     }
 
