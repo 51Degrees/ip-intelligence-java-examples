@@ -119,12 +119,14 @@ public class GettingStartedWebMixed extends HttpServlet {
         }
 
         // Start Jetty with this WebApp
-        EmbedJetty.runWebApp(getResourceBase(), 8083);
+        EmbedJetty.runWebApp(getResourceBase(), 8082);
     }
 
     public static String getResourceBase() {
-        java.io.File webXml = getFilePath("WEB-INF/web.xml");
-        return webXml.getParentFile().getParent();
+        // Use the unique pipeline config file to locate this example's webapp directory.
+        // Cannot use "WEB-INF/web.xml" because FileFinder may find another example's web.xml.
+        java.io.File configXml = getFilePath("WEB-INF/51Degrees-Mixed.xml");
+        return configXml.getParentFile().getParent();
     }
 
     FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();

@@ -130,10 +130,11 @@ public class GettingStartedWebOnPrem extends HttpServlet {
     }
 
     public static String getResourceBase() {
-        // FileFinder always finds the file when running from examples root
-        java.io.File webXml = getFilePath("WEB-INF/web.xml");
-        // web.xml is in WEB-INF/, so parent is webapp directory
-        return webXml.getParentFile().getParent();
+        // Use the unique pipeline config file to locate this example's webapp directory.
+        // Cannot use "WEB-INF/web.xml" because FileFinder may find another example's web.xml.
+        java.io.File configXml = getFilePath("WEB-INF/51Degrees-OnPrem.xml");
+        // 51Degrees-OnPrem.xml is in WEB-INF/, so parent is webapp directory
+        return configXml.getParentFile().getParent();
     }
 
     FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();
