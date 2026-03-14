@@ -12,6 +12,7 @@
     <modules>
         <module>shared</module>
         <module>getting-started.onprem</module>
+        <module>getting-started.mixed</module>
     </modules>
 
     <artifactId>ip-intelligence-java-examples.web</artifactId>
