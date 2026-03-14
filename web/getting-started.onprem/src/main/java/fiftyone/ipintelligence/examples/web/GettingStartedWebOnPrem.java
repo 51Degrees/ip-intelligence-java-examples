@@ -111,13 +111,16 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         configureLogback(getFilePath("logback.xml"));
         logger.info("Running Example {}", GettingStartedWebOnPrem.class);
 
+        // Use the supplied path for the data file
+        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_DATA_FILE_REL_PATH;
+
         // Set data file location using DataFileHelper
         try {
-            String dataFilePath = fiftyone.ipintelligence.examples.shared.DataFileHelper.getDataFileLocation(ENTERPRISE_DATA_FILE_REL_PATH);
+            String dataFilePath = fiftyone.ipintelligence.examples.shared.DataFileHelper.getDataFileLocation(dataFile);
             System.setProperty("TestDataFile", dataFilePath);
             logger.info("Using data file: {}", dataFilePath);
         } catch (Exception e) {
-            logger.warn("Data file not found at expected location: {}", ENTERPRISE_DATA_FILE_REL_PATH);
+            logger.warn("Data file not found at expected location: {}", dataFile);
             logger.warn("Will attempt to use default path from XML configuration");
             logger.debug("Error finding data file", e);
         }
