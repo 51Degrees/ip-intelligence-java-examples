@@ -138,10 +138,21 @@ public class GettingStartedWebMixed extends HttpServlet {
         // The detection has already been carried out by the PipelineFilter
         FlowData flowData = flowDataProvider.getFlowData(request);
 
-        // Determine target IP for display
-        String targetIp = inputIpAddress != null && !inputIpAddress.trim().isEmpty()
-            ? inputIpAddress.trim()
-            : request.getRemoteAddr();
+        // Determine target IP for display.
+        // When behind a reverse proxy (e.g. ngrok), the real client IP
+        // is in the X-Forwarded-For header, not request.getRemoteAddr().
+        String targetIp;
+        if (inputIpAddress != null && !inputIpAddress.trim().isEmpty()) {
+            targetIp = inputIpAddress.trim();
+        } else {
+            String forwarded = request.getHeader("X-Forwarded-For");
+            if (forwarded != null && !forwarded.isEmpty()) {
+                // X-Forwarded-For may contain multiple IPs; the first is the client
+                targetIp = forwarded.split(",")[0].trim();
+            } else {
+                targetIp = request.getRemoteAddr();
+            }
+        }
 
         // Get Device Detection data
         DeviceData deviceData = flowData.get(DeviceData.class);

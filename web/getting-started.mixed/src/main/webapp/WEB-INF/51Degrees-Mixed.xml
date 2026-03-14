@@ -49,7 +49,8 @@
             <!-- Needed to provide customized JS from 51Degrees.core.js for client-side evidence -->
             <BuilderName>JavaScriptBuilderElement</BuilderName>
             <BuildParameters>
-                <Protocol>http</Protocol>
+                <!-- Use https when exposing via ngrok or similar tunneling services -->
+                <Protocol>https</Protocol>
             </BuildParameters>
         </Element>
     </Elements>

@@ -154,10 +154,20 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         // which is responsible for the lifecycle of the flowData - do NOT dispose
         FlowData flowData = flowDataProvider.getFlowData(request);
         
-        // Determine target IP for display (fallback if evidence doesn't contain it)
-        String targetIp = inputIpAddress != null && !inputIpAddress.trim().isEmpty() 
-            ? inputIpAddress.trim() 
-            : request.getRemoteAddr();
+        // Determine target IP for display.
+        // When behind a reverse proxy (e.g. ngrok), the real client IP
+        // is in the X-Forwarded-For header, not request.getRemoteAddr().
+        String targetIp;
+        if (inputIpAddress != null && !inputIpAddress.trim().isEmpty()) {
+            targetIp = inputIpAddress.trim();
+        } else {
+            String forwarded = request.getHeader("X-Forwarded-For");
+            if (forwarded != null && !forwarded.isEmpty()) {
+                targetIp = forwarded.split(",")[0].trim();
+            } else {
+                targetIp = request.getRemoteAddr();
+            }
+        }
         
         // Get IP Intelligence data
         IPIntelligenceData ipiData = flowData.get(IPIntelligenceData.class);

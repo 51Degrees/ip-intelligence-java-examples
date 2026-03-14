@@ -22,6 +22,18 @@
   -->
 
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <!-- This filter must come before the PipelineFilter so that the real
+         client IP (from X-Forwarded-For) is visible to the Pipeline via
+         request.getRemoteAddr() -> server.client-ip evidence.
+         Required when running behind a reverse proxy (e.g. ngrok). -->
+    <filter>
+        <filter-name>RealClientIp</filter-name>
+        <filter-class>fiftyone.ipintelligence.examples.web.RealClientIpFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RealClientIp</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <filter>
         <filter-name>Pipeline</filter-name>
         <filter-class>fiftyone.pipeline.web.PipelineFilter</filter-class>
