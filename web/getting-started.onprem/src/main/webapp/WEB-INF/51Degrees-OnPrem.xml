@@ -30,7 +30,7 @@
                 <!-- specify path to 51Degrees IPI Data File -->
                 <!-- Uses TestDataFile system property if set, otherwise defaults to relative path -->
                 <DataFile>${TestDataFile:-ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi}</DataFile>
-                <PerformanceProfile>MaxPerformance</PerformanceProfile>
+                <PerformanceProfile>LowMemory</PerformanceProfile>
             </BuildParameters>
             <BuilderName>IPIntelligenceOnPremiseEngine</BuilderName>
         </Element>

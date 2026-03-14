@@ -6,7 +6,7 @@
                 <AutoUpdate>false</AutoUpdate>
                 <CreateTempDataCopy>false</CreateTempDataCopy>
                 <DataFile>${TestDataFile:-ip-intelligence-data/51Degrees-LiteV41.ipi}</DataFile>
-                <PerformanceProfile>MaxPerformance</PerformanceProfile>
+                <PerformanceProfile>LowMemory</PerformanceProfile>
             </BuildParameters>
             <BuilderName>IPIntelligenceOnPremiseEngine</BuilderName>
         </Element>
