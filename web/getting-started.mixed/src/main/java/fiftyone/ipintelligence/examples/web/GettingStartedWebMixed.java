@@ -216,6 +216,7 @@ public class GettingStartedWebMixed extends HttpServlet {
             .replace("${LATITUDE}", asFloatProperty(tryGet(ipiData::getLatitude)))
             .replace("${LONGITUDE}", asFloatProperty(tryGet(ipiData::getLongitude)))
             .replace("${AREAS}", asWktStringProperty(tryGet(ipiData::getAreas)))
+            .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
             .replace("${ACCURACY_RADIUS}", asIntegerProperty(tryGet(ipiData::getAccuracyRadiusMin)))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
             .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
@@ -254,6 +255,10 @@ public class GettingStartedWebMixed extends HttpServlet {
         }
 
         return evidenceRows.toString();
+    }
+
+    private String escapeForJs(String value) {
+        return value != null ? value.replace("'", "\\'").replace("\"", "\\\"") : "";
     }
 
     @Override
