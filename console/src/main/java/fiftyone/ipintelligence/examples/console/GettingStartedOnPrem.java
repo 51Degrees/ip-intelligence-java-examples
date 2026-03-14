@@ -222,6 +222,7 @@ public class GettingStartedOnPrem {
             writer.println("\tLatitude: " + asFloatProperty(tryGet(ipData::getLatitude)));
             writer.println("\tLongitude: " + asFloatProperty(tryGet(ipData::getLongitude)));
             writer.println("\tAreas: " + asWktStringProperty(tryGet(ipData::getAreas)));
+            writer.println("\tAccuracyRadiusMin: " + asIntegerProperty(tryGet(ipData::getAccuracyRadiusMin)));
             writer.println("\tTimeZoneOffset: " + asIntegerProperty(tryGet(ipData::getTimeZoneOffset)));
         }
         writer.println();
