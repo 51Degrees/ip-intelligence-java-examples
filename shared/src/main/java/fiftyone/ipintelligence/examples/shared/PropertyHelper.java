@@ -35,6 +35,35 @@ import java.util.stream.Collectors;
 
 
 public class PropertyHelper {
+
+    /**
+     * Unwrap a value that may be a List of IWeightedValue at runtime
+     * (due to Java generics type erasure, the on-premise engine may return
+     * List&lt;IWeightedValue&lt;T&gt;&gt; even when the declared type is T).
+     * For single-element lists, returns just the value.
+     * For multi-element lists, returns values joined with ", ".
+     * @param value the raw value from AspectPropertyValue.getValue()
+     * @return the unwrapped string representation
+     */
+    @SuppressWarnings("unchecked")
+    private static String unwrapValue(Object value) {
+        if (value instanceof List) {
+            List<?> list = (List<?>) value;
+            if (list.isEmpty()) {
+                return "Unknown";
+            }
+            return list.stream()
+                    .map(item -> {
+                        if (item instanceof IWeightedValue) {
+                            Object inner = ((IWeightedValue<?>) item).getValue();
+                            return inner != null ? inner.toString() : "Unknown";
+                        }
+                        return item != null ? item.toString() : "Unknown";
+                    })
+                    .collect(Collectors.joining(", "));
+        }
+        return value != null ? value.toString() : "Unknown";
+    }
     /**
      * Try to carry out a 'get' on a property getter, and catch a
      * {@link PropertyMissingException} to avoid the example breaking if the
@@ -58,65 +87,67 @@ public class PropertyHelper {
     }
 
     /**
-     * Helper to get the value of an IP Intelligence string list property - strongly typed
+     * Helper to get the value of an IP Intelligence string property.
+     * Handles runtime List&lt;IWeightedValue&gt; values due to type erasure.
      */
     public static String asStringProperty(AspectPropertyValue<String> property) {
         if (property == null || !property.hasValue()) {
             String message = property != null ? property.getNoValueMessage() : "No data available";
             return "Unknown. " + message;
         } else {
-            return  String.valueOf(property.getValue());
+            return unwrapValue(property.getValue());
         }
     }
-    
+
     /**
-     * Helper to get the value of an IP Intelligence integer list property - strongly typed
+     * Helper to get the value of an IP Intelligence integer property.
+     * Handles runtime List&lt;IWeightedValue&gt; values due to type erasure.
      */
     public static String asIntegerProperty(AspectPropertyValue<Integer> property) {
         if (property == null || !property.hasValue()) {
             String message = property != null ? property.getNoValueMessage() : "No data available";
             return "Unknown. " + message;
         } else {
-            return  String.valueOf(property.getValue());
+            return unwrapValue(property.getValue());
         }
     }
-    
+
     /**
-     * Helper to get the value of an IP Intelligence float list property - strongly typed
+     * Helper to get the value of an IP Intelligence float property.
+     * Handles runtime List&lt;IWeightedValue&gt; values due to type erasure.
      */
     public static String asFloatProperty(AspectPropertyValue<Float> property) {
         if (property == null || !property.hasValue()) {
             String message = property != null ? property.getNoValueMessage() : "No data available";
             return "Unknown. " + message;
         } else {
-            return String.valueOf(property.getValue());
+            return unwrapValue(property.getValue());
         }
     }
-    
+
     /**
-     * Helper to get the value of an IP Intelligence InetAddress list property - strongly typed
+     * Helper to get the value of an IP Intelligence InetAddress property.
+     * Handles runtime List&lt;IWeightedValue&gt; values due to type erasure.
      */
     public static String asIPAddressProperty(AspectPropertyValue<java.net.InetAddress> property) {
         if (property == null || !property.hasValue()) {
             String message = property != null ? property.getNoValueMessage() : "No data available";
             return "Unknown. " + message;
-
         } else {
-            StringBuilder values = new StringBuilder();
-
-            return  String.valueOf(property.getValue());
+            return unwrapValue(property.getValue());
         }
     }
 
     /**
-     * Helper to get the value of an IP Intelligence WktString property - strongly typed
+     * Helper to get the value of an IP Intelligence WktString property.
+     * Handles runtime List&lt;IWeightedValue&gt; values due to type erasure.
      */
     public static String asWktStringProperty(AspectPropertyValue<WktString> property) {
         if (property == null || !property.hasValue()) {
             String message = property != null ? property.getNoValueMessage() : "No data available";
             return "Unknown. " + message;
         } else {
-            return String.valueOf(property.getValue());
+            return unwrapValue(property.getValue());
         }
     }
 
@@ -129,13 +160,7 @@ public class PropertyHelper {
      */
     public static <T> String asString(AspectPropertyValue<T> value) {
         if (value.hasValue()) {
-            Object object = value.getValue();
-            if (object instanceof List) {
-                return ((List<?>) object).stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", "));
-            }
-            return value.getValue().toString();
+            return unwrapValue(value.getValue());
         }
         return "Unknown. " + value.getNoValueMessage();
     }

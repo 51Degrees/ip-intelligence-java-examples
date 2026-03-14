@@ -6,7 +6,6 @@ body {
 table {
   max-width: 800px;
   font-size: smaller;
-  background-color: lightblue;
 }
 
 tr + td {
@@ -42,4 +41,29 @@ td {
 
 .example-alert {
   border: 2px solid red;
+}
+
+details {
+  margin-top: 20px;
+}
+
+summary {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+summary:hover {
+  background-color: #e8e8e8;
+}
+
+th, td {
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
 }

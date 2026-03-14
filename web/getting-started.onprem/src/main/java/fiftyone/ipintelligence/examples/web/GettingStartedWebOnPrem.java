@@ -194,7 +194,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
      */
     private String substituteTemplateValues(String template, IPIntelligenceData ipiData, String inputIp, FlowData flowData) {
         return template
-            .replace("${DATA_FILE_WARNING}", "") // Add warning logic if needed
+            .replace("${DATA_FILE_WARNING}", "")
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
             .replace("${REGISTERED_NAME}", asStringProperty(tryGet(ipiData::getRegisteredName)))
             .replace("${REGISTERED_OWNER}", asStringProperty(tryGet(ipiData::getRegisteredOwner)))
@@ -211,10 +211,9 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${LONGITUDE}", asFloatProperty(tryGet(ipiData::getLongitude)))
             .replace("${AREAS}", asWktStringProperty(tryGet(ipiData::getAreas)))
             .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
+            .replace("${ACCURACY_RADIUS}", asIntegerProperty(tryGet(ipiData::getAccuracyRadiusMin)))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
-            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
-            .replace("${RESPONSE_HEADER_ROWS}", "") // IP Intelligence doesn't set response headers
-            .replace("${LITE_DATA_WARNING}", ""); // Add warning logic if needed
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
     }
     
     /**
