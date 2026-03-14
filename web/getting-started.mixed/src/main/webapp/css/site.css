@@ -67,3 +67,23 @@ table {
   width: 100%;
   border-collapse: collapse;
 }
+
+.results-columns {
+  display: flex;
+  gap: 20px;
+}
+
+.results-columns > div {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  body {
+    margin: 1em;
+  }
+
+  .results-columns {
+    flex-direction: column;
+    gap: 0;
+  }
+}
