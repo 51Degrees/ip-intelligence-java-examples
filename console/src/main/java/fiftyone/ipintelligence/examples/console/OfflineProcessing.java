@@ -31,7 +31,7 @@
  *
  * As well as explaining the basic operation of offline processing using the defaults, for
  * advanced operation this example can be used to experiment with tuning IP Intelligence for
- * performance and predictive power using Performance Profile settings.
+ * performance using Performance Profile settings.
  *
  * Evidence files can be obtained from the [ip-intelligence-data repository](https://github.com/51Degrees/ip-intelligence-data).
  *
@@ -87,8 +87,8 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  * we write this data to a YAML formatted output stream.
  * <p>
  * As well as explaining the basic operation of offline processing using the defaults, for advanced
- * operation this example can be used to experiment with tuning IP Intelligence for performance and
- * predictive power using Performance Profile, Graph and Difference and Drift settings.
+ * operation this example can be used to experiment with tuning IP Intelligence for performance
+ * using Performance Profile settings.
  */
 public class OfflineProcessing {
     static final Logger logger = LoggerFactory.getLogger(OfflineProcessing.class);
@@ -172,14 +172,6 @@ public class OfflineProcessing {
                 // slower because of disk access
                 .setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
                 //.setPerformanceProfile(Constants.PerformanceProfiles.Balanced)
-                // -- Setting the Graph
-                // Data set production configuration
-                //.setUsePerformanceGraph(false)
-                //.setUsePredictiveGraph(true)
-                // -- Setting Predictive Power
-                // Predictive power configuration
-                //.setDifference(0)
-                //.setDrift(0)
                 .build()) {
 
             // get the details of the detection engine from the pipeline,

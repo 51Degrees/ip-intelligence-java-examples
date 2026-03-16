@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ This Original Work is copyright of 51 Degrees Mobile Experts Limited.
-  ~ Copyright 2025 51 Degrees Mobile Experts Limited, Davidson House,
+  ~ Copyright 2026 51 Degrees Mobile Experts Limited, Davidson House,
   ~ Forbury Square, Reading, Berkshire, United Kingdom RG1 3EU.
   ~
   ~ This Original Work is licensed under the European Union Public Licence
@@ -43,7 +43,7 @@
         </init-param>
         <init-param>
             <param-name>config-file</param-name>
-            <param-value>/WEB-INF/51Degrees-OnPrem.xml</param-value>
+            <param-value>/WEB-INF/51Degrees-Mixed.xml</param-value>
         </init-param>
     </filter>
     <filter-mapping>
@@ -51,11 +51,11 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <servlet>
-        <servlet-name>GettingStartedWebOnPrem</servlet-name>
-        <servlet-class>fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem</servlet-class>
+        <servlet-name>GettingStartedWebMixed</servlet-name>
+        <servlet-class>fiftyone.ipintelligence.examples.web.GettingStartedWebMixed</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>GettingStartedWebOnPrem</servlet-name>
+        <servlet-name>GettingStartedWebMixed</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

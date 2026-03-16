@@ -21,44 +21,33 @@
  * ********************************************************************* */
 
 /*!
- * @example GettingStartedWebOnPrem.java
+ * @example GettingStartedWebMixed.java
  *
- * This example shows how to use 51Degrees On-premise IP Intelligence in a web application to determine location and network details from IP addresses.
+ * This example shows how to use both 51Degrees Device Detection and IP Intelligence
+ * engines in a single pipeline within a web application.
  *
  * You will learn:
- * 
- * 1. How to configure a Pipeline in a web application that uses 51Degrees On-premise IP Intelligence
- * 2. How evidence from the web request is automatically passed to the Pipeline
- * 3. How to retrieve the results in your web application
- * 
- * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/web/getting-started.onprem/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebOnPrem.java).
  *
- * This example requires an enterprise IP Intelligence data file (.ipi). 
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * 1. How to configure a Pipeline with both Device Detection and IP Intelligence engines
+ * 2. How evidence from the web request is automatically passed to both engines
+ * 3. How to retrieve results from both engines in your web application
+ *
+ * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/main/web/getting-started.mixed/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebMixed.java).
+ *
+ * This example requires:
+ * - A Device Detection data file (.hash format)
+ * - An IP Intelligence data file (.ipi format)
  *
  * Required Maven Dependencies:
  * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
+ * - [com.51degrees:device-detection](https://central.sonatype.com/artifact/com.51degrees/device-detection)
  * - [com.51degrees:pipeline-web](https://central.sonatype.com/artifact/com.51degrees/pipeline-web)
- *
- * ## Overview
- *
- * The `PipelineFilter` is used to intercept requests and perform IP Intelligence. The results
- * will be stored in the HttpServletRequest object.
- *
- * The results of detection can be accessed by using a FlowDataProvider which
- * is responsible for managing the lifecycle of the flowData - do NOT dispose
- * ```{java}
- * FlowData flowData = flowDataProvider.getFlowData(request);
- * IPIntelligenceData ipData = flowData.get(IPIntelligenceData.class);
- * ...
- * ```
- *
- * IP Intelligence operates entirely server-side, so all results are available immediately
- * after processing through the Pipeline API shown above.
  */
 
 package fiftyone.ipintelligence.examples.web;
 
+import fiftyone.devicedetection.hash.engine.onpremise.flowelements.DeviceDetectionHashEngine;
+import fiftyone.devicedetection.shared.DeviceData;
 import fiftyone.ipintelligence.shared.IPIntelligenceData;
 import fiftyone.pipeline.core.data.FlowData;
 import fiftyone.pipeline.core.flowelements.FlowElement;
@@ -74,87 +63,83 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIPAddressProperty;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asWktStringProperty;
-import static fiftyone.ipintelligence.examples.shared.PropertyHelper.tryGet;
+import static fiftyone.ipintelligence.examples.shared.PropertyHelper.*;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
- * This example shows how to use 51Degrees On-premise IP Intelligence to determine location and network details from IP addresses in a web application.
- * 
- * You will learn:
- * 
- * 1. How to configure a Pipeline that uses 51Degrees On-premise IP Intelligence in a web application
- * 2. How the PipelineFilter automatically processes requests and makes results available
- * 3. How to retrieve the results in your web application
- * 
- * This is the getting started Web/On-Prem example showing use of the 51Degrees
- * supplied filter which automatically creates and configures an IP Intelligence pipeline.
- * 
- * The configuration file for the pipeline is at src/main/webapp/WEB-INF/51Degrees-OnPrem.xml
- * 
- * This example requires an enterprise IP Intelligence data file (.ipi). 
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * Demonstrates using both Device Detection and IP Intelligence engines in a web application.
+ * The PipelineFilter automatically processes requests through both engines, making results
+ * available for device properties and IP-based location data simultaneously.
+ * <p>
+ * The configuration file for the pipeline is at src/main/webapp/WEB-INF/51Degrees-Mixed.xml
+ * <p>
+ * This example requires:
+ * - A Device Detection data file (.hash format)
+ * - An IP Intelligence data file (.ipi format)
  */
-public class GettingStartedWebOnPrem extends HttpServlet {
-    private static final long serialVersionUID = 1734154705981153540L;
-    public static Logger logger = LoggerFactory.getLogger(GettingStartedWebOnPrem.class);
+public class GettingStartedWebMixed extends HttpServlet {
+    private static final long serialVersionUID = 1734154705981153541L;
+    public static Logger logger = LoggerFactory.getLogger(GettingStartedWebMixed.class);
+
+    public static final String DD_DATA_FILE_DEFAULT = "device-detection-data/51Degrees-LiteV4.1.hash";
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));
-        logger.info("Running Example {}", GettingStartedWebOnPrem.class);
+        logger.info("Running Example {}", GettingStartedWebMixed.class);
 
-        // Use the supplied path for the data file
-        String dataFile = args.length > 0 ? args[0] : ENTERPRISE_DATA_FILE_REL_PATH;
+        // Accept two command line arguments: device detection data file and IP intelligence data file
+        String ddDataFile = args.length > 0 ? args[0] : DD_DATA_FILE_DEFAULT;
+        String ipiDataFile = args.length > 1 ? args[1] : ENTERPRISE_DATA_FILE_REL_PATH;
 
-        // Set data file location using DataFileHelper
+        // Set Device Detection data file location
         try {
-            String dataFilePath = fiftyone.ipintelligence.examples.shared.DataFileHelper.getDataFileLocation(dataFile);
-            System.setProperty("TestDataFile", dataFilePath);
-            logger.info("Using data file: {}", dataFilePath);
+            String ddPath = resolveDataFile(ddDataFile);
+            System.setProperty("TestDeviceDetectionDataFile", ddPath);
+            logger.info("Using Device Detection data file: {}", ddPath);
         } catch (Exception e) {
-            logger.warn("Data file not found at expected location: {}", dataFile);
+            logger.warn("Device Detection data file not found at: {}", ddDataFile);
             logger.warn("Will attempt to use default path from XML configuration");
-            logger.debug("Error finding data file", e);
+            logger.debug("Error finding Device Detection data file", e);
         }
 
-        // start Jetty with this WebApp
+        // Set IP Intelligence data file location
+        try {
+            String ipiPath = fiftyone.ipintelligence.examples.shared.DataFileHelper.getDataFileLocation(ipiDataFile);
+            System.setProperty("TestDataFile", ipiPath);
+            logger.info("Using IP Intelligence data file: {}", ipiPath);
+        } catch (Exception e) {
+            logger.warn("IP Intelligence data file not found at: {}", ipiDataFile);
+            logger.warn("Will attempt to use default path from XML configuration");
+            logger.debug("Error finding IP Intelligence data file", e);
+        }
+
+        // Start Jetty with this WebApp
         EmbedJetty.runWebApp(getResourceBase(), 8082);
     }
 
     public static String getResourceBase() {
         // Use the unique pipeline config file to locate this example's webapp directory.
         // Cannot use "WEB-INF/web.xml" because FileFinder may find another example's web.xml.
-        java.io.File configXml = getFilePath("WEB-INF/51Degrees-OnPrem.xml");
-        // 51Degrees-OnPrem.xml is in WEB-INF/, so parent is webapp directory
+        java.io.File configXml = getFilePath("WEB-INF/51Degrees-Mixed.xml");
         return configXml.getParentFile().getParent();
     }
 
     FlowDataProviderCore flowDataProvider = new FlowDataProviderCore.Default();
 
-    /**
-     * Process the HTTP request and generate the IP Intelligence results page
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws Exception when things go wrong
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        
+
         // Get the IP address parameter from the request for custom lookup
         String inputIpAddress = request.getParameter("client-ip");
-        
+
         // The detection has already been carried out by the PipelineFilter
-        // which is responsible for the lifecycle of the flowData - do NOT dispose
         FlowData flowData = flowDataProvider.getFlowData(request);
-        
+
         // Determine target IP for display.
         // When behind a reverse proxy (e.g. ngrok), the real client IP
         // is in the X-Forwarded-For header, not request.getRemoteAddr().
@@ -164,21 +149,24 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         } else {
             String forwarded = request.getHeader("X-Forwarded-For");
             if (forwarded != null && !forwarded.isEmpty()) {
+                // X-Forwarded-For may contain multiple IPs; the first is the client
                 targetIp = forwarded.split(",")[0].trim();
             } else {
                 targetIp = request.getRemoteAddr();
             }
         }
-        
+
+        // Get Device Detection data
+        DeviceData deviceData = flowData.get(DeviceData.class);
+
         // Get IP Intelligence data
         IPIntelligenceData ipiData = flowData.get(IPIntelligenceData.class);
-        
+
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            // Load and process the HTML template
             String resourceBase = getResourceBase();
             String htmlTemplate = loadTemplate(resourceBase + "/WEB-INF/html/index.html");
-            String processedHtml = substituteTemplateValues(htmlTemplate, ipiData, targetIp, flowData);
+            String processedHtml = substituteTemplateValues(htmlTemplate, deviceData, ipiData, targetIp, flowData);
             out.println(processedHtml);
         } finally {
             if (flowData != null) {
@@ -190,23 +178,30 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             }
         }
     }
-    
-    /**
-     * Load HTML template from file system
-     */
+
     private String loadTemplate(String templatePath) throws IOException {
-        // FileFinder always finds the file when running from examples root
         Path path = getFilePath(templatePath).toPath();
         return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     }
-    
-    /**
-     * Replace template variables with IP Intelligence data
-     */
-    private String substituteTemplateValues(String template, IPIntelligenceData ipiData, String inputIp, FlowData flowData) {
+
+    private String substituteTemplateValues(String template, DeviceData deviceData,
+                                            IPIntelligenceData ipiData, String inputIp,
+                                            FlowData flowData) {
         return template
             .replace("${DATA_FILE_WARNING}", "")
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
+            // Device Detection properties
+            .replace("${HARDWARE_VENDOR}", asString(tryGet(deviceData::getHardwareVendor)))
+            .replace("${HARDWARE_NAME}", asString(tryGet(deviceData::getHardwareName)))
+            .replace("${DEVICE_TYPE}", asString(tryGet(deviceData::getDeviceType)))
+            .replace("${PLATFORM_NAME}", asString(tryGet(deviceData::getPlatformName)))
+            .replace("${PLATFORM_VERSION}", asString(tryGet(deviceData::getPlatformVersion)))
+            .replace("${BROWSER_NAME}", asString(tryGet(deviceData::getBrowserName)))
+            .replace("${BROWSER_VERSION}", asString(tryGet(deviceData::getBrowserVersion)))
+            .replace("${SCREEN_WIDTH}", asString(tryGet(deviceData::getScreenPixelsWidth)))
+            .replace("${SCREEN_HEIGHT}", asString(tryGet(deviceData::getScreenPixelsHeight)))
+            .replace("${DEVICE_ID}", asString(tryGet(deviceData::getDeviceId)))
+            // IP Intelligence properties
             .replace("${REGISTERED_NAME}", asStringProperty(tryGet(ipiData::getRegisteredName)))
             .replace("${REGISTERED_OWNER}", asStringProperty(tryGet(ipiData::getRegisteredOwner)))
             .replace("${REGISTERED_COUNTRY}", asStringProperty(tryGet(ipiData::getRegisteredCountry)))
@@ -226,61 +221,48 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
             .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
     }
-    
-    /**
-     * Build evidence table rows showing all evidence, with distinction between used vs present
-     */
+
     private String buildEvidenceRows(FlowData flowData) {
         StringBuilder evidenceRows = new StringBuilder();
-        
-        // Get the IP Intelligence engine to check which evidence was actually used
-        FlowElement<?, ?> engine = getIPIntelligenceEngine(flowData);
-        
-        // Get all evidence from FlowData
+
         for (Map.Entry<String, Object> evidenceEntry : flowData.getEvidence().asKeyMap().entrySet()) {
             String key = evidenceEntry.getKey();
             Object value = evidenceEntry.getValue();
             String valueStr = value != null ? value.toString() : "null";
-            
-            // Check if this evidence was actually used by the engine
-            boolean wasUsed = engine != null && engine.getEvidenceKeyFilter().include(key);
+
+            // Check if this evidence was used by either engine
+            boolean wasUsed = false;
+            try {
+                FlowElement<?, ?> ddEngine = flowData.getPipeline().getElement(DeviceDetectionHashEngine.class);
+                if (ddEngine != null && ddEngine.getEvidenceKeyFilter().include(key)) {
+                    wasUsed = true;
+                }
+            } catch (Exception e) { /* ignore */ }
+            try {
+                FlowElement<?, ?> ipiEngine = flowData.getPipeline().getElement(
+                    fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
+                if (ipiEngine != null && ipiEngine.getEvidenceKeyFilter().include(key)) {
+                    wasUsed = true;
+                }
+            } catch (Exception e) { /* ignore */ }
+
             String cssClass = wasUsed ? "lightgreen" : "lightyellow";
             String keyDisplay = wasUsed ? "<b>" + key + "</b>" : key;
-            
+
             evidenceRows.append(String.format(
-                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>", 
+                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>",
                 cssClass, keyDisplay, valueStr));
         }
-        
+
         return evidenceRows.toString();
     }
-    
-    /**
-     * Get the IP Intelligence on-premise engine from the pipeline
-     */
-    private FlowElement<?, ?> getIPIntelligenceEngine(FlowData flowData) {
-        // Get IP Intelligence on-premise engine
-        return flowData.getPipeline().getElement(
-            fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
-    }
-    
-    /**
-     * Escape string for JavaScript
-     */
+
     private String escapeForJs(String value) {
         return value != null ? value.replace("'", "\\'").replace("\"", "\\\"") : "";
     }
-    
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        // any failure causes 500 error
         try {
             processRequest(request, response);
             response.setStatus(200);
@@ -289,5 +271,23 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             response.setStatus(500);
         }
     }
-}
 
+    /**
+     * Resolve a data file path that may be absolute, relative, or within the project.
+     */
+    private static String resolveDataFile(String dataFile) throws IOException {
+        Path dataPath = Paths.get(dataFile);
+        if (dataPath.isAbsolute() && Files.exists(dataPath)) {
+            return dataPath.toString();
+        }
+        Path relativePath = Paths.get(System.getProperty("user.dir"), dataFile);
+        if (Files.exists(relativePath)) {
+            return relativePath.toAbsolutePath().toString();
+        }
+        try {
+            return getFilePath(dataFile).getAbsolutePath();
+        } catch (Exception e) {
+            throw new IOException("Data file not found: " + dataFile);
+        }
+    }
+}

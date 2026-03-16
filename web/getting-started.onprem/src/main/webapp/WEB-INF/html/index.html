@@ -23,20 +23,17 @@
     ${DATA_FILE_WARNING}
     
     <div id="content">
-        <h3>IP Intelligence Lookup</h3>
-        <form method="get" action="">
-            <div style="margin-bottom: 20px;">
-                <label for="client-ip">Enter IP Address:</label>
-                <input type="text" id="client-ip" name="client-ip" value="${INPUT_IP_ADDRESS}" 
-                       placeholder="e.g., 13.95.93.152" style="margin-left: 10px; padding: 5px;">
-                <button type="submit" style="margin-left: 10px; padding: 5px 15px;">Look Up</button>
+        <form method="get" action="" style="margin-bottom: 25px;">
+            <div>
+                <label for="client-ip" style="font-weight: bold;">IP Address Lookup:</label>
+                <input type="text" id="client-ip" name="client-ip" value="${INPUT_IP_ADDRESS}"
+                       placeholder="e.g., 8.8.8.8" style="margin-left: 10px; padding: 8px; width: 200px; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" style="margin-left: 10px; padding: 8px 20px; background-color: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer;">Look Up</button>
             </div>
         </form>
         
-        <h3>Detection results</h3>
-        <p>
-            The following values are determined by IP Intelligence analysis:
-        </p>
+        <h3>IP Intelligence Results</h3>
+
         <table>
             <tr>
                 <th>Property</th>
@@ -56,36 +53,26 @@
             <tr class="lightgreen"><td><b>Latitude:</b></td><td>${LATITUDE}</td></tr>
             <tr class="lightyellow"><td><b>Longitude:</b></td><td>${LONGITUDE}</td></tr>
             <tr class="lightgreen"><td><b>Areas:</b></td><td>${AREAS}</td></tr>
-            <tr class="lightyellow"><td><b>Time Zone Offset:</b></td><td>${TIME_ZONE_OFFSET}</td></tr>
+            <tr class="lightyellow"><td><b>Accuracy Radius:</b></td><td>${ACCURACY_RADIUS}</td></tr>
+            <tr class="lightgreen"><td><b>Time Zone Offset:</b></td><td>${TIME_ZONE_OFFSET}</td></tr>
         </table>
+
         <br />
 
         <div id="evidence">
-            <h3>Evidence used</h3>
-            <p class="smaller">Evidence was <span class="lightgreen">used</span> / <span class="lightyellow">present</span> for detection</p>
-            <table>
-                <tr>
-                    <th>Key</th>
-                    <th>Value</th>
-                </tr>
-                ${EVIDENCE_ROWS}
-            </table>
+            <h3>Evidence Used</h3>
+            <p class="smaller">Evidence collected from the current request</p>
+            <details>
+                <summary>Click to view evidence details</summary>
+                <table style="margin-top: 10px;">
+                    <tr>
+                        <th>Key</th>
+                        <th>Value</th>
+                    </tr>
+                    ${EVIDENCE_ROWS}
+                </table>
+            </details>
         </div>
-        <br />
-
-        <div id="response-headers">
-            <h3>Response headers</h3>
-            <table>
-                <tr>
-                    <th>Key</th>
-                    <th>Value</th>
-                </tr>
-                ${RESPONSE_HEADER_ROWS}
-            </table>
-        </div>
-        <br />
-        
-        ${LITE_DATA_WARNING}
         
         <br />
         <div id="map-section" style="display: none;">

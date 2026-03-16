@@ -72,7 +72,7 @@ import static fiftyone.pipeline.engines.Constants.PerformanceProfiles.*;
 
 /**
  * The example illustrates the flexibility with which the 51Degrees pipeline can be configured
- * to achieve a range of outcomes relating to speed, accuracy, predictive power, memory usage.
+ * to achieve a range of outcomes relating to speed, accuracy and memory usage.
  * <p>
  */
 public class PerformanceBenchmark {
@@ -90,11 +90,10 @@ public class PerformanceBenchmark {
     private String dataFileLocation;
     private PrintWriter writer;
 
-    // a default set of configurations: (profile, allProperties, performanceGraph, predictiveGraph)
+    // a default set of configurations: (profile, allProperties)
     public static PerformanceConfiguration [] DEFAULT_PERFORMANCE_CONFIGURATIONS = {
-            new PerformanceConfiguration(MaxPerformance, false, false, true),
-            new PerformanceConfiguration(MaxPerformance, false, true, false),
-            new PerformanceConfiguration(MaxPerformance, true, true, false)
+            new PerformanceConfiguration(MaxPerformance, false),
+            new PerformanceConfiguration(MaxPerformance, true)
     };
 
 
@@ -159,15 +158,10 @@ public class PerformanceBenchmark {
      */
     private void executeBenchmark(PerformanceConfiguration config) throws Exception {
         logger.info(MarkerFactory.getMarker(config.profile.name() + " " +
-                        config.allProperties + " " +
-                        config.performanceGraph + " " +
-                        config.predictiveGraph),
-                "Benchmarking with profile: {} AllProperties: {}, " +
-                        "performanceGraph: {}, predictiveGraph {}",
+                        config.allProperties),
+                "Benchmarking with profile: {} AllProperties: {}",
                 config.profile,
-                config.allProperties,
-                config.performanceGraph,
-                config.predictiveGraph);
+                config.allProperties);
 
         Pipeline pipeline = null;
         try {
@@ -366,16 +360,11 @@ public class PerformanceBenchmark {
     public static class PerformanceConfiguration {
         Constants.PerformanceProfiles profile;
         boolean allProperties;
-        boolean performanceGraph;
-        boolean predictiveGraph;
 
         public PerformanceConfiguration(Constants.PerformanceProfiles profile,
-                                        boolean allProperties, boolean performanceGraph,
-                                        boolean predictiveGraph) {
+                                        boolean allProperties) {
             this.profile = profile;
             this.allProperties = allProperties;
-            this.performanceGraph = performanceGraph;
-            this.predictiveGraph = predictiveGraph;
         }
     }
 }
