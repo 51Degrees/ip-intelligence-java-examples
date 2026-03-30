@@ -119,7 +119,7 @@ public class GettingStartedWebMixed extends HttpServlet {
         }
 
         // Start Jetty with this WebApp
-        EmbedJetty.runWebApp(getResourceBase(), 8082);
+        EmbedJetty.runWebApp(getResourceBase(), 8081);
     }
 
     public static String getResourceBase() {
@@ -219,7 +219,15 @@ public class GettingStartedWebMixed extends HttpServlet {
             .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
             .replace("${ACCURACY_RADIUS}", asIntegerProperty(tryGet(ipiData::getAccuracyRadiusMin)))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
-            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
+            //.replace("${HumanProbability}",asStringProperty(tryGet(ipiData::getHumanProbability)))
+             .replace("${LocationConfidence}",asStringProperty(tryGet(ipiData::getLocationConfidence)))
+            .replace("${ConnectionType}",asStringProperty(tryGet(ipiData::getConnectionType)))
+                .replace("${HumanProbability}",asIntegerProperty(tryGet(ipiData::getHumanProbability)))
+                .replace("${HardwareDiversity}",asIntegerProperty(tryGet(ipiData::getHardwareDiversity)))
+        .replace("${BrowserDiversity}",asIntegerProperty(tryGet(ipiData::getBrowserDiversity)))
+                .replace("${PlatformDiversity}",asIntegerProperty(tryGet(ipiData::getPlatformDiversity)));
+
     }
 
     private String buildEvidenceRows(FlowData flowData) {
