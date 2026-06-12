@@ -22,16 +22,22 @@
 
 package fiftyone.ipintelligence.examples.console;
 
+import fiftyone.ipintelligence.examples.shared.DataFileHelper;
 import fiftyone.ipintelligence.examples.shared.EvidenceHelper;
 import org.junit.Test;
 
-import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
+import static org.junit.Assume.assumeTrue;
 
 public class GettingStartedOnPremTest {
 
     @Test
     public void gettingStartedOnPremTest() throws Exception {
-        GettingStartedOnPrem.run(ENTERPRISE_DATA_FILE_REL_PATH,
+        // Use the enterprise data file when present, otherwise fall back to
+        // the free Lite or ASN file so the test can run from a fresh clone.
+        String dataFile = DataFileHelper.findAvailableDataFile();
+        assumeTrue("Skipping test, no IP Intelligence data file found",
+                dataFile != null);
+        GettingStartedOnPrem.run(dataFile,
                 EvidenceHelper.setUpEvidence(), System.out);
     }
 }

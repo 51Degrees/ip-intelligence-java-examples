@@ -256,7 +256,7 @@ public class GettingStartedMixed {
     /**
      * Resolve a data file path that may be absolute, relative, or within the project.
      * Unlike FileFinder.getFilePath() which only searches within the project directory,
-     * this also handles paths outside the project (e.g. ../assets/TAC-HashV41.hash).
+     * this also handles paths outside the project (e.g. ../assets/51Degrees-LiteV4.1.hash).
      */
     private static String resolveDataFile(String dataFile) throws IOException {
         Path dataPath = Paths.get(dataFile);

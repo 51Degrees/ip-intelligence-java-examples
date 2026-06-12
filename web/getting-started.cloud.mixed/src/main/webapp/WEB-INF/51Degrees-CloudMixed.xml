@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
   ~ This Original Work is copyright of 51 Degrees Mobile Experts Limited.
-  ~ Copyright 2025 51 Degrees Mobile Experts Limited, Davidson House,
+  ~ Copyright 2026 51 Degrees Mobile Experts Limited, Davidson House,
   ~ Forbury Square, Reading, Berkshire, United Kingdom RG1 3EU.
   ~
   ~ This Original Work is licensed under the European Union Public Licence
@@ -24,23 +25,19 @@
     <Elements>
         <Element>
             <BuildParameters>
-                <!-- TAC lookup and Native Model are not available as a free service.
-
-                This means that you will first need a license key, which can be purchased
-                from our pricing page: http://51degrees.com/pricing. 
-
-                Once this is done, a resource key with the properties required by this example
-                can be created at https://configure.51degrees.com/QKyYH5XT.
-
+                <!-- A resource key is required to access the Cloud service.
                 You can paste the resource key here, or set an environment
-                variable or System property called "SuperResourceKey"
-                which will get inserted as the value.-->
-                <ResourceKey>${SuperResourceKey}</ResourceKey>
+                variable or System property called "TestResourceKey"
+                which will get inserted as the value. -->
+                <ResourceKey>${TestResourceKey}</ResourceKey>
             </BuildParameters>
             <BuilderName>CloudRequestEngine</BuilderName>
         </Element>
         <Element>
-            <BuilderName>HardwareProfileCloudEngine</BuilderName>
+            <BuilderName>DeviceDetectionCloudEngine</BuilderName>
+        </Element>
+        <Element>
+            <BuilderName>IPIntelligenceCloudEngine</BuilderName>
         </Element>
     </Elements>
 </PipelineOptions>

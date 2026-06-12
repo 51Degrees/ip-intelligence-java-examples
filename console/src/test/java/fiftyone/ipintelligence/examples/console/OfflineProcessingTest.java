@@ -22,6 +22,7 @@
 
 package fiftyone.ipintelligence.examples.console;
 
+import fiftyone.ipintelligence.examples.shared.DataFileHelper;
 import fiftyone.ipintelligence.shared.testhelpers.FileUtils;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
+import static org.junit.Assume.assumeTrue;
 
 
 public class OfflineProcessingTest {
@@ -38,8 +39,17 @@ public class OfflineProcessingTest {
 
     @Test
     public void offlineProcessingTest() throws Exception {
+        // The example reads the RegisteredName property, which the free ASN
+        // file does not contain, so only the enterprise and Lite files are
+        // candidates here.
+        String dataFile = DataFileHelper.findAvailableDataFile(
+                DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH,
+                DataFileHelper.LITE_DATA_FILE_REL_PATH);
+        assumeTrue("Skipping test, no IP Intelligence data file with the " +
+                        "RegisteredName property found",
+                dataFile != null);
         try (LoggerOutputStream outStream = new LoggerOutputStream(logger)) {
-            OfflineProcessing.run(ENTERPRISE_DATA_FILE_REL_PATH,
+            OfflineProcessing.run(dataFile,
                     new FileInputStream(Objects.requireNonNull(FileUtils.getEvidenceFile())),
                     outStream);
         }

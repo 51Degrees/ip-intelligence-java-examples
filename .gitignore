@@ -37,10 +37,9 @@ nbactions*.xml
 nbactions.xml
 
 build*/
-Enterprise-HashV41.hash
 SESSIONS.ser
-Enterprise-HashV41.hash.gz
-Enterprise-HashV41.hash
-Enterprise-HashV41.hash.bak
-TAC-HashV41.hash
-TAC-HashV41.hash.gz
+51Degrees-EnterpriseIpiV41.ipi
+51Degrees-EnterpriseIpiV41.ipi.gz
+51Degrees-EnterpriseIpiV41.ipi.bak
+# device detection data file used by the mixed examples
+device-detection-data/

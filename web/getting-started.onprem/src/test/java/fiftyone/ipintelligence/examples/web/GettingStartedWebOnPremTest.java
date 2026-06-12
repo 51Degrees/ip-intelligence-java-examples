@@ -33,19 +33,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static fiftyone.ipintelligence.examples.web.GettingStartedWebOnPrem.getResourceBase;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 public class GettingStartedWebOnPremTest {
     private static Server SERVER;
 
     @BeforeClass
     public static void startJetty() throws Exception {
-        // Use DataFileHelper to find the data file
-        String dataFilePath = DataFileHelper.getDataFileLocation(ENTERPRISE_DATA_FILE_REL_PATH);
+        // Use the enterprise data file when present, otherwise fall back to
+        // the free Lite or ASN file so the test can run from a fresh clone.
+        String dataFilePath = DataFileHelper.findAvailableDataFile();
+        assumeTrue("Skipping test, no IP Intelligence data file found",
+                dataFilePath != null);
         System.setProperty("TestDataFile", dataFilePath);
 
         SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 8081);

@@ -82,16 +82,4 @@ public class KeyHelper {
         System.setProperty(variableName, value);
         return value;
     }
-    public static String getOrSetSuperResourceKey(String value, String variablename) {
-        return getOrSetSuperResourceKey(value, variablename, true);
-    }
-    public static String getOrSetSuperResourceKey(String value, String variablename, boolean shouldThrow) {
-        return getOrSetResourceKey(value, variablename, "TAC lookup and Native Model are not " +
-                "available as a free service.\nThis means " +
-                "that you will first need a license key, which can be purchased " +
-                "from our pricing page: https://51degrees.com/pricing. \nOnce this is " +
-                "done, a resource key with the properties required by this example " +
-                "can be created at https://configure.51degrees.com/QKyYH5XT. ",
-            shouldThrow);
-    }
 }

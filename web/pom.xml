@@ -13,6 +13,9 @@
         <module>shared</module>
         <module>getting-started.onprem</module>
         <module>getting-started.mixed</module>
+        <module>getting-started.cloud</module>
+        <module>getting-started.cloud.mixed</module>
+        <module>getting-started.api</module>
     </modules>
 
     <artifactId>ip-intelligence-java-examples.web</artifactId>
