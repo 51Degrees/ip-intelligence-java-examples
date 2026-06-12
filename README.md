@@ -58,6 +58,21 @@ Cloud examples need a resource key. The key is read from the
 `51DEGREES_RESOURCE_KEY` environment variable or system property first. The
 legacy `TestResourceKey` name is still supported and is checked second.
 
+The cloud property tiers changed in May 2026. The examples and this
+documentation now reflect what is free and what needs a paid subscription.
+
+- Free tier IP properties are Country, LocationConfidence, Ip and IpV6.
+- Paid IP properties used by the examples are CountryCode, CountryCode3,
+  Region, State, Town, TimeZoneOffset, RegisteredName, RegisteredOwner,
+  RegisteredCountry, IpRangeStart, IpRangeEnd, Latitude, Longitude, Areas
+  and AccuracyRadiusMin.
+
+A free resource key selecting the free tier properties can be created at
+https://configure.51degrees.com/Wkqxf3Bs. A resource key that also includes
+the paid properties used by the examples can be created at
+https://configure.51degrees.com/hYzn3TV3. See https://51degrees.com/pricing
+to get a paid subscription with more properties.
+
 ### On-Premise
 
 | Example                  | Description                                                                                                                                                                                                                    |

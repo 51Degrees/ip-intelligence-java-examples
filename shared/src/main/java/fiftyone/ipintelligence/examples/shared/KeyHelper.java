@@ -51,9 +51,11 @@ public class KeyHelper {
 
     public static String getOrSetTestResourceKey(String value, boolean shouldThrow) {
         return getOrSetResourceKey(value, TEST_RESOURCE_KEY,
-            "A free resource key configured with the " +
-                "properties required by this example may be obtained from " +
-                "https://configure.51degrees.com/jqz435Nc ",
+            "A free resource key may be obtained from " +
+                "https://configure.51degrees.com/Wkqxf3Bs. A free key " +
+                "populates the free tier properties only. See " +
+                "https://51degrees.com/pricing to get a paid subscription " +
+                "with more properties.",
             shouldThrow);
     }
     public static String getOrSetTestResourceKey(String value) {
@@ -98,12 +100,13 @@ public class KeyHelper {
         return getOrSetSuperResourceKey(value, variablename, true);
     }
     public static String getOrSetSuperResourceKey(String value, String variablename, boolean shouldThrow) {
-        return getOrSetResourceKey(value, variablename, "TAC lookup and Native Model are not " +
-                "available as a free service.\nThis means " +
-                "that you will first need a license key, which can be purchased " +
-                "from our pricing page: https://51degrees.com/pricing. \nOnce this is " +
-                "done, a resource key with the properties required by this example " +
-                "can be created at https://configure.51degrees.com/QKyYH5XT. ",
+        return getOrSetResourceKey(value, variablename, "TAC lookup and native model are not " +
+                "available with a free resource key. " +
+                "See https://51degrees.com/pricing to get a paid subscription " +
+                "with more properties. " +
+                "Once subscribed, a resource key with the properties required " +
+                "by this example can be created at " +
+                "https://configure.51degrees.com/hYzn3TV3.",
             shouldThrow);
     }
 }

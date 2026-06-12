@@ -24,13 +24,12 @@
     <Elements>
         <Element>
             <BuildParameters>
-                <!-- TAC lookup and Native Model are not available as a free service.
+                <!-- TAC lookup and native model are not available with a free resource key.
 
-                This means that you will first need a license key, which can be purchased
-                from our pricing page: http://51degrees.com/pricing. 
+                See https://51degrees.com/pricing to get a paid subscription with more properties.
 
-                Once this is done, a resource key with the properties required by this example
-                can be created at https://configure.51degrees.com/QKyYH5XT.
+                Once subscribed, a resource key with the properties required by this example
+                can be created at https://configure.51degrees.com/hYzn3TV3.
 
                 You can paste the resource key here, or set an environment
                 variable or System property called "SuperResourceKey"
