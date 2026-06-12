@@ -25,6 +25,15 @@ ip-intelligence-java-examples/
 └── shared/
 ```
 
+The examples locate the data file in the following order:
+
+1. The `51DEGREES_IPI_PATH` environment variable or system property, which can
+   be set to an explicit path to the data file.
+2. A search of the project folder hierarchy for the expected file name.
+3. The expected location `ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi`
+   (the configuration files for the getting started examples fall back to the
+   free Lite file `ip-intelligence-data/51Degrees-LiteV41.ipi`).
+
 This project contains sub-modules - **console**, giving examples that are intended
 to be run from the command line/console and **web**, illustrating use
 of 51Degrees Web/Servlet integration. There is also a **shared** sub-module
@@ -44,6 +53,10 @@ The table below describes the examples available in this repository.
 ### Cloud (coming soon)
 
 Cloud examples will be added once the Cloud service for IP Intelligence becomes available.
+
+Cloud examples need a resource key. The key is read from the
+`51DEGREES_RESOURCE_KEY` environment variable or system property first. The
+legacy `TestResourceKey` name is still supported and is checked second.
 
 ### On-Premise
 
