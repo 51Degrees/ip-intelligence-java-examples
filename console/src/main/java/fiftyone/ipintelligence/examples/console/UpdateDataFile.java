@@ -92,7 +92,7 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  * ```
  * # File System Watcher
  * You can configure the pipeline builder to watch for changes to the currently loaded IP Intelligence
- * detection data file, and to replace the file currently in use with the new one. This is
+ * data file, and to replace the file currently in use with the new one. This is
  * useful, for example, if you wish to download and update the IP Intelligence file "manually" -
  * i.e. you would download it then drop it into place with the same path as the currently loaded
  * file. That location is checked periodically (by default every 30 mins) and this frequency can be

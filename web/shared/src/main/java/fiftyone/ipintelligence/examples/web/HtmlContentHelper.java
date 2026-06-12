@@ -88,16 +88,6 @@ public class HtmlContentHelper {
         }
         out.append("</table></div>");
 
-        if (response.getHeaderNames().contains("Accept-CH") == false) {
-            out.append(
-         "<div class=\"example-alert\">WARNING: There is no Accept-CH header in the response. " +
-                 "This may indicate that your browser does not support User-Agent Client Hints. " +
-                 "This is not necessarily a problem, but if you are wanting to try out detection " +
-                 "using User-Agent Client Hints, then make sure that your browser "+
-                 "<a href=\"https://developer.mozilla" +
-                 ".org/en-US/docs/Web/API/User-Agent_Client_Hints_API#browser_compatibility" +
-                 "\">supports them</a>.</div>");
-        }
 
     }
 
@@ -107,8 +97,6 @@ public class HtmlContentHelper {
         out.println(
                 "  <div id=\"evidence\">\n" +
                         "  <h2>Evidence Used </h2>\n");
-
-        doUachInfo(out);
 
         out.println("<table>\n");
         // list by other evidence entries
@@ -123,7 +111,7 @@ public class HtmlContentHelper {
     }
 
     private static FlowElement<?, ?> getFlowElement(FlowData flowData) {
-        // we assume a CloudRequest or a HashEngine ... but not both
+        // we assume a CloudRequestEngine or an IPIntelligenceOnPremiseEngine ... but not both
         FlowElement<?,?> engine = flowData.getPipeline().getElement(CloudRequestEngine.class);
         if (Objects.isNull(engine)) {
             engine = flowData.getPipeline().getElement(IPIntelligenceOnPremiseEngine.class);
@@ -176,26 +164,6 @@ public class HtmlContentHelper {
         doLiteRubric(out, flowData);
     }
 
-    public static void doUachInfo(PrintWriter out) {
-        //language=html
-        out.append(
-
-                "    <p>" +
-                        "    A browser that supports client hints sends <code>Sec-CH-UA</code>, <code>Sec-CH-UA-Platform</code>"+
-                        "    and <code>Sec-CH-UA-Mobile</code> HTTP headers along with the <code>User-Agent</code> header." +
-                        "    <p>\n" +
-                        "    If the server determines that the browser supports client hints, then" +
-                        "    it may request additional client hints headers by setting the" +
-                        "    <code>Accept-CH</code> header in the response." +
-                        "    <p>\n" +
-                        "    Refresh the page to send another request to the server. This time, some" +
-                        "    additional client hints headers that have been requested by the server" +
-                        "    may be included. The browser remembers the server's request to " +
-                        "    add those headers and adds those additional headers on each subsequent request" +
-                        "    (which is why this example works best in a \"private\" window if you launch the test" +
-                        "    more than once).<p>" +
-                        "    \n");
-    }
 
     /**
      * Helper to output text about missing values and what to expect from the Lite file

@@ -45,7 +45,7 @@
  * The `PipelineFilter` is used to intercept requests and perform IP Intelligence. The results
  * will be stored in the HttpServletRequest object.
  *
- * The results of detection can be accessed by using a FlowDataProvider which
+ * The results of processing can be accessed by using a FlowDataProvider which
  * is responsible for managing the lifecycle of the flowData - do NOT dispose
  * ```{java}
  * FlowData flowData = flowDataProvider.getFlowData(request);
@@ -151,7 +151,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
         // Get the IP address parameter from the request for custom lookup
         String inputIpAddress = request.getParameter("client-ip");
         
-        // The detection has already been carried out by the PipelineFilter
+        // The processing has already been carried out by the PipelineFilter
         // which is responsible for the lifecycle of the flowData - do NOT dispose
         FlowData flowData = flowDataProvider.getFlowData(request);
         

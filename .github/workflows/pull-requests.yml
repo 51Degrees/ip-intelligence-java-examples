@@ -18,6 +18,6 @@ jobs:
       cache-assets: true
     secrets:
       token: ${{ secrets.ACCESS_TOKEN }}
-      IpIntelligence: ${{ secrets.DEVICE_DETECTION_KEY }}
+      IpIntelligence: ${{ secrets.IP_INTELLIGENCE_KEY }}
       TestResourceKey: ${{ secrets.SUPER_RESOURCE_KEY}}
       IpIntelligenceUrl: ${{ secrets.IPI_DATA_FILE_URL }}
