@@ -247,12 +247,13 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             
             // Check if this evidence was actually used by the engine
             boolean wasUsed = engine != null && engine.getEvidenceKeyFilter().include(key);
-            String cssClass = wasUsed ? "lightgreen" : "lightyellow";
-            String keyDisplay = wasUsed ? "<b>" + key + "</b>" : key;
-            
+            String rowClass = wasUsed ? "c-eg-table__row--used" : "c-eg-table__row--present";
+
             evidenceRows.append(String.format(
-                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>", 
-                cssClass, keyDisplay, valueStr));
+                "<tr class=\"c-eg-table__row %s\">" +
+                    "<td class=\"c-eg-table__cell c-eg-table__cell--key\">%s</td>" +
+                    "<td class=\"c-eg-table__cell\">%s</td></tr>",
+                rowClass, key, valueStr));
         }
         
         return evidenceRows.toString();
