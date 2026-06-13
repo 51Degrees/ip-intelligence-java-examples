@@ -26,10 +26,10 @@
             <BuildParameters>
                 <!-- TAC lookup and native model are not available with a free resource key.
 
-                See https://51degrees.com/pricing to get a paid subscription with more properties.
+                See https://51degrees.com/pricing?utm_source=code&amp;utm_medium=comment&amp;utm_campaign=ip-intelligence-java-examples&amp;utm_content=console-src-main-resources-taccloud.xml&amp;utm_term=buildparameters to get a paid subscription with more properties.
 
                 Once subscribed, a resource key with the properties required by this example
-                can be created at https://configure.51degrees.com/hYzn3TV3.
+                can be created at https://configure.51degrees.com/hYzn3TV3?utm_source=code&amp;utm_medium=comment&amp;utm_campaign=ip-intelligence-java-examples&amp;utm_content=console-src-main-resources-taccloud.xml&amp;utm_term=buildparameters.
 
                 You can paste the resource key here, or set an environment
                 variable or System property called "SuperResourceKey"

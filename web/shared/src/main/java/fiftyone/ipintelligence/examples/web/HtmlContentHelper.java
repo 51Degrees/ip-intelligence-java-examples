@@ -216,7 +216,7 @@ public class HtmlContentHelper {
                 "you are using a Lite data file included with this source distribution.\n" +
                 "<p>The example requires an Enterprise data file to work fully. " +
                 "You can get the Enterprise data file " +
-                "<a href='https://51degrees.com/pricing'>here</a></div>\n");
+                "<a href='https://51degrees.com/pricing?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=web-shared-src-main-java-fiftyone-ipintelligence-examples-web-htmlcontenthelper.java&utm_term=lite-data-file'>here</a></div>\n");
     }
 
     public static void doHtmlPostamble(PrintWriter out) {
