@@ -229,8 +229,22 @@ public class GettingStartedWebMixed extends HttpServlet {
                 .replace("${HumanProbability}",asIntegerProperty(tryGet(ipiData::getHumanProbability)))
                 .replace("${HardwareDiversity}",asIntegerProperty(tryGet(ipiData::getHardwareDiversity)))
         .replace("${BrowserDiversity}",asIntegerProperty(tryGet(ipiData::getBrowserDiversity)))
-                .replace("${PlatformDiversity}",asIntegerProperty(tryGet(ipiData::getPlatformDiversity)));
+                .replace("${PlatformDiversity}",asIntegerProperty(tryGet(ipiData::getPlatformDiversity)))
+            // On-premise engines: only invite the user to contact us about more
+            // properties and features when running against the free Lite tier.
+            .replace("${CONTACT_MESSAGE}", HtmlContentHelper.getContactMessage(
+                HtmlContentHelper.ContactMessageVariant.ON_PREMISE, isLiteDataFile(flowData)));
 
+    }
+
+    /**
+     * Determine whether the on-premise IP Intelligence engine is using the free Lite tier data file.
+     */
+    private boolean isLiteDataFile(FlowData flowData) {
+        fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine engine =
+            flowData.getPipeline().getElement(
+                fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
+        return engine != null && engine.getDataSourceTier().equals("Lite");
     }
 
     private String buildEvidenceRows(FlowData flowData) {

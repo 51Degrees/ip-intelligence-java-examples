@@ -227,7 +227,21 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
             .replace("${ACCURACY_RADIUS}", asIntegerProperty(tryGet(ipiData::getAccuracyRadiusMin)))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
-            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
+            // On-premise engine: only invite the user to contact us about more
+            // properties and features when running against the free Lite tier.
+            .replace("${CONTACT_MESSAGE}", HtmlContentHelper.getContactMessage(
+                HtmlContentHelper.ContactMessageVariant.ON_PREMISE, isLiteDataFile(flowData)));
+    }
+
+    /**
+     * Determine whether the on-premise engine is using the free Lite tier data file.
+     */
+    private boolean isLiteDataFile(FlowData flowData) {
+        fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine engine =
+            flowData.getPipeline().getElement(
+                fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
+        return engine != null && engine.getDataSourceTier().equals("Lite");
     }
     
     /**

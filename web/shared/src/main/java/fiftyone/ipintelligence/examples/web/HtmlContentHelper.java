@@ -231,4 +231,39 @@ public class HtmlContentHelper {
             br.lines().forEach(out::println);
         }
     }
+
+    /**
+     * The contact-us message banner has two variants. The cloud variant invites
+     * the user to discuss on-premise requirements. The on-premise variant invites
+     * the user to explore additional properties and features.
+     */
+    public enum ContactMessageVariant {
+        CLOUD,
+        ON_PREMISE
+    }
+
+    /**
+     * Build the contact-us message banner shown at the bottom of the web example
+     * pages. Cloud examples are free by design, so the cloud variant is shown
+     * unconditionally. On-premise examples only show the banner when running
+     * against the free Lite tier data file, so the {@code show} flag should be
+     * wired to {@code engine.getDataSourceTier().equals("Lite")}.
+     *
+     * @param variant which message wording to use
+     * @param show    whether the banner should be rendered at all
+     * @return the banner markup, or an empty string when {@code show} is false
+     */
+    public static String getContactMessage(ContactMessageVariant variant, boolean show) {
+        if (show == false) {
+            return "";
+        }
+        String text = variant == ContactMessageVariant.CLOUD
+                ? "Want to try on-premise? <a href=\"https://51degrees.com/contact-us\">Contact us</a> to discuss requirements."
+                : "Need more on-premise properties and features? <a href=\"https://51degrees.com/contact-us\">Contact us</a> to explore the options.";
+        // language=html
+        return "<div class=\"c-eg-message\">\n" +
+                "  <p class=\"c-eg-message__text\">" + text + "</p>\n" +
+                "  <a class=\"b-btn c-eg-message__cta\" href=\"https://51degrees.com/contact-us\">Contact us</a>\n" +
+                "</div>";
+    }
 }
