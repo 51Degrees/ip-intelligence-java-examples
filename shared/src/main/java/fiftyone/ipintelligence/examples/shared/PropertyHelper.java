@@ -27,14 +27,32 @@ import fiftyone.pipeline.core.data.WktString;
 import fiftyone.pipeline.engines.data.AspectPropertyValue;
 import fiftyone.pipeline.engines.data.AspectPropertyValueDefault;
 import fiftyone.pipeline.engines.exceptions.PropertyMissingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
 public class PropertyHelper {
+
+    /**
+     * Advisory logged once when a property has no value, as this is
+     * commonly because the resource key in use does not include the
+     * property.
+     */
+    public static final String PRICING_MESSAGE = "Some properties used " +
+            "by this example are not available with a free resource key. " +
+            "See https://51degrees.com/pricing to get a paid subscription " +
+            "with more properties.";
+
+    static Logger logger = LoggerFactory.getLogger(PropertyHelper.class);
+
+    private static final AtomicBoolean pricingMessageLogged =
+            new AtomicBoolean(false);
 
     /**
      * Unwrap a value that may be a List of IWeightedValue at runtime
@@ -65,6 +83,21 @@ public class PropertyHelper {
         return value != null ? value.toString() : "Unknown";
     }
     /**
+     * Build the "no value" output for a property and log the
+     * {@link #PRICING_MESSAGE} advisory the first time any property
+     * has no value.
+     * @param property the property value, may be null
+     * @return a string describing why no value is available
+     */
+    private static String reportNoValue(AspectPropertyValue<?> property) {
+        if (pricingMessageLogged.compareAndSet(false, true)) {
+            logger.warn(PRICING_MESSAGE);
+        }
+        String message = property != null ? property.getNoValueMessage() : "No data available";
+        return "Unknown. " + message;
+    }
+
+    /**
      * Try to carry out a 'get' on a property getter, and catch a
      * {@link PropertyMissingException} to avoid the example breaking if the
      * resource key, or data file are not configured correctly by the user.
@@ -92,8 +125,7 @@ public class PropertyHelper {
      */
     public static String asStringProperty(AspectPropertyValue<String> property) {
         if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            return "Unknown. " + message;
+            return reportNoValue(property);
         } else {
             return unwrapValue(property.getValue());
         }
@@ -105,8 +137,7 @@ public class PropertyHelper {
      */
     public static String asIntegerProperty(AspectPropertyValue<Integer> property) {
         if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            return "Unknown. " + message;
+            return reportNoValue(property);
         } else {
             return unwrapValue(property.getValue());
         }
@@ -118,8 +149,7 @@ public class PropertyHelper {
      */
     public static String asFloatProperty(AspectPropertyValue<Float> property) {
         if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            return "Unknown. " + message;
+            return reportNoValue(property);
         } else {
             return unwrapValue(property.getValue());
         }
@@ -131,8 +161,7 @@ public class PropertyHelper {
      */
     public static String asIPAddressProperty(AspectPropertyValue<java.net.InetAddress> property) {
         if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            return "Unknown. " + message;
+            return reportNoValue(property);
         } else {
             return unwrapValue(property.getValue());
         }
@@ -144,8 +173,7 @@ public class PropertyHelper {
      */
     public static String asWktStringProperty(AspectPropertyValue<WktString> property) {
         if (property == null || !property.hasValue()) {
-            String message = property != null ? property.getNoValueMessage() : "No data available";
-            return "Unknown. " + message;
+            return reportNoValue(property);
         } else {
             return unwrapValue(property.getValue());
         }

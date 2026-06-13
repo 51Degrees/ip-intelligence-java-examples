@@ -128,8 +128,10 @@ public class GettingStartedOnPrem {
         } catch (Exception e) {
             logger.error("Failed to find IP Intelligence data file at '{}'. " +
                     "Please provide a valid path to an IP Intelligence data file (.ipi). " +
+                    "An explicit path can be supplied via the {} environment variable. " +
                     "For testing, you can obtain an enterprise data file by contacting us at " +
-                    "https://51degrees.com/contact-us", dataFile);
+                    "https://51degrees.com/contact-us",
+                    dataFile, DataFileHelper.IPI_PATH_ENV_VAR);
             throw e;
         }
 

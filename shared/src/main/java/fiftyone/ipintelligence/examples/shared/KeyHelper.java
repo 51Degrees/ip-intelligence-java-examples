@@ -29,6 +29,12 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class KeyHelper {
+    /**
+     * Aligned name of the environment variable or system property which may
+     * hold the resource key. This name is checked first, before the legacy
+     * {@link #TEST_RESOURCE_KEY} name.
+     */
+    public static final String RESOURCE_KEY_ENV_VAR = "51DEGREES_RESOURCE_KEY";
     public static final String TEST_RESOURCE_KEY = "TestResourceKey";
     static Logger logger = LoggerFactory.getLogger(KeyHelper.class);
 
@@ -45,9 +51,11 @@ public class KeyHelper {
 
     public static String getOrSetTestResourceKey(String value, boolean shouldThrow) {
         return getOrSetResourceKey(value, TEST_RESOURCE_KEY,
-            "A free resource key configured with the " +
-                "properties required by this example may be obtained from " +
-                "https://configure.51degrees.com/jqz435Nc ",
+            "A free resource key may be obtained from " +
+                "https://configure.51degrees.com/Wkqxf3Bs. A free key " +
+                "populates the free tier properties only. See " +
+                "https://51degrees.com/pricing to get a paid subscription " +
+                "with more properties.",
             shouldThrow);
     }
     public static String getOrSetTestResourceKey(String value) {
@@ -55,23 +63,29 @@ public class KeyHelper {
     }
     /**
      * Obtain a resource key from the passed argument,
-     * from environment variable or from a property. Store
-     * as System Property TEST_RESOURCE_KEY
+     * from environment variable or from a property. The aligned
+     * {@link #RESOURCE_KEY_ENV_VAR} name is checked first, then the
+     * passed variable name. Store as System Property under the
+     * passed variable name.
      */
     public static String getOrSetResourceKey(String value, String variableName,
                                              String errorMessage,
                                              boolean shouldThrow) {
         if (Objects.isNull(value)) {
-            value = KeyUtils.getNamedKey(variableName);
-
+            // check the aligned name first, then the legacy name
+            value = KeyUtils.getNamedKey(RESOURCE_KEY_ENV_VAR);
+            if (Objects.isNull(value)) {
+                value = KeyUtils.getNamedKey(variableName);
+            }
         }
         if (KeyUtils.isInvalidKey(value)) {
             logger.error("\nTo access Cloud Services you must supply a " +
                     "\"ResourceKey\" in one of the following ways: \n - in the " +
                     "configuration file of an example,\n - as a command line parameter of a " +
                     "runnable example,\n - as an Environment Variable named \"\u001B[36m{}\u001B[0m\"," +
-                    "\n - as a System Property named \"\u001B[36m{}\u001B[0m\").", variableName,
-                    variableName);
+                    "\n - as a System Property named \"\u001B[36m{}\u001B[0m\" " +
+                    "(the legacy name \"\u001B[36m{}\u001B[0m\" is also still accepted).",
+                    RESOURCE_KEY_ENV_VAR, RESOURCE_KEY_ENV_VAR, variableName);
             logger.error(errorMessage);
             if (shouldThrow) {
                 throw new IllegalStateException("\"" + value + "\" is not a valid resource key");
@@ -86,12 +100,13 @@ public class KeyHelper {
         return getOrSetSuperResourceKey(value, variablename, true);
     }
     public static String getOrSetSuperResourceKey(String value, String variablename, boolean shouldThrow) {
-        return getOrSetResourceKey(value, variablename, "TAC lookup and Native Model are not " +
-                "available as a free service.\nThis means " +
-                "that you will first need a license key, which can be purchased " +
-                "from our pricing page: https://51degrees.com/pricing. \nOnce this is " +
-                "done, a resource key with the properties required by this example " +
-                "can be created at https://configure.51degrees.com/QKyYH5XT. ",
+        return getOrSetResourceKey(value, variablename, "TAC lookup and native model are not " +
+                "available with a free resource key. " +
+                "See https://51degrees.com/pricing to get a paid subscription " +
+                "with more properties. " +
+                "Once subscribed, a resource key with the properties required " +
+                "by this example can be created at " +
+                "https://configure.51degrees.com/hYzn3TV3.",
             shouldThrow);
     }
 }

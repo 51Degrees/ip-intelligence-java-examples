@@ -43,9 +43,12 @@ your IDE launch configuration or your operating system shell.
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <!-- a resource key configured for executing the tests and
-                examples in this source distribution may be configured at
-                https://configure.51degrees.com/jqz435Nc -->
+                <!-- a free resource key for executing the tests and
+                examples in this source distribution may be created at
+                https://configure.51degrees.com/Wkqxf3Bs. A free key
+                populates the free tier properties only. A key that also
+                includes the paid properties used by the examples may be
+                created at https://configure.51degrees.com/hYzn3TV3. -->
                 <TestResourceKey><!-- your resource key --></TestResourceKey>
             </properties>
         </profile>
