@@ -1,8 +1,8 @@
 # 51Degrees IP Intelligence Engines - Examples
 
-![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=java-open-source "Data rewards the curious") **Java IP Intelligence**
+![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=51degrees-ip-intelligence-engines-examples "Data rewards the curious") **Java IP Intelligence**
 
-[Developer Documentation](https://51degrees.com/ip-intelligence-java/index.html?utm_source=github&utm_medium=repository&utm_content=documentation&utm_campaign=java-open-source "developer documentation")
+[Developer Documentation](https://51degrees.com/ip-intelligence-java/index.html?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=51degrees-ip-intelligence-engines-examples "developer documentation")
 
 ## Introduction
 
@@ -68,9 +68,9 @@ documentation now reflect what is free and what needs a paid subscription.
   and AccuracyRadiusMin.
 
 A free resource key selecting the free tier properties can be created at
-https://configure.51degrees.com/Wkqxf3Bs. A resource key that also includes
+https://configure.51degrees.com/Wkqxf3Bs?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=cloud-coming-soon. A resource key that also includes
 the paid properties used by the examples can be created at
-https://configure.51degrees.com/hYzn3TV3. See https://51degrees.com/pricing
+https://configure.51degrees.com/hYzn3TV3?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=cloud-coming-soon. See https://51degrees.com/pricing?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=cloud-coming-soon
 to get a paid subscription with more properties.
 
 ### On-Premise
