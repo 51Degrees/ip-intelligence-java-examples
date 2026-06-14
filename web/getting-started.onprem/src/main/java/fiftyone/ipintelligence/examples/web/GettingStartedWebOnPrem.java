@@ -227,7 +227,21 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
             .replace("${ACCURACY_RADIUS}", asIntegerProperty(tryGet(ipiData::getAccuracyRadiusMin)))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
-            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
+            // On-premise engine: only invite the user to contact us about more
+            // properties and features when running against the free Lite tier.
+            .replace("${CONTACT_MESSAGE}", HtmlContentHelper.getContactMessage(
+                HtmlContentHelper.ContactMessageVariant.ON_PREMISE, isLiteDataFile(flowData)));
+    }
+
+    /**
+     * Determine whether the on-premise engine is using the free Lite tier data file.
+     */
+    private boolean isLiteDataFile(FlowData flowData) {
+        fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine engine =
+            flowData.getPipeline().getElement(
+                fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
+        return engine != null && engine.getDataSourceTier().equals("Lite");
     }
     
     /**
@@ -247,12 +261,13 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             
             // Check if this evidence was actually used by the engine
             boolean wasUsed = engine != null && engine.getEvidenceKeyFilter().include(key);
-            String cssClass = wasUsed ? "lightgreen" : "lightyellow";
-            String keyDisplay = wasUsed ? "<b>" + key + "</b>" : key;
-            
+            String rowClass = wasUsed ? "c-eg-table__row--used" : "c-eg-table__row--present";
+
             evidenceRows.append(String.format(
-                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>", 
-                cssClass, keyDisplay, valueStr));
+                "<tr class=\"c-eg-table__row %s\">" +
+                    "<td class=\"c-eg-table__cell c-eg-table__cell--key\">%s</td>" +
+                    "<td class=\"c-eg-table__cell\">%s</td></tr>",
+                rowClass, key, valueStr));
         }
         
         return evidenceRows.toString();
