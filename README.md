@@ -1,8 +1,8 @@
 # 51Degrees IP Intelligence Engines - Examples
 
-![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=repository&utm_content=readme_main&utm_campaign=java-open-source "Data rewards the curious") **Java IP Intelligence**
+![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=51degrees-ip-intelligence-engines-examples "Data rewards the curious") **Java IP Intelligence**
 
-[Developer Documentation](https://51degrees.com/ip-intelligence-java/index.html?utm_source=github&utm_medium=repository&utm_content=documentation&utm_campaign=java-open-source "developer documentation")
+[Developer Documentation](https://51degrees.com/ip-intelligence-java/index.html?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=51degrees-ip-intelligence-engines-examples "developer documentation")
 
 ## Introduction
 
@@ -35,6 +35,15 @@ ip-intelligence-java-examples/
 └── shared/
 ```
 
+The examples locate the data file in the following order:
+
+1. The `51DEGREES_IPI_PATH` environment variable or system property, which can
+   be set to an explicit path to the data file.
+2. A search of the project folder hierarchy for the expected file name.
+3. The expected location `ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi`
+   (the configuration files for the getting started examples fall back to the
+   free Lite file `ip-intelligence-data/51Degrees-LiteV41.ipi`).
+
 This project contains sub-modules - **console**, giving examples that are intended
 to be run from the command line/console and **web**, illustrating use
 of 51Degrees Web/Servlet integration. There is also a **shared** sub-module
@@ -66,6 +75,25 @@ environment variable or system property.
 | GettingStartedWebCloud (Web)  | How to use the 51Degrees cloud IP intelligence service to determine details about IP addresses as part of a simple Java servlet website. |
 | GetAllPropertiesCloud    | How to iterate over all properties returned by the cloud IP intelligence service for a given IP address.                                     |
 | MetadataCloud            | How to access the meta-data that relates to the properties available from the cloud IP intelligence service.                                 |
+
+Cloud examples need a resource key. The key is read from the
+`51DEGREES_RESOURCE_KEY` environment variable or system property first. The
+legacy `TestResourceKey` name is still supported and is checked second.
+
+The cloud property tiers changed in May 2026. The examples and this
+documentation now reflect what is free and what needs a paid subscription.
+
+- Free tier IP properties are Country, LocationConfidence, Ip and IpV6.
+- Paid IP properties used by the examples are CountryCode, CountryCode3,
+  Region, State, Town, TimeZoneOffset, RegisteredName, RegisteredOwner,
+  RegisteredCountry, IpRangeStart, IpRangeEnd, Latitude, Longitude, Areas
+  and AccuracyRadiusMin.
+
+A free resource key selecting the free tier properties can be created at
+https://configure.51degrees.com/Wkqxf3Bs?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=cloud-coming-soon. A resource key that also includes
+the paid properties used by the examples can be created at
+https://configure.51degrees.com/hYzn3TV3?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=cloud-coming-soon. See https://51degrees.com/pricing?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=cloud-coming-soon
+to get a paid subscription with more properties.
 
 ### On-Premise
 

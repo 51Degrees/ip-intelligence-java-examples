@@ -34,7 +34,7 @@
  * This example is available in full on [GitHub](https://github.com/51Degrees/ip-intelligence-java-examples/blob/master/web/getting-started.onprem/src/main/java/fiftyone/ipintelligence/examples/web/GettingStartedWebOnPrem.java).
  *
  * This example requires an enterprise IP Intelligence data file (.ipi). 
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=web-getting-started.onprem-src-main-java-fiftyone-ipintelligence-examples-web-gettingstartedwebonprem.java&utm_term=header).
  *
  * Required Maven Dependencies:
  * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
@@ -78,6 +78,7 @@ import java.util.Map;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.IPI_PATH_ENV_VAR;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asStringProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asIntegerProperty;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.asFloatProperty;
@@ -101,7 +102,7 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
  * The configuration file for the pipeline is at src/main/webapp/WEB-INF/51Degrees-OnPrem.xml
  * 
  * This example requires an enterprise IP Intelligence data file (.ipi). 
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=web-getting-started.onprem-src-main-java-fiftyone-ipintelligence-examples-web-gettingstartedwebonprem.java&utm_term=gettingstartedwebonprem).
  */
 public class GettingStartedWebOnPrem extends HttpServlet {
     private static final long serialVersionUID = 1734154705981153540L;
@@ -120,7 +121,9 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             System.setProperty("TestDataFile", dataFilePath);
             logger.info("Using data file: {}", dataFilePath);
         } catch (Exception e) {
-            logger.warn("Data file not found at expected location: {}", dataFile);
+            logger.warn("Data file not found at expected location: {}. " +
+                    "An explicit path can be supplied via the {} environment variable.",
+                    dataFile, IPI_PATH_ENV_VAR);
             logger.warn("Will attempt to use default path from XML configuration");
             logger.debug("Error finding data file", e);
         }
@@ -224,7 +227,21 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             .replace("${AREAS_JS}", escapeForJs(asWktStringProperty(tryGet(ipiData::getAreas))))
             .replace("${ACCURACY_RADIUS}", asIntegerProperty(tryGet(ipiData::getAccuracyRadiusMin)))
             .replace("${TIME_ZONE_OFFSET}", asIntegerProperty(tryGet(ipiData::getTimeZoneOffset)))
-            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData));
+            .replace("${EVIDENCE_ROWS}", buildEvidenceRows(flowData))
+            // On-premise engine: only invite the user to contact us about more
+            // properties and features when running against the free Lite tier.
+            .replace("${CONTACT_MESSAGE}", HtmlContentHelper.getContactMessage(
+                HtmlContentHelper.ContactMessageVariant.ON_PREMISE, isLiteDataFile(flowData)));
+    }
+
+    /**
+     * Determine whether the on-premise engine is using the free Lite tier data file.
+     */
+    private boolean isLiteDataFile(FlowData flowData) {
+        fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine engine =
+            flowData.getPipeline().getElement(
+                fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
+        return engine != null && engine.getDataSourceTier().equals("Lite");
     }
     
     /**
@@ -244,12 +261,13 @@ public class GettingStartedWebOnPrem extends HttpServlet {
             
             // Check if this evidence was actually used by the engine
             boolean wasUsed = engine != null && engine.getEvidenceKeyFilter().include(key);
-            String cssClass = wasUsed ? "lightgreen" : "lightyellow";
-            String keyDisplay = wasUsed ? "<b>" + key + "</b>" : key;
-            
+            String rowClass = wasUsed ? "c-eg-table__row--used" : "c-eg-table__row--present";
+
             evidenceRows.append(String.format(
-                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>", 
-                cssClass, keyDisplay, valueStr));
+                "<tr class=\"c-eg-table__row %s\">" +
+                    "<td class=\"c-eg-table__cell c-eg-table__cell--key\">%s</td>" +
+                    "<td class=\"c-eg-table__cell\">%s</td></tr>",
+                rowClass, key, valueStr));
         }
         
         return evidenceRows.toString();

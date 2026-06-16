@@ -55,7 +55,7 @@ import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_
  * - [com.51degrees:ip-intelligence](https://central.sonatype.com/artifact/com.51degrees/ip-intelligence)
  *
  * This example requires an enterprise IP Intelligence data file (.ipi).
- * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us).
+ * To obtain an enterprise data file for testing, please [contact us](https://51degrees.com/contact-us?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=console-src-main-java-fiftyone-ipintelligence-examples-console-metadataonprem.java&utm_term=header).
  */
 public class MetadataOnPrem {
     private static final Logger logger = LoggerFactory.getLogger(GettingStartedOnPrem.class);
@@ -63,7 +63,7 @@ public class MetadataOnPrem {
     /* In this example, by default, the 51degrees IP Intelligence data file needs to be somewhere in the project
     space, or you may specify another file as a command line parameter.
 
-    For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us */
+    For testing, contact us to obtain an enterprise data file: https://51degrees.com/contact-us?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=console-src-main-java-fiftyone-ipintelligence-examples-console-metadataonprem.java&utm_term=main */
 
     public static void main(String[] args) throws Exception {
         configureLogback(getFilePath("logback.xml"));
@@ -79,7 +79,9 @@ public class MetadataOnPrem {
             dataFileLocation = DataFileHelper.getDataFileLocation(dataFile);
         } catch (Exception e) {
             logger.error("Failed to find IP Intelligence data file at '{}'. " +
-                    "Please provide a valid path to an IP Intelligence data file (.ipi).", dataFile);
+                    "Please provide a valid path to an IP Intelligence data file (.ipi). " +
+                    "An explicit path can be supplied via the {} environment variable.",
+                    dataFile, DataFileHelper.IPI_PATH_ENV_VAR);
             throw e;
         }
         // Build a new on-premise IP Intelligence engine with the max performance profile.

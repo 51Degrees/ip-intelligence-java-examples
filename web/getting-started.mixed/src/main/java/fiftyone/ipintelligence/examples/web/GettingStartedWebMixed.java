@@ -68,6 +68,7 @@ import java.util.Map;
 
 import static fiftyone.common.testhelpers.LogbackHelper.configureLogback;
 import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
+import static fiftyone.ipintelligence.examples.shared.DataFileHelper.IPI_PATH_ENV_VAR;
 import static fiftyone.ipintelligence.examples.shared.PropertyHelper.*;
 import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
@@ -113,7 +114,9 @@ public class GettingStartedWebMixed extends HttpServlet {
             System.setProperty("TestDataFile", ipiPath);
             logger.info("Using IP Intelligence data file: {}", ipiPath);
         } catch (Exception e) {
-            logger.warn("IP Intelligence data file not found at: {}", ipiDataFile);
+            logger.warn("IP Intelligence data file not found at: {}. " +
+                    "An explicit path can be supplied via the {} environment variable.",
+                    ipiDataFile, IPI_PATH_ENV_VAR);
             logger.warn("Will attempt to use default path from XML configuration");
             logger.debug("Error finding IP Intelligence data file", e);
         }
@@ -226,8 +229,22 @@ public class GettingStartedWebMixed extends HttpServlet {
                 .replace("${HumanProbability}",asIntegerProperty(tryGet(ipiData::getHumanProbability)))
                 .replace("${HardwareDiversity}",asIntegerProperty(tryGet(ipiData::getHardwareDiversity)))
         .replace("${BrowserDiversity}",asIntegerProperty(tryGet(ipiData::getBrowserDiversity)))
-                .replace("${PlatformDiversity}",asIntegerProperty(tryGet(ipiData::getPlatformDiversity)));
+                .replace("${PlatformDiversity}",asIntegerProperty(tryGet(ipiData::getPlatformDiversity)))
+            // On-premise engines: only invite the user to contact us about more
+            // properties and features when running against the free Lite tier.
+            .replace("${CONTACT_MESSAGE}", HtmlContentHelper.getContactMessage(
+                HtmlContentHelper.ContactMessageVariant.ON_PREMISE, isLiteDataFile(flowData)));
 
+    }
+
+    /**
+     * Determine whether the on-premise IP Intelligence engine is using the free Lite tier data file.
+     */
+    private boolean isLiteDataFile(FlowData flowData) {
+        fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine engine =
+            flowData.getPipeline().getElement(
+                fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngine.class);
+        return engine != null && engine.getDataSourceTier().equals("Lite");
     }
 
     private String buildEvidenceRows(FlowData flowData) {
@@ -254,12 +271,13 @@ public class GettingStartedWebMixed extends HttpServlet {
                 }
             } catch (Exception e) { /* ignore */ }
 
-            String cssClass = wasUsed ? "lightgreen" : "lightyellow";
-            String keyDisplay = wasUsed ? "<b>" + key + "</b>" : key;
+            String rowClass = wasUsed ? "c-eg-table__row--used" : "c-eg-table__row--present";
 
             evidenceRows.append(String.format(
-                "<tr class=\"%s\"><td>%s</td><td>%s</td></tr>",
-                cssClass, keyDisplay, valueStr));
+                "<tr class=\"c-eg-table__row %s\">" +
+                    "<td class=\"c-eg-table__cell c-eg-table__cell--key\">%s</td>" +
+                    "<td class=\"c-eg-table__cell\">%s</td></tr>",
+                rowClass, key, valueStr));
         }
 
         return evidenceRows.toString();

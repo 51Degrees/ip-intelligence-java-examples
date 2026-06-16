@@ -126,7 +126,9 @@ public class GettingStartedMixed {
             System.setProperty("TestDataFile", ipiLocation);
         } catch (Exception e) {
             logger.error("Failed to find IP Intelligence data file at '{}'. " +
-                    "Please provide a valid path to an IP Intelligence data file (.ipi).", ipiDataFile);
+                    "Please provide a valid path to an IP Intelligence data file (.ipi). " +
+                    "An explicit path can be supplied via the {} environment variable.",
+                    ipiDataFile, DataFileHelper.IPI_PATH_ENV_VAR);
             throw e;
         }
 

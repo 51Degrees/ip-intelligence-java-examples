@@ -101,6 +101,13 @@ public class DataFileHelper {
         return null;
     }
 
+    /**
+     * Aligned name of the environment variable or system property which may
+     * hold an explicit path to the IP Intelligence data file. This name is
+     * checked first, before any search of the project space.
+     */
+    public static final String IPI_PATH_ENV_VAR = "51DEGREES_IPI_PATH";
+
 public static class DatafileInfo {
         FiftyOneDataFile fileInfo;
         String tier;
@@ -141,7 +148,7 @@ public static class DatafileInfo {
                     "This is used for illustration, and has limited " +
                     "accuracy and capabilities. Find out about the " +
                     "Enterprise data file on our pricing page: " +
-                    "https://51degrees.com/pricing");
+                    "https://51degrees.com/pricing?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=shared-src-main-java-fiftyone-ipintelligence-examples-shared-datafilehelper.java&utm_term=lite-data-file");
         }
         if (daysOld > 28) {
             logger.warn("This example is using a data file that is more " +
@@ -152,7 +159,10 @@ public static class DatafileInfo {
 
     public static void cantFindDataFile(String dataFile) {
         logger.error("Could not find the data file '{}' which must be " +
-                "somewhere in the project space to be found.", dataFile);
+                "somewhere in the project space to be found. An explicit " +
+                "path to the data file can be supplied via the {} " +
+                "environment variable or system property.",
+                dataFile, IPI_PATH_ENV_VAR);
     }
 
     /**
@@ -180,16 +190,37 @@ public static class DatafileInfo {
 
     /**
      * Tries to find the passed file, or if null a default file. Handles both absolute and relative paths.
+     * An absolute path supplied by the caller is used as is. Otherwise an
+     * explicit path supplied via the {@link #IPI_PATH_ENV_VAR} environment
+     * variable or system property is checked before the folder hierarchy is
+     * searched for the passed filename.
      * @param dataFilename a filename to find (can be absolute or relative path)
      * @return a full pathname
      * @throws Exception if the file was not found
      */
     @SuppressWarnings("RedundantThrows")
     public static String getDataFileLocation(String dataFilename) throws Exception {
+        // an explicit path supplied via the aligned environment variable or
+        // system property is checked before any search for the filename
+        if (Objects.isNull(dataFilename) ||
+                Paths.get(dataFilename).isAbsolute() == false) {
+            String envDataFile = System.getenv(IPI_PATH_ENV_VAR);
+            if (Objects.isNull(envDataFile)) {
+                envDataFile = System.getProperty(IPI_PATH_ENV_VAR);
+            }
+            if (Objects.nonNull(envDataFile)) {
+                if (Files.exists(Paths.get(envDataFile))) {
+                    return envDataFile;
+                }
+                logger.warn("Ignoring {} value '{}' as no file exists there",
+                        IPI_PATH_ENV_VAR, envDataFile);
+            }
+        }
+
         if (Objects.isNull(dataFilename)) {
             dataFilename = ENTERPRISE_DATA_FILE_REL_PATH;
         }
-        
+
         // Check if it's an absolute path
         Path dataPath = Paths.get(dataFilename);
         if (dataPath.isAbsolute()) {
@@ -214,8 +245,10 @@ public static class DatafileInfo {
                         return dataPath.toAbsolutePath().toString();
                     }
                     DataFileHelper.cantFindDataFile(dataFilename);
-                    throw new IOException("Data file not found at relative path: " + dataFilename + 
-                                        ". Searched in project directories and current working directory.");
+                    throw new IOException("Data file not found at relative path: " + dataFilename +
+                                        ". Searched in project directories and current working directory." +
+                                        " An explicit path can be supplied via the " + IPI_PATH_ENV_VAR +
+                                        " environment variable.");
                 }
             }
         }
