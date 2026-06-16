@@ -38,8 +38,15 @@ nbactions.xml
 
 build*/
 SESSIONS.ser
+# enterprise IPI data file used by the examples and CI (see DataFileHelper
+# .ENTERPRISE_DATA_FILE_REL_PATH and ci/fetch-assets.ps1)
 51Degrees-EnterpriseIpiV41.ipi
 51Degrees-EnterpriseIpiV41.ipi.gz
 51Degrees-EnterpriseIpiV41.ipi.bak
+# distributor-named IPI data files
+51Degrees-IPIV4EnterpriseIpiV41.ipi
+51Degrees-IPIV4EnterpriseIpiV41.ipi.gz
+51Degrees-IPIV4AsnIpiV41.ipi
+51Degrees-IPIV4AsnIpiV41.ipi.gz
 # device detection data file used by the mixed examples
 device-detection-data/
