@@ -75,8 +75,8 @@ import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_
 
 /**
  * Provides an illustration of the fundamental elements of carrying out IP Intelligence using
- * "on premise" detection - meaning the IP Intelligence data is stored on your server
- * and the detection software executes exclusively on your server.
+ * "on premise" processing - meaning the IP Intelligence data is stored on your server
+ * and the lookup software executes exclusively on your server.
  * <p>
  * This example shows how to use pipeline configuration file, as opposed to the fluent builder.
  * The configuration file is <code>src/main/resources/gettingStartedOnPrem.xml</code>.
@@ -150,7 +150,7 @@ public class GettingStartedOnPrem {
                 .buildFromConfiguration(pipelineOptions)) {
 
 
-            // carry out some sample detections
+            // process some sample IP addresses
             for (Map<String, String> evidence : evidenceList) {
                 analyzeEvidence(evidence, pipeline, outputStream);
             }
@@ -170,16 +170,16 @@ public class GettingStartedOnPrem {
      * supplied and output the IP Intelligence results to the output stream.
      * @param evidence a map representing HTTP headers
      * @param pipeline a pipeline set up to process the evidence
-     * @param out somewhere to send the detection results
+     * @param out somewhere to send the results
      */
     private static void analyzeEvidence(Map<String, String> evidence,
                                         Pipeline pipeline,
                                         OutputStream out) throws Exception {
         PrintWriter writer = new PrintWriter(out);
-        /* FlowData is a data structure that is used to convey information required for detection
-        and the results of the detection through the pipeline. Information required for
-        detection is called "evidence" and usually consists of a number of HTTP Header field
-        values, in this case represented by a Map<String, String> of header name/value entries.
+        /* FlowData is a data structure that is used to convey information required for processing
+        and the results of that processing through the pipeline. Information required for
+        IP Intelligence is called "evidence" and is typically an IP address, in this case
+        represented by a Map<String, String> of evidence key/value entries.
 
         FlowData is wrapped in a try/resources block in order to ensure that the unmanaged
         resources allocated by the native IP Intelligence library are freed */
@@ -204,7 +204,7 @@ public class GettingStartedOnPrem {
             result matching the "IPIntelligenceData" interface. */
             IPIntelligenceData ipData = data.get(IPIntelligenceData.class);
 
-            /* Display the results of the detection, which are called IP Intelligence properties. See the
+            /* Display the results of processing, which are called IP Intelligence properties. See the
             property dictionary at https://51degrees.com/developers/property-dictionary for
             details of all available properties. */
             

@@ -11,7 +11,7 @@ These examples are not distributed as maven jars and need to be built by you.
 ## Required Files
 
 See [ip-intelligence-data](https://github.com/51Degrees/ip-intelligence-data/)
-repository for instructions on obtaining the necessary data files for on-premise detection.
+repository for instructions on obtaining the necessary data files for on-premise IP intelligence.
 
 **IMPORTANT**: The enterprise IP Intelligence data file must be placed in the `ip-intelligence-data`
 directory at the root of this repository. The expected filename is `51Degrees-EnterpriseIpiV41.ipi`.
@@ -51,8 +51,8 @@ Cloud examples will be added once the Cloud service for IP Intelligence becomes 
 |--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | GettingStartedOnPrem (Console) | How to use the 51Degrees on-premise IP intelligence API to determine details about IP addresses.                                                                                                                       |
 | GettingStartedWebOnPrem (Web)   | How to use the 51Degrees on-premise IP intelligence service to determine details about IP addresses as part of a simple Java servlet website.                                                                         |
-| MetadataOnPrem           | How to access the meta-data that relates to the properties available in IP intelligence detection.                                                                                                                             |
-| OfflineProcessing        | Example showing how to ingest a file containing IP addresses and perform IP intelligence detection against the entries.                                                                                                        |
+| MetadataOnPrem           | How to access the meta-data that relates to the properties available in IP intelligence.                                                                                                                             |
+| OfflineProcessing        | Example showing how to ingest a file containing IP addresses and perform IP intelligence processing against the entries.                                                                                                        |
 | PerformanceBenchmark     | How to configure the various performance options and run some simple performance tests for IP intelligence.                                                                                                                    |
 | UpdateDataFile           | How to configure the Pipeline to automatically update the IP intelligence data file on startup. Also illustrates 'file watcher'. This will refresh the IP intelligence engine if the specified data file is updated on disk. |
 
