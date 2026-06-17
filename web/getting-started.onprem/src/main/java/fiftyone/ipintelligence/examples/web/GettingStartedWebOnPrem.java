@@ -208,7 +208,7 @@ public class GettingStartedWebOnPrem extends HttpServlet {
      */
     private String substituteTemplateValues(String template, IPIntelligenceData ipiData, String inputIp, FlowData flowData) {
         return template
-            .replace("${DATA_FILE_WARNING}", "")
+            .replace("${DATA_FILE_WARNING}", HtmlContentHelper.getDataFileAgeWarning(flowData))
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
             .replace("${REGISTERED_NAME}", asStringProperty(tryGet(ipiData::getRegisteredName)))
             .replace("${REGISTERED_OWNER}", asStringProperty(tryGet(ipiData::getRegisteredOwner)))
