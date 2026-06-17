@@ -19,5 +19,5 @@ jobs:
     secrets:
       token: ${{ secrets.ACCESS_TOKEN }}
       IpIntelligence: ${{ secrets.IP_INTELLIGENCE_KEY }}
-      TestResourceKey: ${{ secrets.SUPER_RESOURCE_KEY}}
+      TestResourceKey: ${{ secrets.RESOURCE_KEY_CLOUD_V5_BESPOKE }}
       IpIntelligenceUrl: ${{ secrets.IPI_DATA_FILE_URL }}
