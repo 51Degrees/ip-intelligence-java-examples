@@ -191,7 +191,7 @@ public class GettingStartedWebMixed extends HttpServlet {
                                             IPIntelligenceData ipiData, String inputIp,
                                             FlowData flowData) {
         return template
-            .replace("${DATA_FILE_WARNING}", "")
+            .replace("${DATA_FILE_WARNING}", HtmlContentHelper.getDataFileAgeWarning(flowData))
             .replace("${INPUT_IP_ADDRESS}", inputIp != null ? inputIp : "")
             // Device Detection properties
             .replace("${HARDWARE_VENDOR}", asString(tryGet(deviceData::getHardwareVendor)))
