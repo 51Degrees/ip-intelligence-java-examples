@@ -54,4 +54,11 @@
             </BuildParameters>
         </Element>
     </Elements>
+    <!-- Suppress and log exceptions thrown from within (Web)Pipeline.process().
+         Set to `true` here so a detection failure degrades gracefully instead of
+         returning a 500 for every request. Use `false` while developing to surface mistakes loudly.
+         Note: the element name is singular - it matches Java's setSuppressProcessException. -->
+    <BuildParameters>
+        <SuppressProcessException>true</SuppressProcessException>
+    </BuildParameters>
 </PipelineOptions>
