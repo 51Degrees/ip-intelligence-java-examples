@@ -55,6 +55,53 @@ public class DataFileHelper {
     public static final String ENTERPRISE_DATA_FILE_REL_PATH = "ip-intelligence-data/51Degrees-EnterpriseIpiV41.ipi";
 
     /**
+     * Relative path to the freely downloadable Lite IP Intelligence data file.
+     * Run ip-intelligence-data/get-lite-file-from-azure.ps1 (or .sh) to obtain it.
+     * It contains the RegisteredCountry, RegisteredName and RegisteredOwner properties.
+     */
+    public static final String LITE_DATA_FILE_REL_PATH = "ip-intelligence-data/51Degrees-LiteV41.ipi";
+
+    /**
+     * Relative path to the ASN IP Intelligence data file which is part of the
+     * ip-intelligence-data submodule. It contains the Asn and AsnName properties.
+     */
+    public static final String ASN_DATA_FILE_REL_PATH = "ip-intelligence-data/51Degrees-IPIV4AsnIpiV41.ipi";
+
+    /**
+     * Find the best IP Intelligence data file available, preferring the
+     * enterprise file, then the ASN file from the ip-intelligence-data
+     * submodule, then the Lite file. Suitable for examples that work with
+     * whatever properties the data file contains, where any data file
+     * allows the example to run.
+     * @return a resolved data file path, or null when none is available
+     */
+    public static String findAvailableDataFile() {
+        return findAvailableDataFile(
+                ENTERPRISE_DATA_FILE_REL_PATH,
+                ASN_DATA_FILE_REL_PATH,
+                LITE_DATA_FILE_REL_PATH);
+    }
+
+    /**
+     * Find the first of the passed candidate data files that can be
+     * resolved. Examples that need particular properties can pass only
+     * the files containing them, for example the ASN file does not
+     * contain the RegisteredName property.
+     * @param candidates relative paths to try in order of preference
+     * @return a resolved data file path, or null when none is available
+     */
+    public static String findAvailableDataFile(String... candidates) {
+        for (String candidate : candidates) {
+            try {
+                return getDataFileLocation(candidate);
+            } catch (Exception e) {
+                logger.debug("Data file '{}' not available", candidate);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Aligned name of the environment variable or system property which may
      * hold an explicit path to the IP Intelligence data file. This name is
      * checked first, before any search of the project space.

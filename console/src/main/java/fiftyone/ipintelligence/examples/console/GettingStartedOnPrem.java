@@ -75,8 +75,8 @@ import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_
 
 /**
  * Provides an illustration of the fundamental elements of carrying out IP Intelligence using
- * "on premise" detection - meaning the IP Intelligence data is stored on your server
- * and the detection software executes exclusively on your server.
+ * an "on premise" engine, meaning the IP Intelligence data is stored on your server
+ * and the lookup software executes exclusively on your server.
  * <p>
  * This example shows how to use pipeline configuration file, as opposed to the fluent builder.
  * The configuration file is <code>src/main/resources/gettingStartedOnPrem.xml</code>.
@@ -178,10 +178,10 @@ public class GettingStartedOnPrem {
                                         Pipeline pipeline,
                                         OutputStream out) throws Exception {
         PrintWriter writer = new PrintWriter(out);
-        /* FlowData is a data structure that is used to convey information required for detection
-        and the results of the detection through the pipeline. Information required for
-        detection is called "evidence" and usually consists of a number of HTTP Header field
-        values, in this case represented by a Map<String, String> of header name/value entries.
+        /* FlowData is a data structure that is used to convey information required for a lookup
+        and the results of the lookup through the pipeline. Information required for
+        a lookup is called "evidence", for IP Intelligence this is an IP address, in this
+        case represented by a Map<String, String> of evidence key/value entries.
 
         FlowData is wrapped in a try/resources block in order to ensure that the unmanaged
         resources allocated by the native IP Intelligence library are freed */
@@ -206,7 +206,7 @@ public class GettingStartedOnPrem {
             result matching the "IPIntelligenceData" interface. */
             IPIntelligenceData ipData = data.get(IPIntelligenceData.class);
 
-            /* Display the results of the detection, which are called IP Intelligence properties. See the
+            /* Display the results of the lookup, which are called IP Intelligence properties. See the
             property dictionary at https://51degrees.com/developers/property-dictionary?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=console-src-main-java-fiftyone-ipintelligence-examples-console-gettingstartedonprem.java&utm_term=analyzeevidence for
             details of all available properties. */
             

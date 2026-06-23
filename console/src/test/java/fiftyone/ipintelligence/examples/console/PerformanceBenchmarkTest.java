@@ -23,6 +23,7 @@
 package fiftyone.ipintelligence.examples.console;
 
 import fiftyone.common.testhelpers.LogbackHelper;
+import fiftyone.ipintelligence.examples.shared.DataFileHelper;
 import fiftyone.pipeline.engines.Constants;
 import fiftyone.pipeline.util.FileFinder;
 import org.junit.Test;
@@ -30,20 +31,29 @@ import org.junit.Test;
 import java.io.PrintWriter;
 
 import static fiftyone.ipintelligence.examples.console.PerformanceBenchmark.*;
-import static fiftyone.ipintelligence.examples.shared.DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH;
 import static java.util.Arrays.stream;
+import static org.junit.Assume.assumeTrue;
 
 public class PerformanceBenchmarkTest {
 
    @Test
    public void benchmarkTest() throws Exception {
        LogbackHelper.configureLogback(FileFinder.getFilePath("logback.xml"));
+       // The benchmark restricts the engine to the RegisteredName property,
+       // which the free ASN file does not contain, so only the enterprise
+       // and Lite files are candidates here.
+       String dataFile = DataFileHelper.findAvailableDataFile(
+               DataFileHelper.ENTERPRISE_DATA_FILE_REL_PATH,
+               DataFileHelper.LITE_DATA_FILE_REL_PATH);
+       assumeTrue("Skipping test, no IP Intelligence data file with the " +
+                       "RegisteredName property found",
+               dataFile != null);
        new PerformanceBenchmark().runBenchmarks(
                // get only max performance for testing
                stream(DEFAULT_PERFORMANCE_CONFIGURATIONS)
                        .filter(c -> c.profile.equals(Constants.PerformanceProfiles.MaxPerformance))
                        .toArray(PerformanceConfiguration[]::new),
-               ENTERPRISE_DATA_FILE_REL_PATH,
+               dataFile,
                null,
                DEFAULT_NUMBER_OF_THREADS,
                new PrintWriter(System.out,true));

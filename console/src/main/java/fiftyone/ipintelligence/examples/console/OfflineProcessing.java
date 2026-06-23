@@ -73,14 +73,10 @@ import static fiftyone.pipeline.util.FileFinder.getFilePath;
 
 /**
  * Provides an example of processing a YAML file containing evidence for IP Intelligence. There are
- * 20,000 examples in the supplied file of evidence representing HTTP Headers. For example:
+ * 20,000 examples in the supplied file of evidence representing IP addresses. For example:
  *
  * <code><pre>
- *   header.user-agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36'
- *   header.sec-ch-ua: '" Not A;Brand";v="99", "Chromium";v="98", "Google Chrome";v="98"'
- *   header.sec-ch-ua-full-version: '"98.0.4758.87"'
- *   header.sec-ch-ua-mobile: '?0'
- *   header.sec-ch-ua-platform: '"Android"'
+ *   server.client-ip: '96.235.219.216'
  * </pre></code>
  * <p>
  * We create a IP Intelligence pipeline to read the data and find out about the associated IP addresses,
@@ -125,9 +121,9 @@ public class OfflineProcessing {
     @SuppressWarnings("unchecked")
     public static void run(String dataFile, InputStream is, OutputStream os) throws Exception {
 
-        String detectionFile;
+        String dataFileLocation;
         try {
-            detectionFile = DataFileHelper.getDataFileLocation(dataFile);
+            dataFileLocation = DataFileHelper.getDataFileLocation(dataFile);
         } catch (Exception e) {
             logger.error("Failed to find IP Intelligence data file at '{}'. " +
                     "Please provide a valid path to an IP Intelligence data file (.ipi). " +
@@ -158,7 +154,7 @@ public class OfflineProcessing {
         // Build a new on-premise IP Intelligence engine in a try/resources so
         // that the pipeline is disposed when done
         try (Pipeline pipeline = new IPIntelligencePipelineBuilder()
-                .useOnPremise(detectionFile, false)
+                .useOnPremise(dataFileLocation, false)
                 // inhibit sharing usage for this test, usually
                 // this should be set "true"
                 .setShareUsage(false)
@@ -169,14 +165,14 @@ public class OfflineProcessing {
                 // Performance options for IP Intelligence
                 //.setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
                 //.setPerformanceProfile(Constants.PerformanceProfiles.HighPerformance)
-                // Low memory profile has detection data streamed from disk on
+                // Low memory profile has the data streamed from disk on
                 // demand and is conservative in its use of memory, but
                 // slower because of disk access
                 .setPerformanceProfile(Constants.PerformanceProfiles.MaxPerformance)
                 //.setPerformanceProfile(Constants.PerformanceProfiles.Balanced)
                 .build()) {
 
-            // get the details of the detection engine from the pipeline,
+            // get the details of the IP Intelligence engine from the pipeline,
             // to find out what data file we are using
             IPIntelligenceOnPremiseEngine engine = pipeline.getElement(IPIntelligenceOnPremiseEngine.class);
             logger.info("IP Intelligence data file was created {}", engine.getDataFilePublishedDate());
@@ -203,7 +199,7 @@ public class OfflineProcessing {
                                         "server."));
 
                         /*
-                          ---- Do the detection ----
+                          ---- Do the processing ----
                          */
 
                         // carry out ip-intelligence (and other

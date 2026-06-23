@@ -193,4 +193,35 @@ public class PropertyHelper {
         return "Unknown. " + value.getNoValueMessage();
     }
 
+    /**
+     * Helper to get the first raw value of an IP Intelligence property.
+     * Due to Java generics type erasure, the on-premise engine may return
+     * List&lt;IWeightedValue&lt;T&gt;&gt; even when the declared type is T.
+     * This method unwraps such values and returns the first one, which is
+     * useful when the typed value is needed for further calculation rather
+     * than for display.
+     * @param property the property value
+     * @param <T> the declared type of the property
+     * @return the first unwrapped value, or null when there is no value
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T firstValue(AspectPropertyValue<T> property) {
+        if (property == null || property.hasValue() == false) {
+            return null;
+        }
+        Object value = property.getValue();
+        if (value instanceof List) {
+            List<?> list = (List<?>) value;
+            if (list.isEmpty()) {
+                return null;
+            }
+            Object item = list.get(0);
+            if (item instanceof IWeightedValue) {
+                item = ((IWeightedValue<?>) item).getValue();
+            }
+            return (T) item;
+        }
+        return (T) value;
+    }
+
 }

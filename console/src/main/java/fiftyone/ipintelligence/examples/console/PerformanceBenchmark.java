@@ -24,10 +24,10 @@
  * @example console/PerformanceBenchmark.java
  *
  * This example demonstrates how to run a performance benchmark using the IP Intelligence
- * On-premise API to see how fast detections can be performed.
+ * On-premise API to see how fast IP address lookups can be performed.
  *
  * The example will process a list of IP addresses and output performance metrics including
- * detection rate and processing time per IP address.
+ * lookup rate and processing time per IP address.
  *
  * This can help you optimize your IP Intelligence configuration for your specific use case
  * and understand the performance characteristics of different settings.
@@ -212,16 +212,16 @@ public class PerformanceBenchmark {
         .setConcurrency(numberOfThreads);
         // performance is improved by selecting only the properties you intend to use
         // Requesting properties from a single component
-        // reduces detection time compared with requesting properties from multiple components.
-        // If you don't specify any properties to detect, then all properties are detected,
-        // here we choose "all properties" by specifying none, or just "isMobile"
+        // reduces processing time compared with requesting properties from multiple components.
+        // If you don't specify any properties, then all properties are returned,
+        // here we choose "all properties" by specifying none, or just "RegisteredName"
         if (BooleanUtils.isFalse(config.allProperties)) {
             builder.setProperty("RegisteredName");
         }
     }
 
     /**
-     * Report per thread and overall detection performance
+     * Report per thread and overall lookup performance
      * @throws Exception to satisfy needs of called APIs
      */
     private void doReport() throws Exception {
@@ -250,7 +250,7 @@ public class PerformanceBenchmark {
     }
 
     /**
-     * Execute detections on specified number of threads
+     * Execute lookups on specified number of threads
      * @param pipeline the pipeline to use
      * @return elapsed millis
      * @throws Exception to satisfy called APIs
@@ -304,7 +304,7 @@ public class PerformanceBenchmark {
             result.checkSum = 0;
             long start = System.currentTimeMillis();
             for (Map<String, String> evidence : testList) {
-                // the benchmark is for detection time only
+                // the benchmark is for processing time only
 
                 // A try-with-resource block MUST be used for the
                 // FlowData instance. This ensures that native resources

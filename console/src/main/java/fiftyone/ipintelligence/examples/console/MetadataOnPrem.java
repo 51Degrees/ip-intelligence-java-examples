@@ -89,7 +89,7 @@ public class MetadataOnPrem {
         // the meta-data.
         // If you already have a pipeline and just want to get a reference to the engine 
         // then you can use `var engine = pipeline.GetElement<IPIntelligenceOnPremiseEngine>();`
-        try (IPIntelligenceOnPremiseEngine ddEngine =
+        try (IPIntelligenceOnPremiseEngine engine =
                      new IPIntelligenceOnPremiseEngineBuilder(LoggerFactory.getILoggerFactory())
                 // We use the low memory profile to minimize memory usage for this
                 // metadata example, which is memory-intensive.
@@ -102,31 +102,31 @@ public class MetadataOnPrem {
 
             PrintWriter writer = new PrintWriter(output);
             logger.info("Listing Components");
-            outputComponents(ddEngine, writer);
+            outputComponents(engine, writer);
             writer.println();
             writer.flush();
 
             logger.info("Listing Profile Details");
-            outputProfileDetails(ddEngine, writer);
+            outputProfileDetails(engine, writer);
             writer.println();
             writer.flush();
 
             logger.info("Listing Evidence Key Details");
-            outputEvidenceKeyDetails(ddEngine, writer);
+            outputEvidenceKeyDetails(engine, writer);
             writer.println();
             writer.flush();
 
-            DataFileHelper.logDataFileInfo(ddEngine);
+            DataFileHelper.logDataFileInfo(engine);
         }
     }
 
-    private static void outputEvidenceKeyDetails(IPIntelligenceOnPremiseEngine ddEngine,
+    private static void outputEvidenceKeyDetails(IPIntelligenceOnPremiseEngine engine,
                                               PrintWriter output){
         output.println();
-        if (ddEngine.getEvidenceKeyFilter() instanceof EvidenceKeyFilterWhitelist) {
+        if (engine.getEvidenceKeyFilter() instanceof EvidenceKeyFilterWhitelist) {
             // If the evidence key filter extends EvidenceKeyFilterWhitelist then we can
             // display a list of accepted keys.
-            EvidenceKeyFilterWhitelist filter = (EvidenceKeyFilterWhitelist) ddEngine.getEvidenceKeyFilter();
+            EvidenceKeyFilterWhitelist filter = (EvidenceKeyFilterWhitelist) engine.getEvidenceKeyFilter();
             output.println("Accepted evidence keys:");
             for (Map.Entry<String, Integer> entry : filter.getWhitelist().entrySet()){
                 output.println("\t" + entry.getKey());
@@ -137,19 +137,19 @@ public class MetadataOnPrem {
                     "EvidenceKeyFilterWhitelist, a list of accepted values cannot be " +
                     "displayed. As an alternative, you can pass evidence keys to " +
                     "filter.include(string) to see if a particular key will be included " +
-                    "or not.\n", ddEngine.getEvidenceKeyFilter().getClass().getName());
-            output.println("For example, header.user-agent " +
-                    (ddEngine.getEvidenceKeyFilter().include("header.user-agent") ?
+                    "or not.\n", engine.getEvidenceKeyFilter().getClass().getName());
+            output.println("For example, query.client-ip " +
+                    (engine.getEvidenceKeyFilter().include("query.client-ip") ?
                             "is " : "is not ") + "accepted.");
         }
     }
 
-    private static void outputProfileDetails(IPIntelligenceOnPremiseEngine ddEngine,
+    private static void outputProfileDetails(IPIntelligenceOnPremiseEngine engine,
                                             PrintWriter output) {
         // Group the profiles by component and then output the number of profiles 
         // for each component.
         Map<String, List<ProfileMetaData>> groups =
-                StreamSupport.stream(ddEngine.getProfiles().spliterator(), false)
+                StreamSupport.stream(engine.getProfiles().spliterator(), false)
                                 .collect(Collectors.groupingBy(p -> p.getComponent().getName()));
         groups.forEach((k,v)->output.format("%s Profiles: %d\n", k , v.size()));
     }
@@ -157,8 +157,8 @@ public class MetadataOnPrem {
     // Output the component name as well as a list of all the associated properties.
     // If we're outputting to console then we also add some formatting to make it
     // more readable.
-    private static void outputComponents(IPIntelligenceOnPremiseEngine ddEngine, PrintWriter output){
-        ddEngine.getComponents().forEach(c -> {
+    private static void outputComponents(IPIntelligenceOnPremiseEngine engine, PrintWriter output){
+        engine.getComponents().forEach(c -> {
             output.println("Component - "+ c.getName());
             outputProperties(c, output);
         });
