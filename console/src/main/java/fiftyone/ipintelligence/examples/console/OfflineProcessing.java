@@ -29,6 +29,13 @@
  * We create an IP Intelligence pipeline to read the data and find out about the associated network information,
  * we write this data to a YAML formatted output stream.
  *
+ * This example demonstrates the integration in a simplified form. It intentionally outputs only a
+ * small subset of the available properties (the registered network details) to keep the illustration
+ * clear. Many more IP Intelligence properties can be enabled - refer to the
+ * [Property Dictionary](https://51degrees.com/developers/property-dictionary?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=console-src-main-java-fiftyone-ipintelligence-examples-console-offlineprocessing.java&utm_term=header)
+ * for the complete list. The commented-out `getPopulatedProperties` call further down shows how to
+ * output every populated property instead of the fixed subset.
+ *
  * As well as explaining the basic operation of offline processing using the defaults, for
  * advanced operation this example can be used to experiment with tuning IP Intelligence for
  * performance using Performance Profile settings.
@@ -212,12 +219,19 @@ public class OfflineProcessing {
                           ---- use the IP Intelligence data - output to YAML in this case
                          */
 
+                        // This sample is intentionally minimal: for illustration it
+                        // outputs just a small subset of the available properties (the
+                        // registered network details below). Many more IP Intelligence
+                        // properties can be enabled - for the complete list, see the
+                        // property dictionary at
+                        // https://51degrees.com/developers/property-dictionary?utm_source=code&utm_medium=example&utm_campaign=ip-intelligence-java-examples&utm_content=console-src-main-java-fiftyone-ipintelligence-examples-console-offlineprocessing.java&utm_term=run
                         Map<String, ? super Object> resultMap = new HashMap<>();
                         resultMap.put("ip.RegisteredName", asStringProperty(ipData.getRegisteredName()));
                         resultMap.put("ip.RegisteredOwner", asStringProperty(ipData.getRegisteredOwner()));
                         resultMap.put("ip.RegisteredCountry", asStringProperty(ipData.getRegisteredCountry()));
 
-                        // to look at all IP Intelligence properties use the following:
+                        // To output all populated IP Intelligence properties instead of
+                        // the fixed subset above, replace the three puts with the helper:
                         // resultMap.putAll(getPopulatedProperties(ipData, "ip."));
 
                         // write document to output stream as a YAML document
