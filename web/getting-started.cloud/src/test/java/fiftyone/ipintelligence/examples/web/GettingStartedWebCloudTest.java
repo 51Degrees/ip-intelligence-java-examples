@@ -42,6 +42,7 @@ import static org.junit.Assume.assumeFalse;
 
 public class GettingStartedWebCloudTest {
     private static Server SERVER;
+    private static int PORT;
 
     @BeforeClass
     public static void startJetty() throws Exception {
@@ -51,14 +52,17 @@ public class GettingStartedWebCloudTest {
         // Make the resource key available to the pipeline configuration file
         System.setProperty(KeyHelper.TEST_RESOURCE_KEY, resourceKey);
 
-        SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 8083);
+        // Bind an OS-assigned ephemeral port (0) to avoid intermittent
+        // "Address already in use" failures from a fixed port not yet released.
+        SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 0);
+        PORT = EmbedJetty.boundPort(SERVER);
     }
 
     @Test
     public void testWebCloud() throws Exception {
 
         HttpURLConnection connection =
-                (HttpURLConnection) new URL("http://localhost:8083/").openConnection();
+                (HttpURLConnection) new URL("http://localhost:" + PORT + "/").openConnection();
 
         int code = connection.getResponseCode();
 
@@ -93,8 +97,6 @@ public class GettingStartedWebCloudTest {
 
     @AfterClass
     public static void stopJetty() throws Exception {
-        if (SERVER != null) {
-            SERVER.stop();
-        }
+        EmbedJetty.stopAndJoin(SERVER);
     }
 }

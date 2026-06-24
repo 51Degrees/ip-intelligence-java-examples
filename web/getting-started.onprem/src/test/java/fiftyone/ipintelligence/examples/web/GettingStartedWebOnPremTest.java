@@ -41,6 +41,7 @@ import static org.junit.Assume.assumeTrue;
 
 public class GettingStartedWebOnPremTest {
     private static Server SERVER;
+    private static int PORT;
 
     @BeforeClass
     public static void startJetty() throws Exception {
@@ -51,14 +52,17 @@ public class GettingStartedWebOnPremTest {
                 dataFilePath != null);
         System.setProperty("TestDataFile", dataFilePath);
 
-        SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 8081);
+        // Bind an OS-assigned ephemeral port (0) to avoid intermittent
+        // "Address already in use" failures from a fixed port not yet released.
+        SERVER = EmbedJetty.startWebApp(getFilePath(getResourceBase()).getAbsolutePath(), 0);
+        PORT = EmbedJetty.boundPort(SERVER);
     }
 
     @Test
     public void testWebOnPrem() throws Exception {
 
         HttpURLConnection connection =
-                (HttpURLConnection) new URL("http://localhost:8081/").openConnection();
+                (HttpURLConnection) new URL("http://localhost:" + PORT + "/").openConnection();
 
         int code = connection.getResponseCode();
 
@@ -96,6 +100,6 @@ public class GettingStartedWebOnPremTest {
 
     @AfterClass
     public static void stopJetty() throws Exception {
-        SERVER.stop();
+        EmbedJetty.stopAndJoin(SERVER);
     }
 }

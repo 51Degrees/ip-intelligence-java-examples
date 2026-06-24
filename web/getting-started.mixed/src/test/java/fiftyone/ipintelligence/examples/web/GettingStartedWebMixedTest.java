@@ -43,6 +43,7 @@ import static org.junit.Assume.assumeTrue;
 
 public class GettingStartedWebMixedTest {
     private static Server SERVER;
+    private static int PORT;
 
     /**
      * Resolve the device detection data file. It is not part of this
@@ -77,15 +78,18 @@ public class GettingStartedWebMixedTest {
                 ipiDataFilePath != null);
         System.setProperty("TestDataFile", ipiDataFilePath);
 
+        // Bind an OS-assigned ephemeral port (0) to avoid intermittent
+        // "Address already in use" failures from a fixed port not yet released.
         SERVER = EmbedJetty.startWebApp(
-                GettingStartedWebMixed.getResourceBase(), 8081);
+                GettingStartedWebMixed.getResourceBase(), 0);
+        PORT = EmbedJetty.boundPort(SERVER);
     }
 
     @Test
     public void testWebMixed() throws Exception {
 
         HttpURLConnection connection =
-                (HttpURLConnection) new URL("http://localhost:8081/").openConnection();
+                (HttpURLConnection) new URL("http://localhost:" + PORT + "/").openConnection();
 
         int code = connection.getResponseCode();
 
@@ -117,8 +121,6 @@ public class GettingStartedWebMixedTest {
 
     @AfterClass
     public static void stopJetty() throws Exception {
-        if (SERVER != null) {
-            SERVER.stop();
-        }
+        EmbedJetty.stopAndJoin(SERVER);
     }
 }
