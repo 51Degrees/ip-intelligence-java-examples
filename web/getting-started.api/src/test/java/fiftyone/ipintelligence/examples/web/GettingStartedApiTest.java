@@ -44,7 +44,7 @@ import static org.junit.Assume.assumeTrue;
 
 public class GettingStartedApiTest {
     private static Server SERVER;
-    private static final int PORT = GettingStartedApi.DEFAULT_PORT;
+    private static int PORT;
 
     @BeforeClass
     public static void startJetty() throws Exception {
@@ -56,7 +56,10 @@ public class GettingStartedApiTest {
 
         Map<String, String> initParams = new HashMap<>();
         initParams.put(GettingStartedApi.DATA_FILE_INIT_PARAM, dataFilePath);
-        SERVER = EmbedJetty.startServlet("/*", PORT, GettingStartedApi.class, initParams);
+        // Bind an OS-assigned ephemeral port (0) to avoid intermittent
+        // "Address already in use" failures from a fixed port not yet released.
+        SERVER = EmbedJetty.startServlet("/*", 0, GettingStartedApi.class, initParams);
+        PORT = EmbedJetty.boundPort(SERVER);
     }
 
     private static String get(String path, int expectedCode) throws Exception {
@@ -108,8 +111,6 @@ public class GettingStartedApiTest {
 
     @AfterClass
     public static void stopJetty() throws Exception {
-        if (SERVER != null) {
-            SERVER.stop();
-        }
+        EmbedJetty.stopAndJoin(SERVER);
     }
 }

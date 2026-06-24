@@ -40,6 +40,7 @@ import static org.junit.Assume.assumeFalse;
 
 public class GettingStartedWebCloudMixedTest {
     private static Server SERVER;
+    private static int PORT;
 
     @BeforeClass
     public static void startJetty() throws Exception {
@@ -51,15 +52,18 @@ public class GettingStartedWebCloudMixedTest {
         // Intelligence properties as this example uses both engines.
         System.setProperty(KeyHelper.TEST_RESOURCE_KEY, resourceKey);
 
+        // Bind an OS-assigned ephemeral port (0) to avoid intermittent
+        // "Address already in use" failures from a fixed port not yet released.
         SERVER = EmbedJetty.startWebApp(
-                GettingStartedWebCloudMixed.getResourceBase(), 8084);
+                GettingStartedWebCloudMixed.getResourceBase(), 0);
+        PORT = EmbedJetty.boundPort(SERVER);
     }
 
     @Test
     public void testWebCloudMixed() throws Exception {
 
         HttpURLConnection connection =
-                (HttpURLConnection) new URL("http://localhost:8084/").openConnection();
+                (HttpURLConnection) new URL("http://localhost:" + PORT + "/").openConnection();
 
         int code = connection.getResponseCode();
 
@@ -91,8 +95,6 @@ public class GettingStartedWebCloudMixedTest {
 
     @AfterClass
     public static void stopJetty() throws Exception {
-        if (SERVER != null) {
-            SERVER.stop();
-        }
+        EmbedJetty.stopAndJoin(SERVER);
     }
 }

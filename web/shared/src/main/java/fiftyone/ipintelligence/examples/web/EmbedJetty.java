@@ -57,6 +57,12 @@ public class EmbedJetty {
         // Link the context to the server.
         server.setHandler(context);
 
+        // Ensure the connector socket is released promptly and gracefully when
+        // the server is stopped, so a subsequent bind on the same port (e.g.
+        // when tests run back-to-back) does not hit "Address already in use".
+        server.setStopAtShutdown(true);
+        server.setStopTimeout(5000);
+
         server.start();
 
         // Wait for the server to be fully started and ready to accept connections
@@ -64,6 +70,32 @@ public class EmbedJetty {
         waitForServerReady(server, 30000); // 30 second timeout
 
         return server;
+    }
+
+    /**
+     * Returns the local TCP port the server's first connector is actually
+     * listening on. When the server is started with port {@code 0} the OS
+     * assigns a free ephemeral port; tests should read it back via this method
+     * rather than assuming a fixed port.
+     *
+     * @param server a started Jetty server
+     * @return the bound local port
+     */
+    public static int boundPort(Server server) {
+        return ((ServerConnector) server.getConnectors()[0]).getLocalPort();
+    }
+
+    /**
+     * Stops the server and blocks until it has fully terminated, ensuring the
+     * listening socket is released before the method returns.
+     *
+     * @param server the server to stop (ignored if null)
+     */
+    public static void stopAndJoin(Server server) throws Exception {
+        if (server != null) {
+            server.stop();
+            server.join();
+        }
     }
 
     /**
@@ -140,6 +172,11 @@ public class EmbedJetty {
 
         // Link the context to the server.
         server.setHandler(context);
+
+        // Release the connector socket promptly and gracefully on stop (see
+        // startWebApp for rationale).
+        server.setStopAtShutdown(true);
+        server.setStopTimeout(5000);
 
         server.start();
 

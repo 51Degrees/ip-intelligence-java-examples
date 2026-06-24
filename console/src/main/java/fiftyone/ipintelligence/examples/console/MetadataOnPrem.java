@@ -27,7 +27,6 @@ import fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPre
 import fiftyone.pipeline.core.data.EvidenceKeyFilterWhitelist;
 import fiftyone.pipeline.engines.Constants;
 import fiftyone.pipeline.engines.fiftyone.data.ComponentMetaData;
-import fiftyone.pipeline.engines.fiftyone.data.ProfileMetaData;
 import fiftyone.pipeline.engines.fiftyone.data.ValueMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,12 +145,18 @@ public class MetadataOnPrem {
 
     private static void outputProfileDetails(IPIntelligenceOnPremiseEngine engine,
                                             PrintWriter output) {
-        // Group the profiles by component and then output the number of profiles 
-        // for each component.
-        Map<String, List<ProfileMetaData>> groups =
+        // Group the profiles by component and then output the number of profiles
+        // for each component. Count with a reducing collector rather than
+        // collecting every ProfileMetaData into a List: an on-premise IP
+        // Intelligence data file has an enormous number of profiles, so
+        // materializing them all just to call size() exhausts the heap
+        // (OutOfMemoryError). counting() retains only the per-group total.
+        Map<String, Long> groups =
                 StreamSupport.stream(engine.getProfiles().spliterator(), false)
-                                .collect(Collectors.groupingBy(p -> p.getComponent().getName()));
-        groups.forEach((k,v)->output.format("%s Profiles: %d\n", k , v.size()));
+                                .collect(Collectors.groupingBy(
+                                        p -> p.getComponent().getName(),
+                                        Collectors.counting()));
+        groups.forEach((k,v)->output.format("%s Profiles: %d\n", k , v));
     }
 
     // Output the component name as well as a list of all the associated properties.
