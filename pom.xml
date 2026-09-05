@@ -50,7 +50,7 @@
         <junit.version>4.13.2</junit.version>
         <maven.deploy.skip>true</maven.deploy.skip>
         <snakeyaml.version>1.30</snakeyaml.version>
-        <ip-intelligence.version>4.5.66</ip-intelligence.version>
+        <ip-intelligence.version>4.5.70</ip-intelligence.version>
         <device-detection.version>4.5.9</device-detection.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 
@@ -61,7 +61,7 @@
         <fetchrepository.id>central</fetchrepository.id>
         <fetchrepository.url>https://repo1.maven.org/maven2</fetchrepository.url>
 
-        <slf4j-api.version>2.0.18</slf4j-api.version>
+        <slf4j-api.version>2.0.19</slf4j-api.version>
         <logback-classic.version>1.3.16</logback-classic.version>
     </properties>
 
