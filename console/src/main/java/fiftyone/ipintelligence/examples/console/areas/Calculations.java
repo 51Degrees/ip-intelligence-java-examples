@@ -199,6 +199,19 @@ public class Calculations {
     private static Geometry transformGeometry(
             Geometry geometry,
             CoordinateTransform transform) {
+        // A multipolygon or collection can arrive holding a single piece,
+        // for example from the TopologyException fallback or the intersection
+        // of a collection. Each polygon in it is transformed on its own.
+        if (geometry instanceof Polygon == false) {
+            List<Geometry> parts = new ArrayList<>();
+            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+                Geometry part = geometry.getGeometryN(i);
+                if (part.getDimension() == 2) {
+                    parts.add(transformGeometry(part, transform));
+                }
+            }
+            return geometry.getFactory().buildGeometry(parts);
+        }
         // The outer boundary and each hole are separate rings. Joining their
         // points into one ring does not close, so they are handled apart.
         Polygon polygon = (Polygon) geometry;
