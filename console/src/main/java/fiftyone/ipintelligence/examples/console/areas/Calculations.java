@@ -25,6 +25,8 @@ package fiftyone.ipintelligence.examples.console.areas;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.proj4j.CoordinateTransform;
@@ -163,10 +165,10 @@ public class Calculations {
             }
             else {
                 for (int i = 0; i < intersect.getNumGeometries(); i++) {
-                    if (geo.getGeometryN(i).getArea() > 0) {
+                    if (intersect.getGeometryN(i).getArea() > 0) {
                         area += getArea(
                                 geo,
-                                geo.getGeometryN(i),
+                                intersect.getGeometryN(i),
                                 rectangle.getTransformation());
                     }
                 }
@@ -197,22 +199,49 @@ public class Calculations {
     private static Geometry transformGeometry(
             Geometry geometry,
             CoordinateTransform transform) {
-        GeometryFactory factory = geometry.getFactory();
-        Coordinate[] coordinates = new Coordinate[
-                geometry.getCoordinates().length];
+        // A multipolygon or collection can arrive holding a single piece,
+        // for example from the TopologyException fallback or the intersection
+        // of a collection. Each polygon in it is transformed on its own.
+        if (geometry instanceof Polygon == false) {
+            List<Geometry> parts = new ArrayList<>();
+            for (int i = 0; i < geometry.getNumGeometries(); i++) {
+                Geometry part = geometry.getGeometryN(i);
+                if (part.getDimension() == 2) {
+                    parts.add(transformGeometry(part, transform));
+                }
+            }
+            return geometry.getFactory().buildGeometry(parts);
+        }
+        // The outer boundary and each hole are separate rings. Joining their
+        // points into one ring does not close, so they are handled apart.
+        Polygon polygon = (Polygon) geometry;
+        LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
+        for (int i = 0; i < holes.length; i++) {
+            holes[i] = transformRing(polygon.getInteriorRingN(i), transform);
+        }
+        return geometry.getFactory().createPolygon(
+                transformRing(polygon.getExteriorRing(), transform),
+                holes);
+    }
+
+    private static LinearRing transformRing(
+            LinearRing ring,
+            CoordinateTransform transform) {
+        Coordinate[] source = ring.getCoordinates();
+        Coordinate[] coordinates = new Coordinate[source.length];
 
         for (int i = 0; i < coordinates.length; i++) {
             ProjCoordinate transformed = transform.transform(
                     new ProjCoordinate(
-                            geometry.getCoordinates()[i].getX(),
-                            geometry.getCoordinates()[i].getY()),
+                            source[i].getX(),
+                            source[i].getY()),
                     new ProjCoordinate());
             coordinates[i] = new Coordinate(
                     transformed.x,
                     transformed.y);
         }
 
-        return factory.createPolygon(coordinates);
+        return ring.getFactory().createLinearRing(coordinates);
     }
 
     /**

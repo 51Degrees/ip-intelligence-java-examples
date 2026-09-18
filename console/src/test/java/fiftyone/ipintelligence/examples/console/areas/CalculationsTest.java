@@ -25,6 +25,7 @@ package fiftyone.ipintelligence.examples.console.areas;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 
 import static org.junit.Assert.assertEquals;
@@ -96,6 +97,51 @@ public class CalculationsTest {
         Result result = Calculations.getAreas(wkt, 0, 0);
         assertAreaEquals(19836, result.getSquareKms());
         assertEquals(1, result.getGeometries());
+    }
+
+    @Test
+    public void testPolygonWithHole() throws Exception {
+        Polygon outer = createRectangle(0, 51, 1);
+        Polygon hole = createRectangle(0.25, 51.25, 0.5);
+        Polygon withHole = factory.createPolygon(
+                outer.getExteriorRing(),
+                new LinearRing[]{hole.getExteriorRing()});
+        assertAreaEquals(
+                Calculations.getAreas(outer, 0, 0).getSquareKms() -
+                        Calculations.getAreas(hole, 0, 0).getSquareKms(),
+                Calculations.getAreas(withHole, 0, 0).getSquareKms());
+    }
+
+    @Test
+    public void testPolygonSplitByGridCell() throws Exception {
+        // A U shape whose arms cross into the next grid cell, where they
+        // are two separate pieces.
+        Polygon shape = factory.createPolygon(new Coordinate[]{
+                new Coordinate(0.2, 50.5),
+                new Coordinate(0.8, 50.5),
+                new Coordinate(0.8, 51.5),
+                new Coordinate(0.6, 51.5),
+                new Coordinate(0.6, 50.7),
+                new Coordinate(0.4, 50.7),
+                new Coordinate(0.4, 51.5),
+                new Coordinate(0.2, 51.5),
+                new Coordinate(0.2, 50.5)});
+        Polygon whole = factory.createPolygon(new Coordinate[]{
+                new Coordinate(0.2, 50.5),
+                new Coordinate(0.8, 50.5),
+                new Coordinate(0.8, 51.5),
+                new Coordinate(0.2, 51.5),
+                new Coordinate(0.2, 50.5)});
+        Polygon gap = factory.createPolygon(new Coordinate[]{
+                new Coordinate(0.4, 50.7),
+                new Coordinate(0.6, 50.7),
+                new Coordinate(0.6, 51.5),
+                new Coordinate(0.4, 51.5),
+                new Coordinate(0.4, 50.7)});
+        assertAreaEquals(
+                Calculations.getAreas(whole, 0, 0).getSquareKms() -
+                        Calculations.getAreas(gap, 0, 0).getSquareKms(),
+                Calculations.getAreas(shape, 0, 0).getSquareKms());
     }
 
     @Test
