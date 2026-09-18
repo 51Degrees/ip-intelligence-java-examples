@@ -145,6 +145,18 @@ public class CalculationsTest {
     }
 
     @Test
+    public void testWktAreaIsCached() throws Exception {
+        String wkt = createRectangle(10, 51, 1).toText();
+
+        Calculations.getAreas(wkt, 0, 0);
+        int first = Calculations.getCachedWktCount();
+        Result again = Calculations.getAreas(wkt, 51.5, 10.5);
+
+        assertEquals(first, Calculations.getCachedWktCount());
+        assertTrue(again.getContains());
+    }
+
+    @Test
     public void testContains() throws Exception {
         Result result = Calculations.getAreas(
                 createRectangle(0, 51, 1), 51.5, 0.5);
