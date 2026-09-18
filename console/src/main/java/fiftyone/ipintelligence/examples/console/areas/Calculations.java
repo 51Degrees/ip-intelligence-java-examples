@@ -34,6 +34,8 @@ import org.locationtech.proj4j.ProjCoordinate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Used to work out the common values for areas in the examples.
@@ -54,6 +56,23 @@ public class Calculations {
      */
     private static final ThreadLocal<WKTReader> wktReader =
             ThreadLocal.withInitial(WKTReader::new);
+
+    /**
+     * Parsed geometry and area in square meters for each WKT string seen,
+     * so that an area is only worked out once.
+     */
+    private static final Map<String, CachedArea> wktAreas =
+            new ConcurrentHashMap<>();
+
+    private static class CachedArea {
+        final Geometry geo;
+        final double area;
+
+        CachedArea(Geometry geo, double area) {
+            this.geo = geo;
+            this.area = area;
+        }
+    }
 
     /**
      * A grid of latitude and longitude rectangles. Used to work out the
@@ -79,11 +98,27 @@ public class Calculations {
             String wkt,
             double latitude,
             double longitude) throws Exception {
-        Geometry geo = wktReader.get().read(wkt);
-        if (geo != null) {
-            return getAreas(geo, latitude, longitude);
+        CachedArea cached = wktAreas.get(wkt);
+        if (cached == null) {
+            Geometry geo = wktReader.get().read(wkt);
+            cached = new CachedArea(geo, geo == null ? 0 : getAreas(geo));
+            wktAreas.put(wkt, cached);
+        }
+        if (cached.geo != null) {
+            return new Result(
+                    (int) Math.round(cached.area / 1_000_000),
+                    cached.geo.getNumGeometries(),
+                    cached.geo.contains(cached.geo.getFactory().createPoint(
+                            new Coordinate(longitude, latitude))));
         }
         return new Result(0, 0, false);
+    }
+
+    /**
+     * Number of WKT strings with a cached area.
+     */
+    public static int getCachedWktCount() {
+        return wktAreas.size();
     }
 
     /**
