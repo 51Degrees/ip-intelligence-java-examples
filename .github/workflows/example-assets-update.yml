@@ -7,6 +7,10 @@ name: Example Assets Update
 
 on:
   workflow_dispatch:
+    inputs:
+      common-ci-ref:
+        type: string
+        default: ''
   schedule:
     - cron: '0 3 * * 1'
 
@@ -15,5 +19,6 @@ jobs:
     uses: 51Degrees/common-ci/.github/workflows/nightly-example-assets-update.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
+      common-ci-ref: ${{ inputs.common-ci-ref || '' }}
     secrets:
       token: ${{ secrets.ACCESS_TOKEN }}
