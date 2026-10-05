@@ -60,6 +60,7 @@ import fiftyone.ipintelligence.shared.IPIntelligenceData;
 import fiftyone.pipeline.core.data.FlowData;
 import fiftyone.pipeline.core.flowelements.Pipeline;
 import fiftyone.pipeline.engines.Constants;
+import fiftyone.pipeline.engines.fiftyone.data.CloseableIterable;
 import fiftyone.pipeline.engines.fiftyone.data.ComponentMetaData;
 import fiftyone.pipeline.engines.fiftyone.data.ProfileMetaData;
 import fiftyone.pipeline.engines.fiftyone.data.ValueMetaData;
@@ -429,10 +430,23 @@ public class MetricsOnPrem {
                                  int maxRanges) throws Exception {
         int added = 0;
         // Find the Network component which contains the range properties.
+        //
+        // A try-with-resource block MUST be used for the collections of
+        // metadata returned by the engine. Each one holds a reference to the
+        // engine's data set until it is closed. If it is left open, closing
+        // the pipeline cannot free the data set, and with the max performance
+        // profile that is the whole data file held in memory until the
+        // garbage collector happens to finalize the collection.
         ComponentMetaData network = null;
-        for (ComponentMetaData component : engine.getComponents()) {
-            if ("Network".equalsIgnoreCase(component.getName())) {
-                network = component;
+        try (CloseableIterable<ComponentMetaData> components =
+                     engine.getComponents()) {
+            for (ComponentMetaData component : components) {
+                if (network == null &&
+                        "Network".equalsIgnoreCase(component.getName())) {
+                    network = component;
+                } else {
+                    component.close();
+                }
             }
         }
         if (network == null) {
@@ -440,25 +454,31 @@ public class MetricsOnPrem {
                     "An enterprise data file is needed for this example.");
             return 0;
         }
-        for (ProfileMetaData profile : engine.getProfiles()) {
-            try {
-                if (network.equals(profile.getComponent()) &&
-                        isRegisteredCountryValid(profile)) {
-                    String start = getValue(profile, "IpRangeStart");
-                    String end = getValue(profile, "IpRangeEnd");
-                    if (start != null && end != null) {
-                        String[] range = new String[]{start, end};
-                        if (condition == null || condition.test(range)) {
-                            ranges.put(range);
-                            added++;
-                            if (maxRanges > 0 && added >= maxRanges) {
-                                break;
+        // The Network component is kept to compare each profile against, so
+        // it is closed with the collection of profiles once that is done.
+        try (ComponentMetaData networkComponent = network;
+             CloseableIterable<ProfileMetaData> profiles =
+                     engine.getProfiles()) {
+            for (ProfileMetaData profile : profiles) {
+                try (ComponentMetaData component = profile.getComponent()) {
+                    if (networkComponent.equals(component) &&
+                            isRegisteredCountryValid(profile)) {
+                        String start = getValue(profile, "IpRangeStart");
+                        String end = getValue(profile, "IpRangeEnd");
+                        if (start != null && end != null) {
+                            String[] range = new String[]{start, end};
+                            if (condition == null || condition.test(range)) {
+                                ranges.put(range);
+                                added++;
+                                if (maxRanges > 0 && added >= maxRanges) {
+                                    break;
+                                }
                             }
                         }
                     }
+                } finally {
+                    profile.close();
                 }
-            } finally {
-                profile.close();
             }
         }
         return added;
@@ -484,12 +504,16 @@ public class MetricsOnPrem {
      */
     private static String getValue(ProfileMetaData profile, String name)
             throws Exception {
+        String result = null;
+        // Every value is closed, not only the first, as each one wraps a
+        // native object of its own.
         for (ValueMetaData value : profile.getValues(name)) {
-            String result = value.getName();
+            if (result == null) {
+                result = value.getName();
+            }
             value.close();
-            return result;
         }
-        return null;
+        return result;
     }
 
     /**

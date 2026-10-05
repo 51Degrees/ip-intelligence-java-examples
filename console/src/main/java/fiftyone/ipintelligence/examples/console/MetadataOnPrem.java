@@ -26,7 +26,9 @@ import fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPre
 import fiftyone.ipintelligence.engine.onpremise.flowelements.IPIntelligenceOnPremiseEngineBuilder;
 import fiftyone.pipeline.core.data.EvidenceKeyFilterWhitelist;
 import fiftyone.pipeline.engines.Constants;
+import fiftyone.pipeline.engines.fiftyone.data.CloseableIterable;
 import fiftyone.pipeline.engines.fiftyone.data.ComponentMetaData;
+import fiftyone.pipeline.engines.fiftyone.data.ProfileMetaData;
 import fiftyone.pipeline.engines.fiftyone.data.ValueMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,29 +146,40 @@ public class MetadataOnPrem {
     }
 
     private static void outputProfileDetails(IPIntelligenceOnPremiseEngine engine,
-                                            PrintWriter output) {
+                                            PrintWriter output) throws Exception {
         // Group the profiles by component and then output the number of profiles
         // for each component. Count with a reducing collector rather than
         // collecting every ProfileMetaData into a List: an on-premise IP
         // Intelligence data file has an enormous number of profiles, so
         // materializing them all just to call size() exhausts the heap
         // (OutOfMemoryError). counting() retains only the per-group total.
-        Map<String, Long> groups =
-                StreamSupport.stream(engine.getProfiles().spliterator(), false)
-                                .collect(Collectors.groupingBy(
-                                        p -> p.getComponent().getName(),
-                                        Collectors.counting()));
+        //
+        // A try-with-resource block MUST be used for the collections of
+        // metadata returned by the engine. Each one holds a reference to the
+        // engine's data set until it is closed, so if it is left open the
+        // data set cannot be freed when the engine is closed.
+        Map<String, Long> groups;
+        try (CloseableIterable<ProfileMetaData> profiles = engine.getProfiles()) {
+            groups = StreamSupport.stream(profiles.spliterator(), false)
+                    .collect(Collectors.groupingBy(
+                            p -> p.getComponent().getName(),
+                            Collectors.counting()));
+        }
         groups.forEach((k,v)->output.format("%s Profiles: %d\n", k , v));
     }
 
     // Output the component name as well as a list of all the associated properties.
     // If we're outputting to console then we also add some formatting to make it
     // more readable.
-    private static void outputComponents(IPIntelligenceOnPremiseEngine engine, PrintWriter output){
-        engine.getComponents().forEach(c -> {
-            output.println("Component - "+ c.getName());
-            outputProperties(c, output);
-        });
+    private static void outputComponents(IPIntelligenceOnPremiseEngine engine, PrintWriter output)
+            throws Exception {
+        // See outputProfileDetails for why this is a try-with-resource block.
+        try (CloseableIterable<ComponentMetaData> components = engine.getComponents()) {
+            components.forEach(c -> {
+                output.println("Component - "+ c.getName());
+                outputProperties(c, output);
+            });
+        }
     }
 
     private static void outputProperties(ComponentMetaData component, PrintWriter output) {
