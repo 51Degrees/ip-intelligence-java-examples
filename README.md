@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This repo has been merged into the monorepo https://github.com/51Degrees/51degrees-java, under `examples/ip-intelligence/`. Please refer to the new monorepository for issues and PRs. The examples are maintained there and build against the packages published from there, from version 4.5.127.
+
 # 51Degrees IP Intelligence Engines - Examples
 
 ![51Degrees](https://51degrees.com/img/logo.png?utm_source=github&utm_medium=readme&utm_campaign=ip-intelligence-java-examples&utm_content=readme.md&utm_term=51degrees-ip-intelligence-engines-examples "Data rewards the curious") **Java IP Intelligence**
